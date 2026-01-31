@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Volume Booster | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .controls {
+            display: none;
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 1rem 0;
+            accent-color: var(--primary-color);
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Audio Tools</a> / Volume Booster
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Audio Volume Booster</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔊</div>
+                <p>Click to upload audio (MP3, WAV)</p>
+                <input type="file" id="file-input" accept="audio/*" style="display: none;">
+            </div>
+
+            <div id="controls" class="controls">
+                <div class="control-group">
+                    <label>Volume Boost: <span id="gain-val">100</span>%</label>
+                    <input type="range" id="gain-slider" min="0" max="400" value="100" step="10">
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Warning: high boost may cause
+                        clipping/distortion.</p>
+                </div>
+
+                <div class="control-group">
+                    <button id="process-btn" class="action-btn" onclick="processAudio()">Process & Download</button>
+                    <div id="status" style="margin-top: 1rem; color:var(--text-muted)"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Ultimate Guide to Audio Volume Boosting</h2>
+            <p>Welcome to the Adiminium Audio Volume Booster, a powerful utility designed to amplify your audio files
+                beyond their original limits. Whether you have a recording that's too quiet, a podcast with uneven
+                levels, or a music track that lacks punch, this tool helps you increase the gain without downloading
+                complex software like Audacity or Adobe Audition.</p>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Pro Tip:</strong> Boosting volume too much can causing "clipping" (distortion). Start with small
+                increments (e.g., 1.5x) and listen for crackling sounds before saving.
+            </div>
+
+            <h3>Why is My Audio So Quiet?</h3>
+            <p>Low volume in digital audio can result from several factors:</p>
+            <ul>
+                <li><strong>Poor Microphone Placement:</strong> Recording too far from the source decreases signal
+                    strength exponentially.</li>
+                <li><strong>Low Input Gain:</strong> The recording interface or preamp wasn't set high enough during the
+                    session.</li>
+                <li><strong>Dynamic Range:</strong> Movies and classical music often have a wide dynamic range, meaning
+                    whispers are very quiet while explosions are loud. On small speakers (like phones), the quiet parts
+                    become inaudible.</li>
+                <li><strong>Normalization Issues:</strong> The file hasn't been "normalized" to reach the maximum
+                    available headroom (0dB).</li>
+            </ul>
+
+            <h3>How Volume Boosting Works</h3>
+            <p>This tool uses the <strong>Web Audio API</strong> to digitally multiply the amplitude of the audio
+                signal. In digital audio, volume is measured in decibels (dB).</p>
+            <ul>
+                <li><strong>1.0x (0dB):</strong> The original volume. No change.</li>
+                <li><strong>2.0x (+6dB):</strong> Doubles the amplitude. This is a significant boost.</li>
+                <li><strong>4.0x (+12dB):</strong> Quadruples the amplitude. Use with extreme caution.</li>
+            </ul>
+            <p>When you increase the volume, you are technically increasing the value of every sample in the waveform.
+                If a sample's value exceeds the digital limit (0dB Full Scale), it gets "clipped" off, resulting in a
+                harsh, crackling noise.</p>
+
+            <h3>Use Cases for Volume Boosting</h3>
+            <ol>
+                <li><strong>Fixing Quiet Lectures:</strong> Students often record lectures from the back of the class. A
+                    volume booster brings the professor's voice to a clear level.</li>
+                <li><strong>Normalizing Podcasts:</strong> If one speaker is loud and another is quiet, you can cut the
+                    quiet sections (using our Trim Tool) and boost them here.</li>
+                <li><strong>Audio for Video:</strong> Before importing audio into a video editor, ensuring it hits the
+                    industry standard levels (-12dB to -6dB for dialogue) ensures professional results.</li>
+                <li><strong>Ringtone Creation:</strong> Phone speakers are small and quiet. Boosting a ringtone ensures
+                    you hear it even when your phone is in your pocket.</li>
+            </ol>
+
+            <h3>Technical Specifications</h3>
+            <p>Our tool processes audio entirely in your browser using <strong>Client-Side Processing</strong>. This
+                provides several benefits:</p>
+            <ul>
+                <li><strong>Privacy:</strong> Your files are never uploaded to a server. They stay on your device.</li>
+                <li><strong>Speed:</strong> No upload or download times. The processing happens instantly.</li>
+                <li><strong>Quality:</strong> We export 16-bit PCM WAV files (44.1kHz or 48kHz), ensuring lossless
+                    quality relative to the processed stream.</li>
+            </ul>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Does this affect quality?</h4>
+                <p>Increasing volume significantly can cause "clipping" or distortion if the audio exceeds the maximum
+                    limit. We recommend boosting in small increments.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Is my data private?</h4>
+                <p>Yes. All processing happens locally in your browser. No files are uploaded to our servers.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const controls = document.getElementById('controls');
+        const gainSlider = document.getElementById('gain-slider');
+        const gainVal = document.getElementById('gain-val');
+        const status = document.getElementById('status');
+        const processBtn = document.getElementById('process-btn');
+        let audioCtx;
+        let file;
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                file = e.target.files[0];
+                document.getElementById('drop-zone').style.display = 'none';
+                controls.style.display = 'flex';
+                status.textContent = "Loaded: " + file.name;
+            }
+        });
+
+        gainSlider.addEventListener('input', () => {
+            gainVal.textContent = gainSlider.value;
+        });
+
+        async function processAudio() {
+            if (!file) return;
+            status.textContent = "Decoding audio...";
+            processBtn.disabled = true;
+
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+                const arrayBuffer = await file.arrayBuffer();
+                const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+                status.textContent = "Rendering...";
+
+                // Offline rendering
+                const offlineCtx = new OfflineAudioContext(
+                    audioBuffer.numberOfChannels,
+                    audioBuffer.length,
+                    audioBuffer.sampleRate
+                );
+
+                const source = offlineCtx.createBufferSource();
+                source.buffer = audioBuffer;
+
+                const gainNode = offlineCtx.createGain();
+                gainNode.gain.value = parseInt(gainSlider.value) / 100;
+
+                source.connect(gainNode);
+                gainNode.connect(offlineCtx.destination);
+
+                source.start();
+
+                const renderedBuffer = await offlineCtx.startRendering();
+                status.textContent = "Encoding...";
+
+                const wavBlob = bufferToWav(renderedBuffer);
+                const url = URL.createObjectURL(wavBlob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "boosted_" + file.name.replace(/\.[^/.]+$/, "") + ".wav";
+                a.click();
+
+                status.textContent = "Done!";
+                processBtn.disabled = false;
+
+            } catch (e) {
+                console.error(e);
+                status.textContent = "Error processing audio: " + e.message;
+                processBtn.disabled = false;
+            }
+        }
+
+        // Simple WAV encoder
+        function bufferToWav(abuffer) {
+            const numOfChan = abuffer.numberOfChannels;
+            const length = abuffer.length * numOfChan * 2 + 44;
+            const buffer = new ArrayBuffer(length);
+            const view = new DataView(buffer);
+            const channels = [];
+            let i;
+            let sample;
+            let offset = 0;
+            let pos = 0;
+
+            // write WAVE header
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16); // length = 16
+            setUint16(1); // PCM (uncompressed)
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+            setUint16(numOfChan * 2); // block-align
+            setUint16(16); // 16-bit (hardcoded in this loop)
+
+            setUint32(0x61746164); // "data" - chunk
+            setUint32(length - pos - 4); // chunk length
+
+            // write interleaved data
+            for (i = 0; i < abuffer.numberOfChannels; i++)
+                channels.push(abuffer.getChannelData(i));
+
+            while (pos < abuffer.length) {
+                for (i = 0; i < numOfChan; i++) { // interleave channels
+                    sample = Math.max(-1, Math.min(1, channels[i][pos])); // clamp
+                    // scale to 16-bit signed int
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                    view.setInt16(44 + offset, sample, true);
+                    offset += 2;
+                }
+                pos++;
+            }
+
+            return new Blob([buffer], { type: "audio/wav" });
+
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
+            }
+        }
+    </script>
+</body>
+
+</html>

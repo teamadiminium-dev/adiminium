@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lazy Load Image Tester | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tester-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="url"],
+        input[type="file"] {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .delay-control {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        input[type="range"] {
+            flex: 1;
+        }
+
+        .preview-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-body);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loaded-img {
+            max-width: 100%;
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Lazy Load Tester
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Lazy Load & Network Simulator</h1>
+
+        <div class="tool-container">
+            <div class="tester-card">
+                <div class="delay-control">
+                    <label>Simulated Network Delay: <span id="delay-val">2000</span>ms</label>
+                    <input type="range" id="delay" min="0" max="5000" step="100" value="2000">
+                </div>
+
+                <div class="input-group">
+                    <input type="file" id="file-input" accept="image/*" style="display:none">
+                    <button class="action-btn" onclick="document.getElementById('file-input').click()"
+                        style="width:100%">Select an Image to Test</button>
+                </div>
+
+                <p style="text-align:center; color:var(--text-muted); margin-bottom:1rem">OR</p>
+
+                <div class="input-group">
+                    <input type="url" id="url-input" placeholder="https://example.com/image.jpg">
+                    <button class="action-btn" onclick="testUrl()">Load URL</button>
+                </div>
+
+                <div class="preview-area" id="preview-area">
+                    <p style="color:var(--text-muted)">Image will appear here</p>
+                    <div class="spinner" id="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The UX Performance Guide: Lazy Loading & Network Simulation</h2>
+            <p>The Adiminium Lazy Load Tester is a critical tool for developers and UX designers. We all test our
+                websites on fast office Wi-Fi, but real users often browse on spotty 3G/4G connections. This tool
+                simulates those harsh conditions, allowing you to perfect the "Loading State" of your images.</p>
+
+            <h3>Why Test "Loading States"?</h3>
+            <p>A blank screen is the enemy of user retention. If your image takes 3 seconds to load, what does the user
+                see during those 3 seconds?</p>
+            <ul>
+                <li><strong>The Generic Spinner:</strong> Better than nothing, but can feel broken if it spins too long.
+                </li>
+                <li><strong>Skeleton Screens:</strong> A gray pulsing box that mimics the shape of the content. This is
+                    the gold standard (used by Facebook, LinkedIn, YouTube) because it lowers "Perceived Latency".</li>
+                <li><strong>Blur-Up (LQIP):</strong> Loading a tiny 10px blurry version first, then fading in the
+                    high-res one. (Used by Medium, Next.js).</li>
+            </ul>
+
+            <h3>Understanding "Network Throttling"</h3>
+            <p>Browsers have built-in dev tools for this, but they are buried in menus. This tool brings network
+                simulation to the forefront.</p>
+            <ul>
+                <li><strong>Fast 3G (1.5s delay):</strong> Good for testing basic patience.</li>
+                <li><strong>Slow 3G (3s delay):</strong> Good for testing error states and timeout messages.</li>
+                <li><strong>Offline (Infinity):</strong> What happens if the image <em>never</em> loads? Do you have an
+                    `alt` tag fallback?</li>
+            </ul>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Set the Delay:</strong> Drag the slider to 2000ms (2 seconds).</li>
+                <li><strong>Choose Image:</strong> Select a high-res photo.</li>
+                <li><strong>Observe:</strong> Watch the "Spinner" animation. Does it look good? Is it centered?</li>
+                <li><strong>Test Failure:</strong> Try a broken URL to see if your browser renders the "broken image"
+                    icon or your custom error styling.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Does this actually slow down my internet?</h4>
+                <p>No. It uses a JavaScript `setTimeout` to artificially delay the <em>display</em> of the image within
+                    this specific tool. It does not affect your other tabs or system network speed.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const range = document.getElementById('delay');
+        const val = document.getElementById('delay-val');
+        const preview = document.getElementById('preview-area');
+        const spinner = document.getElementById('spinner');
+
+        range.addEventListener('input', () => val.textContent = range.value);
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) startLoad(URL.createObjectURL(file));
+        });
+
+        function testUrl() {
+            const url = document.getElementById('url-input').value;
+            // Cache bursting to force reload
+            const cleanUrl = url.split('?')[0] + '?t=' + Date.now();
+            if (url) startLoad(cleanUrl);
+        }
+
+        function startLoad(src) {
+            const delay = parseInt(range.value);
+
+            // Reset UI
+            preview.innerHTML = '';
+            preview.appendChild(spinner);
+            spinner.style.display = 'block';
+
+            setTimeout(() => {
+                const img = new Image();
+                img.onload = () => {
+                    spinner.style.display = 'none';
+                    img.className = 'loaded-img';
+                    preview.appendChild(img);
+                };
+                img.onerror = () => {
+                    spinner.style.display = 'none';
+                    preview.innerHTML = '<p style="color:#ff6b6b">Failed to load image</p>';
+                };
+                img.src = src;
+            }, delay);
+        }
+    </script>
+</body>
+
+</html>

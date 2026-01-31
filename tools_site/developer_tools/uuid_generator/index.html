@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online UUID / GUID Generator. Generate random Version 4 UUIDs instantly. Bulk generation supported. Perfect for developers needing unique identifiers.">
+    <meta name="keywords"
+        content="uuid generator, guid generator, random uuid, version 4 uuid, uuid v4, online guid tool, bulk uuid generator, unique identifier">
+    <title>UUID / GUID Generator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .config-box {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .config-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .input-num {
+            width: 80px;
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Result Area */
+        .result-area {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: 'Fira Code', monospace;
+            resize: vertical;
+            line-height: 1.8;
+            outline: none;
+        }
+
+        textarea[readonly] {
+            cursor: text;
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-action {
+            padding: 0.8rem 2rem;
+            background: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            color: #000;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-copy-float {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-copy-float:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Checkbox styling */
+        input[type="checkbox"] {
+            accent-color: var(--primary-color);
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Developer Tools</a> / UUID Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">UUID / GUID Generator</h1>
+
+        <div class="tool-container">
+            <div class="config-box">
+                <div class="config-group">
+                    <label style="font-weight:600;">Quantity:</label>
+                    <input type="number" id="quantity" class="input-num" value="5" min="1" max="500">
+                </div>
+
+                <div class="config-group">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="hyphens" checked>
+                        Hyphens
+                    </label>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="uppercase">
+                        Uppercase
+                    </label>
+                </div>
+
+                <div class="config-group">
+                    <button class="btn-action" onclick="generate()">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Generate
+                    </button>
+                </div>
+            </div>
+
+            <div class="result-area">
+                <textarea id="output" readonly spellcheck="false"></textarea>
+                <button class="btn-copy-float" onclick="copyOutput()">
+                    Copy List
+                </button>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Unique identifiers are the backbone of database integrity. A UUID (Universally Unique Identifier) is a
+                128-bit label used to uniquely identify numbers in computer systems. The probability of duplicates is so
+                astronomically low that you can generate them independently without a central authority. The Adiminium
+                UUID Generator creates standard Version 4 UUIDs (based on random numbers), which are perfect for use as
+                primary keys, session IDs, or transaction tokens.</p>
+
+            <h3>What It Does</h3>
+            <p>Generates random Version 4 UUIDs (GUIDs) individually or in bulk.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Quantity:</strong> Choose how many unique IDs you need (up to 500).</li>
+                <li><strong>Options:</strong> Toggle standard "Hyphens" or "Uppercase" formatting.</li>
+                <li><strong>Generate:</strong> Click to fill the text area with new IDs.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Database administrators, backend developers, and software architects.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Will these ever collide?</h4>
+                <p>The probability of a collision in Version 4 UUIDs is practically zero. You are more likely to be hit
+                    by a meteorite than to generate a duplicate.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is it cryptographically secure?</h4>
+                <p>We use the browser's <code>crypto.randomUUID()</code> where available, ensuring high-quality
+                    randomness suitable for security contexts.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">GUID vs UUID?</h4>
+                <p>They are effectively the same thing. GUID (Globally Unique Identifier) is simply Microsoft's
+                    implementation of the UUID standard.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        const quantityInput = document.getElementById('quantity');
+        const hyphensCheck = document.getElementById('hyphens');
+        const uppercaseCheck = document.getElementById('uppercase');
+
+        function generateUUID() {
+            // Native crypto supported?
+            if (crypto.randomUUID) {
+                return crypto.randomUUID();
+            }
+
+            // Fallback for older browsers
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function generate() {
+            const count = Math.min(Math.max(parseInt(quantityInput.value) || 1, 1), 1000);
+            const useHyphens = hyphensCheck.checked;
+            const useUppercase = uppercaseCheck.checked;
+
+            let result = [];
+            for (let i = 0; i < count; i++) {
+                let uuid = generateUUID();
+
+                if (!useHyphens) {
+                    uuid = uuid.replace(/-/g, '');
+                }
+
+                if (useUppercase) {
+                    uuid = uuid.toUpperCase();
+                }
+
+                result.push(uuid);
+            }
+
+            output.value = result.join('\n');
+        }
+
+        function copyOutput() {
+            if (!output.value) return;
+            output.select();
+            document.execCommand('copy');
+
+            const btn = document.querySelector('.btn-copy-float');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Copied!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+
+        // Initial generation
+        generate();
+    </script>
+</body>
+
+</html>

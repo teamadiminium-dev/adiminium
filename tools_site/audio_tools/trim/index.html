@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Trim Tool | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-body);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-surface);
+        }
+
+        #waveform {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .time-controls {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.8rem;
+            border-radius: 8px;
+            width: 120px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Audio Tools</a> / Trim Tool
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Audio Trim Tool</h1>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">✂️</div>
+                    <p>Click to upload audio</p>
+                    <input type="file" id="file-input" accept="audio/*" style="display: none;">
+                </div>
+
+                <div id="waveform"></div>
+
+                <div class="regions-list" style="text-align:center; margin-bottom:1rem; color:var(--text-muted)">
+                    Drag handles or edit time below to select the part to KEEP.
+                </div>
+
+                <div class="time-controls">
+                    <div class="input-group">
+                        <label>Start Time (s)</label>
+                        <input type="number" id="start-time" step="0.1" min="0" value="0.00">
+                    </div>
+                    <div class="input-group">
+                        <label>End Time (s)</label>
+                        <input type="number" id="end-time" step="0.1" min="0" value="0.00">
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="action-btn" onclick="wavesurfer.playPause()">Play/Pause</button>
+                    <button class="action-btn" onclick="trimAndDownload()">Trim & Download</button>
+                </div>
+                <div id="status" style="text-align:center; color:var(--text-muted)"></div>
+            </div>
+
+            <section class="description-section">
+                <h2>The Complete Guide to Audio Trimming</h2>
+                <p>The Adiminium Audio Trim Tool enables you to cut, shorten, and extract specific parts of your audio
+                    files with millimeter precision. Trimming is the fundamental "copy-paste" action of audio editing.
+                    Whether you need to remove the dead air from the start of a recording, extract a catchy chorus for a
+                    ringtone, or shorten a podcast interview, this tool handles it effortlessly from your browser.</p>
+
+                <div class="tip-box"
+                    style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                    <strong>Pro Tip:</strong> Zoom is not yet implemented, but you can refine your selection by typing
+                    precise timestamps (e.g., <code>12.5</code> seconds) in the input boxes below the waveform for
+                    greater accuracy than dragging alone.
+                </div>
+
+                <h3>Why Trim Audio?</h3>
+                <ol>
+                    <li><strong>Removing Silence:</strong> Most recordings have "dead air" at the beginning and end.
+                        Trimming gives your file a professional, tight start.</li>
+                    <li><strong>Extracting Highlights:</strong> Grab just the quote you need from an hour-long speech,
+                        or just the beat drop from a song.</li>
+                    <li><strong>Reducing File Size:</strong> By discarding unused minutes of audio, you significantly
+                        reduce the megabyte size of the file, making it easier to email or upload.</li>
+                    <li><strong>Loop Creation:</strong> Create perfect loops for music production by trimming a 4-bar or
+                        8-bar section precisely.</li>
+                </ol>
+
+                <h3>How Our Visual Trimmer Works</h3>
+                <p>We use a visual representation of your audio called a <strong>Waveform</strong>.</p>
+                <ul>
+                    <li><strong>The Peaks:</strong> The tall bars represent loud sounds (beats, voices).</li>
+                    <li><strong>The Valleys:</strong> The flat lines represent silence or quiet noise.</li>
+                </ul>
+                <p>By seeing the sound, you can visually identify exactly where a word starts or a drum hits, rather
+                    than guessing with time codes alone. The highlighted region in <span
+                        style="color:var(--primary-color)">green</span> is what will be <strong>saved</strong>.
+                    Everything in the dark grey areas will be <strong>deleted</strong>.</p>
+
+                <h3>Step-by-Step Tutorial</h3>
+                <ol>
+                    <li><strong>Load:</strong> Drag and drop your audio file onto the scissors icon.</li>
+                    <li><strong>Select:</strong> Click and drag on the waveform to create a selection region. You can
+                        drag the left handle (Start) and right handle (End) to adjust.</li>
+                    <li><strong>Refine:</strong> Use the manual timestamp inputs below the waveform to type exact
+                        seconds for perfect cuts.</li>
+                    <li><strong>Preview:</strong> Press "Play" to hear <em>only</em> the selected region.</li>
+                    <li><strong>Download:</strong> Click "Trim & Download" to save the new WAV file.</li>
+                </ol>
+
+                <h3>Technical Details</h3>
+                <p>This tool functions as a <strong>Non-Destructive Editor</strong> until you hit download. This means:
+                </p>
+                <ul>
+                    <li>You can adjust handles endlessly without losing quality.</li>
+                    <li>The original file on your computer is never touched.</li>
+                    <li>The processing happens in RAM. When you click download, we create a new digital buffer
+                        containing only the samples from your Start Frame to your End Frame.</li>
+                </ul>
+
+                <h3>Frequently Asked Questions</h3>
+                <div class="faq-item">
+                    <h4>Can I cut a section out of the middle?</h4>
+                    <p>This specific tool acts as a "Crop" tool (Keeping the middle, deleting ends). To delete a middle
+                        section (e.g., a cough), use our Multi-Segment Joiner or cut the file into two parts and rejoin
+                        them.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h4>Does it support MP3 metadata?</h4>
+                    <p>Currently, the output is a fresh WAV file, so embedded album art or ID3 tags from the original
+                        MP3 might be stripped. You can add them back using our <strong>Metadata Editor</strong>.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h4>Is there a file size limit?</h4>
+                    <p>Since processing happens in your browser's memory (RAM), extremely large files (like 3-hour
+                        uncompressed WAVs) might crash the tab on older computers. For most songs and podcasts under
+                        100MB, it works perfectly.</p>
+                </div>
+            </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/regions.min.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        let wavesurfer;
+        let wsRegions;
+        let activeRegion;
+        let file;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: '#4d4d4d',
+                progressColor: '#00ff9d',
+                cursorColor: '#ffffff',
+                height: 150,
+            });
+
+            wsRegions = wavesurfer.registerPlugin(WaveSurfer.Regions.create());
+
+            const startInput = document.getElementById('start-time');
+            const endInput = document.getElementById('end-time');
+
+            wsRegions.on('region-updated', (region) => {
+                activeRegion = region;
+                // Only update inputs if they are not being edited (focus check not strictly needed if we are careful, 
+                // but to avoid fighting the user, we can just update. For smooth slider, maybe throttled.
+                // Simple version: just update.
+                if (document.activeElement !== startInput) startInput.value = region.start.toFixed(2);
+                if (document.activeElement !== endInput) endInput.value = region.end.toFixed(2);
+            });
+
+            wsRegions.on('region-created', (region) => {
+                wsRegions.getRegions().forEach(r => {
+                    if (r !== region) r.remove();
+                });
+                activeRegion = region;
+                startInput.value = region.start.toFixed(2);
+                endInput.value = region.end.toFixed(2);
+            });
+
+            // Input listeners
+            startInput.addEventListener('change', updateRegionFromInput);
+            endInput.addEventListener('change', updateRegionFromInput);
+
+            function updateRegionFromInput() {
+                if (!activeRegion) return;
+                const start = parseFloat(startInput.value);
+                const end = parseFloat(endInput.value);
+
+                if (start >= 0 && end > start) {
+                    activeRegion.setOptions({
+                        start: start,
+                        end: end
+                    });
+                }
+            }
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            file = e.target.files[0];
+            if (file) {
+                document.getElementById('drop-zone').style.display = 'none';
+                const url = URL.createObjectURL(file);
+                wavesurfer.load(url);
+                wavesurfer.on('ready', () => {
+                    wsRegions.clearRegions();
+                    // Default region: entire clip
+                    wsRegions.addRegion({
+                        start: 0,
+                        end: wavesurfer.getDuration(),
+                        color: 'rgba(0, 255, 157, 0.2)',
+                        drag: true,
+                        resize: true
+                    });
+                });
+            }
+        });
+
+        async function trimAndDownload() {
+            if (!activeRegion || !file) return;
+
+            const status = document.getElementById('status');
+            status.textContent = "Processing...";
+
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const arrayBuffer = await file.arrayBuffer();
+            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+            const start = activeRegion.start;
+            const end = activeRegion.end;
+            const duration = end - start;
+
+            // Validate
+            if (duration <= 0) return;
+
+            const sampleRate = audioBuffer.sampleRate;
+            const startFrame = Math.floor(start * sampleRate);
+            const frameCount = Math.floor(duration * sampleRate);
+
+            const newBuffer = audioCtx.createBuffer(
+                audioBuffer.numberOfChannels,
+                frameCount,
+                sampleRate
+            );
+
+            for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
+                const channelData = audioBuffer.getChannelData(i);
+                const newChannelData = newBuffer.getChannelData(i);
+                // Copy slice
+                for (let j = 0; j < frameCount; j++) {
+                    if (startFrame + j < channelData.length) {
+                        newChannelData[j] = channelData[startFrame + j];
+                    }
+                }
+            }
+
+            const blob = bufferToWav(newBuffer);
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trimmed_${file.name.replace(/\.[^.]+$/, '')}.wav`;
+            a.click();
+            status.textContent = "Done!";
+        }
+
+        function bufferToWav(abuffer) {
+            const numOfChan = abuffer.numberOfChannels;
+            const length = abuffer.length * numOfChan * 2 + 44;
+            const buffer = new ArrayBuffer(length);
+            const view = new DataView(buffer);
+            const channels = [];
+            let i, sample, offset = 0, pos = 0;
+
+            setUint32(0x46464952);
+            setUint32(length - 8);
+            setUint32(0x45564157);
+            setUint32(0x20746d66);
+            setUint32(16);
+            setUint16(1);
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan);
+            setUint16(numOfChan * 2);
+            setUint16(16);
+            setUint32(0x61746164);
+            setUint32(length - pos - 4);
+
+            for (i = 0; i < numOfChan; i++) channels.push(abuffer.getChannelData(i));
+
+            while (pos < abuffer.length) {
+                for (i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][pos]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                    view.setInt16(44 + offset, sample, true);
+                    offset += 2;
+                }
+                pos++;
+            }
+            return new Blob([buffer], { type: "audio/wav" });
+            function setUint16(d) { view.setUint16(pos, d, true); pos += 2; }
+            function setUint32(d) { view.setUint32(pos, d, true); pos += 4; }
+        }
+    </script>
+</body>
+
+</html>

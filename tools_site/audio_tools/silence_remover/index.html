@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Silence Remover | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-body);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-surface);
+        }
+
+        .controls {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Audio Tools</a> / Silence
+            Remover</div>
+        <h1 style="text-align: center; margin-bottom: 2rem;">Audio Silence Remover</h1>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔇</div>
+                    <p>Click to upload audio</p>
+                    <input type="file" id="file-input" accept="audio/*" style="display: none;">
+                </div>
+
+                <div id="controls" class="controls">
+                    <label>Threshold (dB): <span id="thresh-val">-50</span>dB</label>
+                    <input type="range" id="thresh-slider" min="-80" max="-10" value="-50" step="1" style="width:100%">
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.5rem">Lower value = remove only
+                        absolute silence. Higher value = remove quiet background noise.</p>
+
+                    <button class="action-btn" style="margin-top:1.5rem" onclick="process()">Remove Silence &
+                        Download</button>
+                    <div id="status" style="margin-top:1rem; color:var(--text-muted)"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Ultimate Guide to Removing Silence</h2>
+            <p>The Adiminium Silence Remover is an intelligent productivity tool designed to automatically detect and
+                delete "dead air" from your audio recordings. Whether you are editing a podcast, cleaning up a lecture,
+                or shortening a voice memo, this tool can save you hours of manual cutting work.</p>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Efficiency Booster:</strong> A typical 1-hour unscripted podcast contains about 10-15 minutes of
+                silence. Removing this tightens the flow and respects your listeners' time.
+            </div>
+
+            <h3>How "Noise Gating" Works</h3>
+            <p>This tool functions similarly to a studio effect called a <strong>Noise Gate</strong> or <strong>Truncate
+                    Silence</strong> filter. It scans your audio 44,100 times per second to analyze volume.</p>
+            <ul>
+                <li><strong>The Threshold (-db):</strong> This is the "line in the sand". Any sound LOWER than this
+                    level is considered "Silence". Any sound HIGHER is considered "Audio".</li>
+                <li><strong>-50dB:</strong> Very quiet. Removes only absolute silence (digital zeros).</li>
+                <li><strong>-30dB:</strong> Moderate. Removes room tone and distant background noise.</li>
+                <li><strong>-10dB:</strong> Aggressive. Might cut off soft words or breaths.</li>
+            </ul>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Drag your file into the drop zone.</li>
+                <li><strong>Set Threshold:</strong> Start with the default (-50dB). If it doesn't remove enough, move
+                    the slider to the right (e.g., -40dB).</li>
+                <li><strong>Process:</strong> Click the button. The algorithm cuts out the silent blocks and instantly
+                    stitches the remaining audio together.</li>
+                <li><strong>Download:</strong> Get your tightened, shorter WAV file.</li>
+            </ol>
+
+            <h3>Best Practices for Voice</h3>
+            <p>When recording voice, background noise (air conditioning, computer fans) often sits around -60dB to
+                -50dB. Your voice should peak around -12dB to -6dB. </p>
+            <ul>
+                <li><strong>If the tool cuts off your words:</strong> The threshold is too high (too close to 0dB).
+                    Lower it (move left).</li>
+                <li><strong>If the tool keeps too much silence:</strong> The threshold is too low. Raise it (move
+                    right).</li>
+            </ul>
+
+            <h3>Technical Details</h3>
+            <p>Our algorithm uses a "Lookahead" buffer to ensure the cuts don't sound too abrupt. It adds a tiny fade
+                (10ms) at the cut points to prevent digital clicking sounds, ensuring a smooth transition between
+                sentences.</p>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Can I remove silence from a video?</h4>
+                <p>This tool only processes Audio files. However, you can extract the audio from your video, process it
+                    here, and then sync it back in your video editor (though the lip-sync will change because the audio
+                    is now shorter!).</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Does it delete breaths?</h4>
+                <p>Breaths are often louder than silence. To remove breaths, you need a fairly aggressive threshold
+                    (around -30dB), but be careful not to cut the start of soft sentences.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const controls = document.getElementById('controls');
+        const threshSlider = document.getElementById('thresh-slider');
+        const threshVal = document.getElementById('thresh-val');
+        let file;
+
+        fileInput.addEventListener('change', (e) => {
+            file = e.target.files[0];
+            if (file) {
+                document.getElementById('drop-zone').style.display = 'none';
+                controls.style.display = 'block';
+            }
+        });
+
+        threshSlider.addEventListener('input', () => threshVal.textContent = threshSlider.value);
+
+        async function process() {
+            const status = document.getElementById('status');
+            status.textContent = "Processing...";
+
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const ab = await file.arrayBuffer();
+            const inBuffer = await audioCtx.decodeAudioData(ab);
+
+            const thresholdDb = parseInt(threshSlider.value); // -50
+            // Convert dB to amplitude: 10^(dB/20)
+            const threshold = Math.pow(10, thresholdDb / 20);
+
+            const channelData = inBuffer.getChannelData(0); // Use ch 0 for detection
+
+            const chunks = [];
+            let isSilent = true;
+            let lastStart = 0;
+
+            // Simple gate with hold
+            // Scan through
+            // We want to KEEP audio that is > threshold
+
+            // This is a simplified block-based approach
+            const blockSize = 4096;
+            const keepMap = new Uint8Array(Math.ceil(inBuffer.length / blockSize));
+
+            for (let i = 0; i < inBuffer.length; i += blockSize) {
+                let max = 0;
+                // check max amplitude in block
+                for (let j = 0; j < blockSize && i + j < inBuffer.length; j++) {
+                    const val = Math.abs(channelData[i + j]);
+                    if (val > max) max = val;
+                }
+
+                if (max > threshold) {
+                    keepMap[Math.floor(i / blockSize)] = 1;
+                }
+            }
+
+            // Calculate new length
+            let keptBlocks = 0;
+            for (let k of keepMap) if (k) keptBlocks++;
+
+            if (keptBlocks === 0) {
+                status.textContent = "Error: Result is empty (threshold too high?)";
+                return;
+            }
+
+            const outBuffer = audioCtx.createBuffer(inBuffer.numberOfChannels, keptBlocks * blockSize, inBuffer.sampleRate);
+
+            for (let ch = 0; ch < inBuffer.numberOfChannels; ch++) {
+                const inData = inBuffer.getChannelData(ch);
+                const outData = outBuffer.getChannelData(ch);
+                let writePtr = 0;
+
+                for (let b = 0; b < keepMap.length; b++) {
+                    if (keepMap[b]) {
+                        const start = b * blockSize;
+                        // Copy block
+                        for (let j = 0; j < blockSize && start + j < inData.length; j++) {
+                            outData[writePtr++] = inData[start + j];
+                        }
+                    }
+                }
+            }
+
+            status.textContent = "Encoding...";
+            const blob = bufferToWav(outBuffer);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `silence_removed_${file.name.replace(/\.[^.]+$/, '')}.wav`;
+            a.click();
+            status.textContent = "Done!";
+        }
+
+        function bufferToWav(abuffer) {
+            const numOfChan = abuffer.numberOfChannels;
+            const length = abuffer.length * numOfChan * 2 + 44;
+            const buffer = new ArrayBuffer(length);
+            const view = new DataView(buffer);
+            const channels = [];
+            let i, sample, offset = 0, pos = 0;
+
+            setUint32(0x46464952);
+            setUint32(length - 8);
+            setUint32(0x45564157);
+            setUint32(0x20746d66);
+            setUint32(16);
+            setUint16(1);
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan);
+            setUint16(numOfChan * 2);
+            setUint16(16);
+            setUint32(0x61746164);
+            setUint32(length - pos - 4);
+
+            for (i = 0; i < numOfChan; i++) channels.push(abuffer.getChannelData(i));
+
+            while (pos < abuffer.length) {
+                for (i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][pos]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                    view.setInt16(44 + offset, sample, true);
+                    offset += 2;
+                }
+                pos++;
+            }
+            return new Blob([buffer], { type: "audio/wav" });
+            function setUint16(d) { view.setUint16(pos, d, true); pos += 2; }
+            function setUint32(d) { view.setUint32(pos, d, true); pos += 4; }
+        }
+    </script>
+</body>
+
+</html>

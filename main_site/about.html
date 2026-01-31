@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Adiminium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            transition: color var(--transition-fast);
+        }
+
+        /* SVG Theme Button Style */
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        main {
+            padding: 4rem 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--text-main), var(--primary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            line-height: 1.7;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .content-panel p {
+            margin-bottom: 1.5rem;
+        }
+
+        .content-panel h2 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: auto;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        footer a:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Adiminium<span>.</span></a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="../tools_site/index.html">Tools</a>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>About Adiminium</h1>
+        <div class="content-panel">
+            <p>Welcome to <strong>Adiminium</strong>, your all-in-one digital workspace for essential utilities. We
+                believe that powerful tools should be accessible, private, and easy to use.</p>
+
+            <h2>Our Mission</h2>
+            <p>In a web filled with ad-heavy, slow, and tracking-intensive tools, Adiminium stands apart. Our mission is
+                to provide a clean, fast, and privacy-first suite of utilities for developers, students, and
+                professionals alike.</p>
+
+            <h2>Privacy Focused</h2>
+            <p>We prioritize your security. For our client-side tools, we process your data directly in your
+                browser—meaning your files and sensitive information don't leave your device for those operations.</p>
+
+            <h2>Accessible & Powerful</h2>
+            <p>Adiminium provides a robust suite of utilities designed to help you get work done faster. We believe in
+                making powerful digital tools accessible to everyone.</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script src="js/particles.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Speed Changer | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .controls {
+            display: none;
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Audio Tools</a> / Speed Changer
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Audio Speed Changer</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">⏩</div>
+                <p>Click to upload audio</p>
+                <input type="file" id="file-input" accept="audio/*" style="display: none;">
+            </div>
+
+            <div id="controls" class="controls">
+                <div>
+                    <label>Playback Speed: <span id="rate-val">1.0</span>x</label>
+                    <input type="range" id="rate-slider" min="0.5" max="2.0" value="1.0" step="0.1"
+                        style="width:100%; margin:1rem 0">
+                    <p style="font-size:0.8rem; color:var(--text-muted)">Note: This will also change pitch (Resampling).
+                    </p>
+                </div>
+
+                <div style="display:flex; gap:1rem">
+                    <button class="action-btn" onclick="preview()">Preview</button>
+                    <button class="action-btn" onclick="process()">Download</button>
+                    <button onclick="stop()"
+                        style="border:none; background:none; color:red; cursor:pointer">Stop</button>
+                </div>
+                <div id="status" style="color:var(--text-muted)"></div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Comprehensive Guide to Audio Speed Adjustment</h2>
+            <p>The Adiminium Audio Speed Changer is a versatile tool designed to manipulate the playback rate of your
+                audio files. Whether you are a musician learning a fast solo, a student listening to a lecture in double
+                time, or a dancer practicing a routine, controlling the tempo of your audio is an essential superpower.
+            </p>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Note on Pitch:</strong> This tool acts like a traditional vinyl record player or tape deck. When
+                you increase speed, the pitch goes UP (Chipmunk effect). When you decrease speed, the pitch goes DOWN
+                (Deep voice).
+            </div>
+
+            <h3>Why Change Audio Speed?</h3>
+            <p>Speed manipulation is used across various industries for different purposes:</p>
+            <ul>
+                <li><strong>Musicians & Transcribers:</strong> Slowing down intricate jazz solos or fast rap verses
+                    makes them easier to transcribe or learn by ear without losing note definition.</li>
+                <li><strong>Productivity & Learning:</strong> "Speed Listening" is a growing trend. Listening to
+                    audiobooks or podcasts at 1.5x or 2.0x speed allows you to consume content faster.</li>
+                <li><strong>Dance & Choreography:</strong> Dancers often start practicing a routine at 0.75x speed and
+                    gradually work their way up to full tempo (1.0x).</li>
+                <li><strong>Sound Design:</strong> Extreme slowing of everyday sounds (like a door creak) can create
+                    terrifying horror movie sound effects.</li>
+            </ul>
+
+            <h3>Understanding Playback Rate</h3>
+            <p>The speed is measured as a multiplier of the original tempo:</p>
+            <ul>
+                <li><strong>0.5x:</strong> Half speed. The duration doubles. (e.g., a 10s clip becomes 20s).</li>
+                <li><strong>1.0x:</strong> Original speed.</li>
+                <li><strong>1.5x:</strong> 50% faster.</li>
+                <li><strong>2.0x:</strong> Double speed. The duration is halved. (e.g., a 10s clip becomes 5s).</li>
+            </ul>
+
+            <h3>Technical Deep Dive: Resampling vs. Time Stretching</h3>
+            <p>There are two methods to change speed, and it's important to understand which one this tool uses:</p>
+            <ol>
+                <li><strong>Resampling (Vari-Speed):</strong> This is what our tool currently does. It changes the
+                    sample rate playback. Imagine a tape moving faster over the playhead. The wave vibrations are
+                    compressed, creating a higher frequency (pitch). Result: Faster Speed + Higher Pitch.</li>
+                <li><strong>Time Stretching (Coming Soon):</strong> This complex algorithm chops the audio into tiny
+                    "grains" and spaces them out or overlaps them. It allows you to change speed <em>without</em>
+                    changing pitch. We are working on adding this advanced feature!</li>
+            </ol>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Click the drop zone or drag your file (MP3, WAV, OGG).</li>
+                <li><strong>Adjust:</strong> Move the slider. Left for slow-motion, right for fast-forward.</li>
+                <li><strong>Preview:</strong> Always check the audio. Note how the character of voices changes.</li>
+                <li><strong>Process:</strong> The algorithm renders a new WAV file at the new sample rate.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Why do voices sound like chipmunks?</h4>
+                <p>This is the natural physics of sound! Sound is vibration. To play a sound faster, you must vibrate
+                    the speaker faster, which equals a higher frequency (pitch). To avoid this, you would need a "Time
+                    Stretch" algorithm.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Is the quality preserved?</h4>
+                <p>Generally, yes. However, extreme slowing (like 0.1x) will reveal the digital "steps" between samples,
+                    sounding metallic or bit-crushed. For moderate changes (0.7x - 1.5x), quality remains pristine.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>What file formats are supported?</h4>
+                <p>We support all browser-compatible audio formats including MP3, WAV, OGG, and AAC. The output is
+                    always a high-compatibility WAV file.</p>
+            </div>
+
+            <h3>Creative Ideas</h3>
+            <p>Try recording a message in a very deep voice and speeding it up to 1.5x to hear what you sound like as a
+                normal person! Or record your normal voice and slow it to 0.6x for a "witness protection" anonymity
+                effect.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const controls = document.getElementById('controls');
+        const rateSlider = document.getElementById('rate-slider');
+        const rateVal = document.getElementById('rate-val');
+        const status = document.getElementById('status');
+
+        let audioCtx;
+        let file;
+        let sourceNode; // For preview
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                file = e.target.files[0];
+                document.getElementById('drop-zone').style.display = 'none';
+                controls.style.display = 'flex';
+            }
+        });
+
+        rateSlider.addEventListener('input', () => rateVal.textContent = rateSlider.value);
+
+        async function getBuffer() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const arr = await file.arrayBuffer();
+            return await audioCtx.decodeAudioData(arr);
+        }
+
+        async function preview() {
+            stop(); // Stop potential playing
+            const buffer = await getBuffer();
+            sourceNode = audioCtx.createBufferSource();
+            sourceNode.buffer = buffer;
+            sourceNode.playbackRate.value = parseFloat(rateSlider.value);
+            sourceNode.connect(audioCtx.destination);
+            sourceNode.start();
+        }
+
+        function stop() {
+            if (sourceNode) {
+                try { sourceNode.stop(); } catch (e) { }
+            }
+        }
+
+        async function process() {
+            stop();
+            status.textContent = "Processing...";
+            const buffer = await getBuffer();
+            const rate = parseFloat(rateSlider.value);
+
+            // New length = original length / rate
+            const newLength = Math.ceil(buffer.length / rate);
+
+            const offlineCtx = new OfflineAudioContext(buffer.numberOfChannels, newLength, buffer.sampleRate);
+            const source = offlineCtx.createBufferSource();
+            source.buffer = buffer;
+            source.playbackRate.value = rate;
+            source.connect(offlineCtx.destination);
+            source.start();
+
+            const rendered = await offlineCtx.startRendering();
+            const blob = bufferToWav(rendered);
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `speed_${rate}x_${file.name.replace(/\.[^.]+$/, '')}.wav`;
+            a.click();
+            status.textContent = "Done!";
+        }
+
+        // Helper: Buffer to WAV
+        function bufferToWav(abuffer) {
+            const numOfChan = abuffer.numberOfChannels;
+            const length = abuffer.length * numOfChan * 2 + 44;
+            const buffer = new ArrayBuffer(length);
+            const view = new DataView(buffer);
+            const channels = [];
+            let i, sample, offset = 0, pos = 0;
+
+            setUint32(0x46464952); // RIFF
+            setUint32(length - 8);
+            setUint32(0x45564157); // WAVE
+            setUint32(0x20746d66); // fmt 
+            setUint32(16);
+            setUint16(1);
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan);
+            setUint16(numOfChan * 2);
+            setUint16(16);
+            setUint32(0x61746164); // data
+            setUint32(length - pos - 4);
+
+            for (i = 0; i < numOfChan; i++) channels.push(abuffer.getChannelData(i));
+
+            while (pos < abuffer.length) {
+                for (i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][pos]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                    view.setInt16(44 + offset, sample, true);
+                    offset += 2;
+                }
+                pos++;
+            }
+            return new Blob([buffer], { type: "audio/wav" });
+            function setUint16(d) { view.setUint16(pos, d, true); pos += 2; }
+            function setUint32(d) { view.setUint32(pos, d, true); pos += 4; }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        /* Calculator UI */
+        .calculator-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .screen {
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: right;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .previous-operand {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            min-height: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .current-operand {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .btn-calc {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--bg-body);
+            color: var(--text-main);
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+        }
+
+        .btn-calc:hover {
+            background: var(--border-color);
+        }
+
+        .btn-calc:active {
+            transform: scale(0.95);
+        }
+
+        .btn-op {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+        }
+
+        .btn-op:hover {
+            background: var(--primary-color);
+            color: #000;
+        }
+
+        .btn-eq {
+            grid-column: span 2;
+            aspect-ratio: auto;
+            background: var(--primary-color);
+            color: #000;
+        }
+
+        .btn-eq:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-clear {
+            color: #FF4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .btn-clear:hover {
+            background: #FF4444;
+            color: #fff;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Calculators</a> / Simple
+        </div>
+
+        <div class="calculator-wrapper" style="padding: 2rem 0;">
+            <div class="calculator-container">
+                <div class="screen">
+                    <div class="previous-operand" id="previous-operand"></div>
+                    <div class="current-operand" id="current-operand">0</div>
+                </div>
+                <div class="keypad">
+                    <button class="btn-calc btn-clear" onclick="clearDisplay()">AC</button>
+                    <button class="btn-calc btn-clear" onclick="deleteNumber()">DEL</button>
+                    <button class="btn-calc btn-op" onclick="chooseOperation('%')">%</button>
+                    <button class="btn-calc btn-op" onclick="chooseOperation('/')">÷</button>
+
+                    <button class="btn-calc" onclick="appendNumber('7')">7</button>
+                    <button class="btn-calc" onclick="appendNumber('8')">8</button>
+                    <button class="btn-calc" onclick="appendNumber('9')">9</button>
+                    <button class="btn-calc btn-op" onclick="chooseOperation('*')">×</button>
+
+                    <button class="btn-calc" onclick="appendNumber('4')">4</button>
+                    <button class="btn-calc" onclick="appendNumber('5')">5</button>
+                    <button class="btn-calc" onclick="appendNumber('6')">6</button>
+                    <button class="btn-calc btn-op" onclick="chooseOperation('-')">−</button>
+
+                    <button class="btn-calc" onclick="appendNumber('1')">1</button>
+                    <button class="btn-calc" onclick="appendNumber('2')">2</button>
+                    <button class="btn-calc" onclick="appendNumber('3')">3</button>
+                    <button class="btn-calc btn-op" onclick="chooseOperation('+')">+</button>
+
+                    <button class="btn-calc" onclick="appendNumber('0')">0</button>
+                    <button class="btn-calc" onclick="appendNumber('.')">.</button>
+                    <button class="btn-calc btn-eq" onclick="compute()">=</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Our Simple Calculator is a robust, responsive tool designed for your everyday arithmetic needs. Whether
+                you're balancing your budget, double-checking a homework problem, or simply tallying up expenses, this
+                calculator provides a clean, distraction-free interface. Unlike physical calculators that can be
+                misplaced or mobile apps laden with ads, this web-based tool is instantly accessible from any device
+                with a browser. It features a high-contrast display and large, tactile-friendly buttons to minimize
+                input errors. We have optimized the layout for both desktop and mobile screens, ensuring a seamless
+                experience whether you are on a laptop or a smartphone. Plus, true to Adiminium's privacy promise, every
+                calculation is processed explicitly on your device—no data is sent to our servers.</p>
+
+            <h3>What It Does</h3>
+            <p>This tool performs fundamental mathematical operations: addition, subtraction, multiplication, division,
+                and percentage calculations. It acts as a digital replacement for a standard handheld calculator,
+                utilizing your browser's processing power for instant results.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Enter Numbers:</strong> Click the on-screen buttons or use your physical keyboard (Numpad
+                    recommended).</li>
+                <li><strong>Select Operation:</strong> Choose Add (+), Subtract (-), Multiply (&times;), Divide
+                    (&divide;), or Modulo (%).</li>
+                <li><strong>Get Result:</strong> Press the Equals (=) button or hit Enter on your keyboard.</li>
+                <li><strong>Corrections:</strong> Use 'DEL' to remove the last digit or 'AC' (All Clear) to reset the
+                    calculator completely.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>This tool is perfect for students needing quick math help, professionals engaging in basic financial
+                calculations, shoppers comparing prices, or anyone who needs a reliable calculator without the bloat of
+                complex scientific features.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does this calculator store my history?</h4>
+                <p>No, for privacy reasons, we do not store your calculation history permanently. The current session
+                    data is cleared once you refresh the page.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I use my keyboard?</h4>
+                <p>Yes! The calculator supports full keyboard input. You can use your number row, Numpad, and Enter key
+                    to calculate just like a native app.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it work offline?</h4>
+                <p>Once the page is loaded, the JavaScript runs entirely on your device, so you can perform calculations
+                    even if your internet connection drops momentarily.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        // Calculator Logic
+        let currentOperand = '0';
+        let previousOperand = '';
+        let operation = undefined;
+
+        const currentOperandTextElement = document.getElementById('current-operand');
+        const previousOperandTextElement = document.getElementById('previous-operand');
+
+        function updateDisplay() {
+            currentOperandTextElement.innerText = currentOperand;
+            if (operation != null) {
+                previousOperandTextElement.innerText = `${previousOperand} ${operation}`;
+            } else {
+                previousOperandTextElement.innerText = '';
+            }
+        }
+
+        function appendNumber(number) {
+            if (number === '.' && currentOperand.includes('.')) return;
+            if (currentOperand === '0' && number !== '.') {
+                currentOperand = number.toString();
+            } else {
+                currentOperand = currentOperand.toString() + number.toString();
+            }
+            updateDisplay();
+        }
+
+        function chooseOperation(op) {
+            if (currentOperand === '') return;
+            if (previousOperand !== '') {
+                compute();
+            }
+            operation = op;
+            previousOperand = currentOperand;
+            currentOperand = '';
+            updateDisplay();
+        }
+
+        function compute() {
+            let computation;
+            const prev = parseFloat(previousOperand);
+            const current = parseFloat(currentOperand);
+            if (isNaN(prev) || isNaN(current)) return;
+
+            switch (operation) {
+                case '+': computation = prev + current; break;
+                case '-': computation = prev - current; break;
+                case '*': computation = prev * current; break;
+                case '/': computation = prev / current; break;
+                case '%': computation = prev % current; break;
+                default: return;
+            }
+
+            currentOperand = computation;
+            operation = undefined;
+            previousOperand = '';
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentOperand = '0';
+            previousOperand = '';
+            operation = undefined;
+            updateDisplay();
+        }
+
+        function deleteNumber() {
+            currentOperand = currentOperand.toString().slice(0, -1);
+            if (currentOperand === '') currentOperand = '0';
+            updateDisplay();
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') appendNumber(e.key);
+            if (e.key === '.') appendNumber('.');
+            if (e.key === '=' || e.key === 'Enter') compute();
+            if (e.key === 'Backspace') deleteNumber();
+            if (e.key === 'Escape') clearDisplay();
+            if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') chooseOperation(e.key);
+        });
+    </script>
+</body>
+
+</html>

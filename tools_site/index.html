@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            padding: 0.2rem 0.5rem;
+            background: var(--primary-dim);
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .tool-card {
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            background: var(--bg-surface);
+            transition: all var(--transition-normal);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .tool-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="/" class="logo">
+                <img src="assets/logo.png" alt="Adiminium Logo"
+                    style="height: 32px; margin-right: 0.5rem; display: none;" onload="this.style.display='block'">
+                Adiminium <span>Tools</span>
+            </a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search for tools (Press /)..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <!-- Link back to main site (assuming localhost port difference or domain structure later) -->
+                <!-- For now relative link ../../main_site/index.html might work for local file viewing but not serving -->
+                <!-- We will just assume / maps to root of THIS site -->
+                <button onclick="toggleTheme()" aria-label="Toggle theme"
+                    style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 4rem 0;">
+        <h1 style="margin-bottom: 0.5rem;">All Tools</h1>
+        <p style="color: var(--text-muted); margin-bottom: 3rem;">Select a category to explore available utilities.</p>
+
+        <div class="grid">
+            <a href="calculators/index.html" class="tool-card">
+                <div class="card-icon">🧮</div>
+                <div class="card-title">Calculators</div>
+                <div class="card-desc">Math, finance, health, and scientific calculators.</div>
+            </a>
+
+            <!-- Other categories as placeholders -->
+            <a href="converters/index.html" class="tool-card">
+                <div class="card-icon">💱</div>
+                <div class="card-title">Converters</div>
+                <div class="card-desc">Currency, unit, and data converters.</div>
+            </a>
+
+            <a href="text_tools/index.html" class="tool-card">
+                <div class="card-icon">✍️</div>
+                <div class="card-title">Text Tools</div>
+                <div class="card-desc">Word count, case converter, lorem ipsum, and more.</div>
+            </a>
+
+            <a href="developer_tools/index.html" class="tool-card">
+                <div class="card-icon">👨‍💻</div>
+                <div class="card-title">Developer Tools</div>
+                <div class="card-desc">JSON Formatter, Diff Checker, and code utilities.</div>
+            </a>
+
+            <a href="color_design/index.html" class="tool-card">
+                <div class="card-icon">🎨</div>
+                <div class="card-title">Color & Design</div>
+                <div class="card-desc">Gradient generator, palette creator, and contrast checker.</div>
+            </a>
+
+            <a href="randomness/index.html" class="tool-card">
+                <div class="card-icon">🎲</div>
+                <div class="card-title">Randomness</div>
+                <div class="card-desc">Password gen, dice roller, fake data, and more.</div>
+            </a>
+
+            <a href="image_tools/index.html" class="tool-card">
+                <div class="card-icon">🖼️</div>
+                <div class="card-title">Image Tools</div>
+                <div class="card-desc">Resize, crop, and optimize images locally.</div>
+            </a>
+
+            <a href="audio_tools/index.html" class="tool-card">
+                <div class="card-icon">🎵</div>
+                <div class="card-title">Audio Tools</div>
+                <div class="card-desc">Trim, join, convert, and manipulate audio files.</div>
+            </a>
+
+            <a href="ai_tools/index.html" class="tool-card">
+                <div class="card-icon">🧠</div>
+                <div class="card-title">AI Tools</div>
+                <div class="card-desc">Prompt generators for ChatGPT, Midjourney, and more.</div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/particles.js"></script>
+</body>
+
+</html>

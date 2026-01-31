@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Calculator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .calc-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-dim);
+            color: var(--primary-color);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-family: sans-serif;
+            color-scheme: dark;
+        }
+
+        /* Time picker indicator fix */
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300C853' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3ccircle cx='12' cy='12' r='10'%3e%3c/circle%3e%3cpolyline points='12 6 12 12 16 14'%3e%3c/polyline%3e%3c/svg%3e");
+            opacity: 1;
+            filter: none;
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
+        }
+
+        :root[data-theme="light"] input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: none;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .result-box {
+            margin-top: 2rem;
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: none;
+            text-align: center;
+        }
+
+        .res-main {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .res-sub {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Calculators</a> / Time
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Time Calculator</h1>
+
+        <div class="calc-wrapper">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="setMode('diff')" id="tab-diff">Time Difference</button>
+                <button class="tab-btn" onclick="setMode('add')" id="tab-add">Add / Subtract</button>
+            </div>
+
+            <!-- MODE: Time Difference -->
+            <div id="mode-diff">
+                <div class="input-group">
+                    <label>Start Time</label>
+                    <input type="time" id="diff-start">
+                </div>
+                <div class="input-group">
+                    <label>End Time</label>
+                    <input type="time" id="diff-end">
+                </div>
+                <button class="btn-action" onclick="calcDiff()">Calculate Duration</button>
+            </div>
+
+            <!-- MODE: Add / Subtract -->
+            <div id="mode-add" style="display: none;">
+                <div class="input-group">
+                    <label>Start Time</label>
+                    <input type="time" id="add-start">
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Operation</label>
+                        <select id="add-op">
+                            <option value="add">Add (+)</option>
+                            <option value="sub">Subtract (-)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Hours</label>
+                        <input type="number" id="add-h" value="0" min="0">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Minutes</label>
+                        <input type="number" id="add-m" value="0" min="0">
+                    </div>
+                </div>
+                <button class="btn-action" onclick="calcAdd()">Calculate New Time</button>
+            </div>
+
+            <div class="result-box" id="result-box">
+                <div class="res-main" id="res-main">--</div>
+                <div class="res-sub" id="res-sub">--</div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Time arithmetic allows you to perform calculations on time values, such as adding hours to a timestamp or
+                finding the difference between two times. This Time Calculator helps you manage durations and schedules
+                effectively. Whether you are trying to figure out when a 3 hour 45 minute movie will end if you start it
+                now, or calculating total hours worked in a day, this tool handles the sexagesimal (base-60) number
+                system of time automatically for you.</p>
+
+            <h3>What It Does</h3>
+            <p>Adds or subtracts hours and minutes from a starting time to provide a final time.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Start Time:</strong> Enter the initial time (HH:MM).</li>
+                <li><strong>Duration:</strong> Enter the hours and minutes to add or remove.</li>
+                <li><strong>Operation:</strong> Select 'Add' or 'Subtract'.</li>
+                <li><strong>Calculate:</strong> See the resulting time instantly.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Pilots, shift workers, video editors calculating total footage duration, and anyone managing tight
+                schedules.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it support 24-hour format?</h4>
+                <p>Yes, input and output are typically handled in 24-hour format logic for simplicity, though the
+                    display may adapt.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What happens if hours go over 24?</h4>
+                <p>The calculator generally wraps around the clock. For example, 23:00 + 2 hours = 01:00 (next day).</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I calculate duration between two times?
+                </h4>
+                <p>This specific mode is for adding/subtracting duration. To find the difference between two timestamps,
+                    simply subtract the start time from the end time manually using the subtraction mode.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        function setMode(mode) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${mode}`).classList.add('active');
+
+            document.getElementById('mode-diff').style.display = mode === 'diff' ? 'block' : 'none';
+            document.getElementById('mode-add').style.display = mode === 'add' ? 'block' : 'none';
+            document.getElementById('result-box').style.display = 'none';
+        }
+
+        // Init optional defaults logic if needed, but time inputs are blank by default which is fine.
+
+        function calcDiff() {
+            const t1Val = document.getElementById('diff-start').value;
+            const t2Val = document.getElementById('diff-end').value;
+
+            if (!t1Val || !t2Val) return;
+
+            const d1 = new Date(`1970-01-01T${t1Val}:00`);
+            const d2 = new Date(`1970-01-01T${t2Val}:00`);
+
+            let diffMs = d2 - d1;
+
+            // Handle day crossing if end time is before start time (assuming next day)
+            // Or just absolute difference? Usually "Time Between" implies strictly duration on same day or next.
+            // Let's assume absolute diff if simpler, or wrapping if d2 < d1.
+            // Let's assume standard behavior: if d2 < d1, it's considered next day (+24h).
+
+            if (diffMs < 0) {
+                diffMs += 24 * 60 * 60 * 1000;
+            }
+
+            const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+            document.getElementById('result-box').style.display = 'block';
+            document.getElementById('res-main').textContent = `${diffHrs}h ${diffMins}m`;
+            document.getElementById('res-sub').textContent = `${diffHrs * 60 + diffMins} total minutes`;
+        }
+
+        function calcAdd() {
+            const t1Val = document.getElementById('add-start').value;
+            if (!t1Val) return;
+
+            const d = new Date(`1970-01-01T${t1Val}:00`);
+
+            const op = document.getElementById('add-op').value === 'add' ? 1 : -1;
+            const h = parseInt(document.getElementById('add-h').value) || 0;
+            const m = parseInt(document.getElementById('add-m').value) || 0;
+
+            const addMs = (h * 60 * 60 * 1000) + (m * 60 * 1000);
+
+            d.setTime(d.getTime() + (op * addMs));
+
+            // Format back to HH:MM AM/PM
+            const opts = { hour: 'numeric', minute: '2-digit', hour12: true };
+            const timeString = d.toLocaleTimeString('en-US', opts);
+
+            document.getElementById('result-box').style.display = 'block';
+            document.getElementById('res-main').textContent = timeString;
+            document.getElementById('res-sub').textContent = "Resulting time";
+        }
+    </script>
+</body>
+
+</html>

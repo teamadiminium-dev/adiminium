@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Adiminium</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <script src="js/theme.js"></script>
+    <script src="js/particles.js"></script>
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
+            <a href="/" class="logo">Adiminium<span>.</span></a>
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 4rem 0;">
+        <h1 style="margin-bottom: 2rem;">Contact Us</h1>
+        <div class="glass-panel" style="padding: 2rem;">
+            <p>Have questions or suggestions? Reach out to us.</p>
+            <a href="mailto:support@adiminium.com" class="btn-primary"
+                style="display:inline-block; margin-top:1rem; text-decoration:none;">Email Support</a>
+        </div>
+    </main>
+</body>
+
+</html>

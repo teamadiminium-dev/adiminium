@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Tools | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .category-hero {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .category-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tool-link {
+            text-decoration: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .tool-link:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tool-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .tool-icon {
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / Developer Tools
+        </div>
+
+        <div class="category-hero">
+            <h1>Code & Developer Tools 👨‍💻</h1>
+            <p>Utilities for developers, designers, and data wizards. Format code, validate JSON, and more.</p>
+        </div>
+
+        <div class="tools-grid">
+            <a href="json_formatter/index.html" class="tool-link">
+                <div class="tool-name"><span class="tool-icon">{}</span> JSON Formatter</div>
+                <div class="tool-desc">Beautify, validate, and minify JSON data instantly.</div>
+            </a>
+
+            <a href="code_formatter/index.html" class="tool-link">
+                <div class="tool-name"><span class="tool-icon">📝</span> Code for Word/PPT</div>
+                <div class="tool-desc">Format code with colors and line numbers for documents.</div>
+            </a>
+
+            <a href="base64_converter/index.html" class="tool-link">
+                <div class="tool-name"><span class="tool-icon">🔤</span> Base64 Converter</div>
+                <div class="tool-desc">Encode and decode text to Base64 format instantly.</div>
+            </a>
+
+            <a href="url_encoder/index.html" class="tool-link">
+                <div class="tool-name"><span class="tool-icon">🔗</span> URL Encode/Decode</div>
+                <div class="tool-desc">Escape text for URLs or decode URI components.</div>
+            </a>
+
+            <a href="regex_tester/index.html" class="tool-link">
+                <div class="tool-name"><span class="tool-icon">🔍</span> Regex Tester</div>
+                <div class="tool-desc">Test and debug regular expressions in real-time.</div>
+            </a>
+
+            <a href="csv_to_json/index.html" class="tool-link">
+                <div class="tool-name"><span class="tool-icon">📊</span> CSV to JSON</div>
+                <div class="tool-desc">Convert comma-separated data to JSON arrays.</div>
+            </a>
+
+            <a href="uuid_generator/index.html" class="tool-link">
+                <div class="tool-name"><span class="tool-icon">🆔</span> UUID Generator</div>
+                <div class="tool-desc">Generate unique Version 4 UUIDs/GUIDs in bulk.</div>
+            </a>
+
+            <!-- Tools will be added here -->
+            <a href="#" class="tool-link" style="opacity: 0.5; cursor: default;">
+                <div class="tool-name"><span class="tool-icon">⏳</span> More Tools Soon...</div>
+                <div class="tool-desc">We are actively building new tools. Stay tuned!</div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="../js/theme.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/particles.js"></script>
+</body>
+
+</html>

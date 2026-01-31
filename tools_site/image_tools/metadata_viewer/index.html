@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Metadata Viewer | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-direction: column;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .preview-col {
+            text-align: center;
+        }
+
+        .preview-col img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            max-height: 400px;
+        }
+
+        .data-col {
+            background: var(--bg-body);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .metadata-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .metadata-table th,
+        .metadata-table td {
+            text-align: left;
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .metadata-table th {
+            color: var(--text-muted);
+            width: 40%;
+        }
+
+        .metadata-table td {
+            font-family: 'Fira Code', monospace;
+            color: var(--text-main);
+            word-break: break-all;
+        }
+
+        .metadata-table tr:last-child th,
+        .metadata-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Metadata Viewer
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Metadata Viewer (EXIF)</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">ℹ️</div>
+                <p>Drag & Drop your image here or click to browse</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="result-grid">
+                    <div class="preview-col">
+                        <img id="preview-img" src="" alt="Preview">
+                        <button onclick="resetTool()"
+                            style="margin-top:1rem; background:transparent; border:1px solid var(--border-color); color:var(--text-main); padding:0.5rem 1rem; border-radius:6px; cursor:pointer">Check
+                            Another</button>
+                    </div>
+
+                    <div class="data-col">
+                        <h3>Image Properties</h3>
+                        <table class="metadata-table">
+                            <tbody id="basic-data"></tbody>
+                        </table>
+
+                        <h3 style="margin-top:2rem">EXIF Data</h3>
+                        <div id="exif-loading" style="color:var(--text-muted); padding:1rem;">Reading EXIF tags...</div>
+                        <table class="metadata-table">
+                            <tbody id="exif-data"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Complete Guide to Image Metadata (EXIF)</h2>
+            <p>The Adiminium Metadata Viewer is a digital forensics tool for your browser. Every digital photo you take
+                contains a hidden layer of data called EXIF (Exchangeable Image File Format). This data tells the story
+                of the image: where it was taken, what camera was used, and even who took it. This tool lets you read
+                that story.</p>
+
+            <h3>What is EXIF Data?</h3>
+            <p>Metadata serves as a digital fingerprint. Common tags include:</p>
+            <ul>
+                <li><strong>Hardware Info:</strong> Camera Maker (e.g., Canon), Model (e.g., EOS R5), Lens type.</li>
+                <li><strong>Shooting Settings:</strong> Aperture (f/2.8), Shutter Speed (1/200), ISO (100), Focal
+                    Length.</li>
+                <li><strong>Date & Time:</strong> The exact second the shutter was pressed.</li>
+                <li><strong>GPS Coordinates:</strong> Latitude, Longitude, and Altitude. (Great for mapping, bad for
+                    privacy!)</li>
+                <li><strong>Copyright:</strong> Author name and usage rights.</li>
+            </ul>
+
+            <h3>Why View Metadata?</h3>
+            <ol>
+                <li><strong>Learning Photography:</strong> See a great photo? Check its metadata to learn what settings
+                    the photographer used (e.g., "Ah, they used a slow shutter speed to blur the water").</li>
+                <li><strong>Privacy Checks:</strong> Before uploading a photo of your home to a public forum, check if
+                    it contains GPS coordinates that pinpoint your address.</li>
+                <li><strong>Copyright Verification:</strong> Prove a photo is yours by showing the original metadata
+                    that matches your camera.</li>
+            </ol>
+
+            <h3>Supported Formats</h3>
+            <p>We primarily support <strong>JPEG</strong> and <strong>TIFF</strong> files, as these use the standard
+                EXIF container. PNG and WebP files can store metadata, but standards vary (XMP vs. EXIF chunks), and
+                support is more limited.</p>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Is my data safe?</h4>
+                <p>Yes. The parsing is done by a JavaScript library (exif-js) running entirely in your browser memory.
+                    We never upload your photo to parse it.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Why is there no data?</h4>
+                <p>If you downloaded the image from Facebook, Instagram, or WhatsApp, the metadata is likely gone. These
+                    platforms automatically "strip" metadata to protect user privacy and save space.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const previewImg = document.getElementById('preview-img');
+        const basicData = document.getElementById('basic-data');
+        const exifData = document.getElementById('exif-data');
+        const exifLoading = document.getElementById('exif-loading');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFile(e.dataTransfer.files[0]);
+        });
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + ['B', 'KB', 'MB'][i];
+        }
+
+        function loadFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+
+            // Basic Data
+            basicData.innerHTML = `
+                <tr><th>Filename</th><td>${file.name}</td></tr>
+                <tr><th>Size</th><td>${formatBytes(file.size)}</td></tr>
+                <tr><th>Type</th><td>${file.type}</td></tr>
+                <tr><th>Last Modified</th><td>${new Date(file.lastModified).toLocaleString()}</td></tr>
+            `;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+
+                // Get dims
+                const img = new Image();
+                img.onload = () => {
+                    basicData.innerHTML += `<tr><th>Dimensions</th><td>${img.width} x ${img.height} px</td></tr>`;
+                };
+                img.src = e.target.result;
+
+                dropZone.style.display = 'none';
+                editor.style.display = 'flex';
+
+                // Read EXIF
+                exifData.innerHTML = '';
+                exifLoading.style.display = 'block';
+
+                // Need to use the raw image not <img> tag for EXIF sometimes, but library supports <img>
+                // We'll trust EXIF.js
+                // Note: EXIF.js reads from DOM element or ArrayBuffer.
+                // Since 'previewImg' needs to be loaded first.
+                // We set 'src' above.
+
+                // Small delay to ensure image parsed by browser
+                setTimeout(() => {
+                    EXIF.getData(previewImg, function () {
+                        const allTags = EXIF.getAllTags(this);
+                        exifLoading.style.display = 'none';
+
+                        if (Object.keys(allTags).length === 0) {
+                            exifData.innerHTML = '<tr><td colspan="2" style="text-align:center; color:var(--text-muted)">No EXIF data found.</td></tr>';
+                            return;
+                        }
+
+                        let html = '';
+                        // Common interesting tags
+                        const important = ['Make', 'Model', 'DateTime', 'ExposureTime', 'FNumber', 'ISOSpeedRatings', 'GPSLatitude', 'GPSLongitude'];
+
+                        for (let tag in allTags) {
+                            if (tag === 'thumbnail') continue; // Skip thumbnail blob
+                            let val = allTags[tag];
+                            // Simplify objects
+                            if (typeof val === 'object' && val.numerator) {
+                                val = val.numerator / val.denominator;
+                            }
+                            // Truncate long strings
+                            if (typeof val === 'string' && val.length > 50) val = val.substring(0, 50) + '...';
+
+                            html += `<tr><th>${tag}</th><td>${val}</td></tr>`;
+                        }
+                        exifData.innerHTML = html;
+                    });
+                }, 100);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetTool() {
+            dropZone.style.display = 'block';
+            editor.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+
+</html>

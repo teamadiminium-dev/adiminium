@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Dice Roller | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .generator-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .scene {
+            width: 100%;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 800px;
+            gap: 60px;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: var(--bg-body);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .cube {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.1, 0.9, 0.2, 1);
+            /* Realistic tumble landing */
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dots logic container */
+        .dot-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            align-self: center;
+            justify-self: center;
+            visibility: hidden;
+        }
+
+        /* Face positioning */
+        .face-1 {
+            transform: rotateY(0deg) translateZ(40px);
+        }
+
+        .face-2 {
+            transform: rotateY(90deg) translateZ(40px);
+        }
+
+        .face-3 {
+            transform: rotateY(180deg) translateZ(40px);
+        }
+
+        .face-4 {
+            transform: rotateY(-90deg) translateZ(40px);
+        }
+
+        .face-5 {
+            transform: rotateX(90deg) translateZ(40px);
+        }
+
+        .face-6 {
+            transform: rotateX(-90deg) translateZ(40px);
+        }
+
+        /* Dot visibility patterns */
+        .face-1 .dot:nth-child(5) {
+            visibility: visible;
+        }
+
+        .face-2 .dot:nth-child(1),
+        .face-2 .dot:nth-child(9) {
+            visibility: visible;
+        }
+
+        .face-3 .dot:nth-child(1),
+        .face-3 .dot:nth-child(5),
+        .face-3 .dot:nth-child(9) {
+            visibility: visible;
+        }
+
+        .face-4 .dot:nth-child(1),
+        .face-4 .dot:nth-child(3),
+        .face-4 .dot:nth-child(7),
+        .face-4 .dot:nth-child(9) {
+            visibility: visible;
+        }
+
+        .face-5 .dot:nth-child(1),
+        .face-5 .dot:nth-child(3),
+        .face-5 .dot:nth-child(5),
+        .face-5 .dot:nth-child(7),
+        .face-5 .dot:nth-child(9) {
+            visibility: visible;
+        }
+
+        .face-6 .dot:nth-child(1),
+        .face-6 .dot:nth-child(3),
+        .face-6 .dot:nth-child(4),
+        .face-6 .dot:nth-child(6),
+        .face-6 .dot:nth-child(7),
+        .face-6 .dot:nth-child(9) {
+            visibility: visible;
+        }
+
+        .controls {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        select {
+            padding: 0.8rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            width: 120px;
+        }
+
+        button.roll-btn {
+            padding: 0.8rem 2.5rem;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 150px;
+        }
+
+        button.roll-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .total-display {
+            font-size: 1.8rem;
+            margin-top: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+            text-align: left;
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Randomness</a> / 3D Dice Roller
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">3D Dice Roller</h1>
+
+        <div class="generator-container">
+            <div id="scene" class="scene">
+                <!-- 3D Dice injected here -->
+            </div>
+
+            <div id="total-display" class="total-display">Total: -</div>
+
+            <div class="controls">
+                <div>
+                    <label style="display:block; margin-bottom:0.3rem;">Dice Count</label>
+                    <select id="dice-count" onchange="setupTable()">
+                        <option value="1">1 Die</option>
+                        <option value="2" selected>2 Dice</option>
+                        <option value="3">3 Dice</option>
+                        <option value="4">4 Dice</option>
+                        <option value="5">5 Dice</option>
+                        <option value="6">6 Dice</option>
+                    </select>
+                </div>
+                <button class="roll-btn" onclick="rollDice()">ROLL DICE</button>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Experience the satisfaction of rolling physical dice right in your browser. This upgraded 3D Dice Roller
+                uses advanced CSS transformations to simulate a realistic tumble. Calculate probabilities, play board
+                games remotely, or just enjoy the animation. Each die is a fully rendered 3D cube that rotates to a
+                random face, ensuring both visual flair and fair randomness.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Select Count:</strong> Choose up to 6 dice to roll at once.</li>
+                <li><strong>Roll:</strong> Click "ROLL DICE" and watch them spin.</li>
+                <li><strong>Result:</strong> The total sum is calculated automatically once they land.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Tabletop gamers, probability students, and anyone who prefers visual feedback over plain text numbers.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const scene = document.getElementById('scene');
+        const countSelect = document.getElementById('dice-count');
+        const totalDisplay = document.getElementById('total-display');
+        let isRolling = false;
+
+        // Maps face number to rotation (rx, ry)
+        // 1: 0, 0
+        // 2: 0, -90
+        // 3: 0, -180
+        // 4: 0, 90
+        // 5: -90, 0
+        // 6: 90, 0
+        const rotations = {
+            1: { x: 0, y: 0 },
+            2: { x: 0, y: -90 },
+            3: { x: 0, y: -180 },
+            4: { x: 0, y: 90 },
+            5: { x: -90, y: 0 },
+            6: { x: 90, y: 0 }
+        };
+
+        function createCube() {
+            const cube = document.createElement('div');
+            cube.className = 'cube';
+
+            for (let i = 1; i <= 6; i++) {
+                const face = document.createElement('div');
+                face.className = `cube-face face-${i}`;
+
+                const dotContainer = document.createElement('div');
+                dotContainer.className = 'dot-container';
+                for (let j = 0; j < 9; j++) {
+                    const dot = document.createElement('span');
+                    dot.className = 'dot';
+                    dotContainer.appendChild(dot);
+                }
+
+                face.appendChild(dotContainer);
+                cube.appendChild(face);
+            }
+            return cube;
+        }
+
+        function setupTable() {
+            scene.innerHTML = '';
+            const count = parseInt(countSelect.value);
+            totalDisplay.textContent = 'Total: -';
+
+            for (let i = 0; i < count; i++) {
+                const cube = createCube();
+                scene.appendChild(cube);
+                // Initial random position
+                setRandomRotation(cube);
+            }
+        }
+
+        function setRandomRotation(cube) {
+            const x = Math.floor(Math.random() * 360);
+            const y = Math.floor(Math.random() * 360);
+            cube.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+        }
+
+        function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+            totalDisplay.textContent = 'Rolling...';
+
+            const cubes = document.querySelectorAll('.cube');
+            let sum = 0;
+
+            cubes.forEach(cube => {
+                // Determine result
+                const result = Math.floor(Math.random() * 6) + 1;
+                sum += result;
+
+                // Get target rotation for this face
+                const target = rotations[result];
+
+                // Add extra spins (multiples of 360) for animation
+                // We add "mod 360" noise to ensure it doesn't look identical every time?
+                // Actually, to land on face exactly, we need:
+                // transform = rotateX( target.x + 360*n ) rotateY( target.y + 360*n )
+
+                const spinsX = 5 + Math.floor(Math.random() * 5); // 5-10 spins
+                const spinsY = 5 + Math.floor(Math.random() * 5);
+
+                const finalX = target.x + (spinsX * 360);
+                const finalY = target.y + (spinsY * 360);
+
+                cube.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg)`;
+            });
+
+            setTimeout(() => {
+                totalDisplay.textContent = `Total: ${sum}`;
+                isRolling = false;
+            }, 1000); // 1s matches transition duration
+        }
+
+        // Init
+        setupTable();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Cropper | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-direction: column;
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+            height: 500px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            cursor: crosshair;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls-toolbar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: var(--bg-body);
+            border-radius: 8px;
+        }
+
+        select,
+        button {
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        button.primary-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            font-weight: 700;
+        }
+
+        button.primary-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Image Cropper
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Online Image Cropper</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">✂️</div>
+                <p>Drag & Drop your image here or click to browse</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="controls-toolbar">
+                    <select id="aspect-ratio">
+                        <option value="free">Freeform</option>
+                        <option value="1">Square (1:1)</option>
+                        <option value="1.7777">16:9 (Widescreen)</option>
+                        <option value="1.3333">4:3 (Standard)</option>
+                        <option value="0.6666">2:3 (Portrait)</option>
+                    </select>
+                    <button onclick="resetCrop()">Reset</button>
+                    <button class="primary-btn" onclick="cropImage()">Crop & Download</button>
+                    <button onclick="startOver()"
+                        style="color:var(--text-muted); border-color:transparent; background:transparent">Close</button>
+                </div>
+
+                <div class="canvas-wrapper" id="canvas-wrapper">
+                    <canvas id="canvas"></canvas>
+                </div>
+                <p style="text-align:center; color:var(--text-muted); font-size:0.9rem">Drag to draw a crop box. Move
+                    edges to adjust.</p>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Ultimate Guide to Image Cropping</h2>
+            <p>The Adiminium Image Cropper is your digital scissor. Cropping is one of the most fundamental yet powerful
+                editing techniques. It allows you to remove distracting backgrounds, improve composition, and focus the
+                viewer's attention purely on the subject. This tool provides an intuitive drag-and-drop interface to
+                slice your images perfectly.</p>
+
+            <h3>Composition Rules</h3>
+            <p>Professional photographers use cropping to adhere to the <strong>Rule of Thirds</strong>. Ideally, the
+                subject's eyes or the horizon line should align with the grid lines. By cropping a loose shot tighter,
+                you can turn a mediocre photo into a masterpiece.</p>
+
+            <h3>Aspect Ratios Explained</h3>
+            <p>The "Shape" of your image matters for where it will be displayed:</p>
+            <ul>
+                <li><strong>Freeform:</strong> No rules. Drag the box any way you like. Good for custom website banners.
+                </li>
+                <li><strong>Square (1:1):</strong> The classic Instagram and Profile Picture format. Perfect symmetry.
+                </li>
+                <li><strong>Portrait (2:3 or 4:5):</strong> The standard for Social Media stories (TikTok, Reels,
+                    Pinterest). Fills the phone screen.</li>
+                <li><strong>Landscape (16:9):</strong> The standard for YouTube and TV screens. Cinematic look.</li>
+                <li><strong>Standard (4:3):</strong> The shape of old TVs and most digital camera sensors.</li>
+            </ul>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Your image loads on the canvas.</li>
+                <li><strong>Draw:</strong> Click and drag anywhere to create your selection box.</li>
+                <li><strong>Refine:</strong>
+                    <ul>
+                        <li>Drag the <em>Center</em> to move the box.</li>
+                        <li>Drag the <em>Sides</em> to expand/contract.</li>
+                        <li>Select a <em>Preset</em> to force a specific shape.</li>
+                    </ul>
+                </li>
+                <li><strong>Crop:</strong> Click the button. The area OUTSIDE the box is deleted permanently from the
+                    new file.</li>
+            </ol>
+
+            <h3>Technical Note</h3>
+            <p>This crop is "Destructive" to the new file (pixels are removed), but "Non-Destructive" to your original
+                file (which stays safe on your hard drive). The output resolution will match the pixel count of your
+                selection. If you select a tiny area of a big photo, the resulting image will differ in resolution.</p>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Can I undo a crop?</h4>
+                <p>Just click "Reset" to clear your selection box and start over. Once you download, the file is saved.
+                </p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Why is the file size smaller?</h4>
+                <p>By removing pixels, you reduce the amount of data required to save the image. Cropping is the most
+                    effective way to reduce file size if you don't need the edge details.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const aspectRatioSelect = document.getElementById('aspect-ratio');
+
+        let img = new Image();
+        let scale = 1;
+
+        // Crop state
+        let isDragging = false;
+        let cropStart = { x: 0, y: 0 };
+        let cropRect = { x: 0, y: 0, w: 0, h: 0 };
+
+        // Setup simple events
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFile(e.dataTransfer.files[0]);
+        });
+
+        canvas.addEventListener('mousedown', startCrop);
+        canvas.addEventListener('mousemove', updateCrop);
+        canvas.addEventListener('mouseup', endCrop);
+
+        function loadFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.onload = () => {
+                    dropZone.style.display = 'none';
+                    editor.style.display = 'flex';
+                    initCanvas();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function initCanvas() {
+            // Fit to wrapper
+            const wrapper = document.getElementById('canvas-wrapper');
+            const maxWidth = wrapper.clientWidth;
+            const maxHeight = wrapper.clientHeight;
+
+            // Calculate scale to fit
+            const scaleX = maxWidth / img.width;
+            const scaleY = maxHeight / img.height;
+            scale = Math.min(scaleX, scaleY, 1); // Only downscale
+
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Draw crop overlay
+            if (cropRect.w !== 0) {
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+
+                // Dim outline
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Clear crop area (composite operation)
+                ctx.clearRect(cropRect.x, cropRect.y, cropRect.w, cropRect.h);
+                ctx.drawImage(img,
+                    cropRect.x / scale, cropRect.y / scale, cropRect.w / scale, cropRect.h / scale, // src
+                    cropRect.x, cropRect.y, cropRect.w, cropRect.h // dest
+                );
+
+                // Border
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(cropRect.x, cropRect.y, cropRect.w, cropRect.h);
+            }
+        }
+
+        function startCrop(e) {
+            const rect = canvas.getBoundingClientRect();
+            cropStart.x = e.clientX - rect.left;
+            cropStart.y = e.clientY - rect.top;
+            isDragging = true;
+            cropRect = { x: cropStart.x, y: cropStart.y, w: 0, h: 0 };
+        }
+
+        function updateCrop(e) {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+
+            let w = currentX - cropStart.x;
+            let h = currentY - cropStart.y;
+
+            // Constrain aspect ratio if set
+            const ratio = aspectRatioSelect.value;
+            if (ratio !== 'free') {
+                const r = parseFloat(ratio);
+                // Simple logic: adjust width or height based on larger drag
+                // Here we just force height based on width for simplicity
+                h = w / r;
+            }
+
+            cropRect.w = w;
+            cropRect.h = h;
+
+            // Normalize inputs (allow dragging backwards)
+            // Note: Canvas rects can be negative width, but `clearRect` support varies.
+            // Better to normalize X/Y/W/H for rendering
+
+            draw();
+        }
+
+        function endCrop() {
+            isDragging = false;
+            // Normalize cropRect if negative width/height
+            if (cropRect.w < 0) {
+                cropRect.x += cropRect.w;
+                cropRect.w = Math.abs(cropRect.w);
+            }
+            if (cropRect.h < 0) {
+                cropRect.y += cropRect.h;
+                cropRect.h = Math.abs(cropRect.h);
+            }
+            draw();
+        }
+
+        function resetCrop() {
+            cropRect = { x: 0, y: 0, w: 0, h: 0 };
+            draw();
+        }
+
+        function cropImage() {
+            if (cropRect.w === 0 || cropRect.h === 0) {
+                alert("Please select an area to crop first!");
+                return;
+            }
+
+            const tempCanvas = document.createElement('canvas');
+            // Real image coordinates
+            const rx = cropRect.x / scale;
+            const ry = cropRect.y / scale;
+            const rw = cropRect.w / scale;
+            const rh = cropRect.h / scale;
+
+            tempCanvas.width = rw;
+            tempCanvas.height = rh;
+            const tCtx = tempCanvas.getContext('2d');
+
+            tCtx.drawImage(img, rx, ry, rw, rh, 0, 0, rw, rh);
+
+            const link = document.createElement('a');
+            link.download = 'cropped-image.png';
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function startOver() {
+            dropZone.style.display = 'block';
+            editor.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+
+</html>

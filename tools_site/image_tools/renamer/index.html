@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Image Renamer | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-direction: column;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-surface);
+            color: var(--text-main);
+        }
+
+        .file-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .arrow {
+            margin: 0 1rem;
+            color: var(--primary-color);
+        }
+
+        .new-name {
+            color: var(--primary-color);
+        }
+
+        button.action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        button.action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Bulk Renamer
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Bulk Image Renamer</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🏷️</div>
+                <p>Drag & Drop multiple images here</p>
+                <button onclick="document.getElementById('file-input').click()">Select Images</button>
+                <input type="file" id="file-input" accept="image/*" multiple style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="controls">
+                    <div class="input-group">
+                        <label>Name Pattern</label>
+                        <input type="text" id="name-pattern" value="image_">
+                    </div>
+                    <div class="input-group">
+                        <label>Start Number</label>
+                        <input type="number" id="start-num" value="1">
+                    </div>
+                    <div class="input-group">
+                        <label>Suffix</label>
+                        <input type="text" id="suffix" placeholder="(Optional)">
+                    </div>
+                </div>
+
+                <div class="file-list" id="file-list"></div>
+
+                <div style="text-align:center; padding:1rem">
+                    <button class="action-btn" onclick="downloadZip()">Download as ZIP</button>
+                    <button onclick="resetTool()"
+                        style="margin-top:1rem; background:transparent; border:none; color:var(--text-muted); cursor:pointer">Start
+                        Over</button>
+                </div>
+            </div>
+
+            <div id="loading" style="display:none; text-align:center; padding:2rem;">
+                <p>Zipping files... please wait...</p>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Organization Guide: Clean File Naming</h2>
+            <p>The Adiminium Bulk Renamer is your digital filing clerk. Anyone who has unloaded a camera knows the pain
+                of seeing `DSC_0001.jpg`, `DSC_0002.jpg`. This tells you nothing about the image content, and it's
+                terrible for SEO (Search Engine Optimization).</p>
+
+            <h3>Why Rename Images?</h3>
+            <ol>
+                <li><strong>SEO:</strong> Google cannot see images. It reads filenames. `Tokyo-Tower-Sunset.jpg` is
+                    infinitely better than `IMG_9923.jpg` for appearing in search results.</li>
+                <li><strong>Client Handoff:</strong> Delivering files named `ClientName_Final_01.jpg` looks
+                    professional. Delivering `Screen Shot 2023-10-12 at 10.45.11.png` looks messy.</li>
+                <li><strong>Sorting:</strong> Operating systems sort by name. By using a consistent prefix and number
+                    system, you ensure your photos stay in the correct chronological order.</li>
+            </ol>
+
+            <h3>Naming Patterns</h3>
+            <p>Our tool supports dynamic pattern generation:</p>
+            <ul>
+                <li><strong>Prefix:</strong> The core identifier. e.g., "Wedding_Sarah_Mike_".</li>
+                <li><strong>Iterator (Number):</strong> The counter. e.g., "001". We handle the leading zeros
+                    automatically so "01" sorts before "10".</li>
+                <li><strong>Suffix:</strong> Optional add-ons. e.g., "_edit" or "_print".</li>
+            </ul>
+
+            <h3>Workflow Example</h3>
+            <p>You have 50 photos from a hiking trip.
+                <br>1. Upload them all.
+                <br>2. Set Pattern: "Yosemite_Hike_".
+                <br>3. Set Start: "1".
+                <br>4. Result in ZIP: "Yosemite_Hike_1.jpg", "Yosemite_Hike_2.jpg"...
+            </p>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Does it change the file content?</h4>
+                <p>No. We do not re-compress or modify the image data at all. We simply copy the file blob into a new
+                    container with a new name string.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const fileList = document.getElementById('file-list');
+        const namePattern = document.getElementById('name-pattern');
+        const startNum = document.getElementById('start-num');
+        const suffixInput = document.getElementById('suffix');
+
+        let files = [];
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFiles(e.target.files));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFiles(e.dataTransfer.files);
+        });
+
+        [namePattern, startNum, suffixInput].forEach(el => el.addEventListener('input', updateList));
+
+        function loadFiles(fileListObj) {
+            files = Array.from(fileListObj).filter(f => f.type.startsWith('image/'));
+            if (files.length === 0) return;
+
+            dropZone.style.display = 'none';
+            editor.style.display = 'flex';
+            updateList();
+        }
+
+        function updateList() {
+            fileList.innerHTML = '';
+            const pattern = namePattern.value;
+            const start = parseInt(startNum.value) || 1;
+            const suffix = suffixInput.value;
+
+            files.forEach((file, index) => {
+                const ext = file.name.split('.').pop();
+                const newName = `${pattern}${start + index}${suffix}.${ext}`;
+
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <div style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${file.name}</div>
+                    <div class="arrow">➜</div>
+                    <div style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" class="new-name">${newName}</div>
+                `;
+                fileList.appendChild(item);
+            });
+        }
+
+        function downloadZip() {
+            if (files.length === 0) return;
+
+            document.getElementById('loading').style.display = 'block';
+            editor.style.display = 'none';
+
+            const zip = new JSZip();
+            const pattern = namePattern.value;
+            const start = parseInt(startNum.value) || 1;
+            const suffix = suffixInput.value;
+
+            files.forEach((file, index) => {
+                const ext = file.name.split('.').pop();
+                const newName = `${pattern}${start + index}${suffix}.${ext}`;
+                zip.file(newName, file);
+            });
+
+            zip.generateAsync({ type: "blob" }).then(function (content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = "renamed_images.zip";
+                link.click();
+
+                document.getElementById('loading').style.display = 'none';
+                editor.style.display = 'flex';
+            });
+        }
+
+        function resetTool() {
+            files = [];
+            dropZone.style.display = 'block';
+            editor.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online ASCII Converter tool. Convert text to ASCII codes and ASCII values back to text. View character codes for programming and debugging.">
+    <meta name="keywords"
+        content="ascii converter, text to ascii, ascii to text, char code converter, unicode values, ascii table tool, string to byte">
+    <title>ASCII Converter | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .converter-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: monospace;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .btn-action {
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-action:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dim);
+            color: var(--primary-color);
+            opacity: 1;
+        }
+
+        .copy-btn {
+            margin-top: 0.5rem;
+            align-self: flex-end;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .copy-btn:hover {
+            text-decoration: underline;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Converters</a> / ASCII
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">ASCII Converter</h1>
+
+        <div class="converter-container">
+            <div class="panels">
+                <div class="panel-col">
+                    <label>Text Input</label>
+                    <textarea id="text-input" placeholder="Type text here..." spellcheck="false"></textarea>
+                    <button class="copy-btn" onclick="copyToClipboard('text-input')">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Text
+                    </button>
+                </div>
+
+                <div class="panel-col">
+                    <label>ASCII Codes (Decimal)</label>
+                    <textarea id="ascii-input" placeholder="65 100 105 109 105 110 105 117 109"
+                        spellcheck="false"></textarea>
+                    <button class="copy-btn" onclick="copyToClipboard('ascii-input')">
+                        <svg width="16" height="16" fill="none" viewBox="0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Values
+                    </button>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-action btn-primary" onclick="toAscii()">
+                    Text &rarr; ASCII
+                </button>
+                <button class="btn-action btn-primary" onclick="toText()">
+                    ASCII &rarr; Text
+                </button>
+                <button class="btn-action" onclick="clearAll()">
+                    Clear All
+                </button>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Behind every letter you read on a screen lies a numeric code. The ASCII Converter exposes this underlying
+                structure. ASCII (American Standard Code for Information Interchange) assigns a unique number to every
+                character—for example, 'A' is 65 and '?' is 63. This tool allows you to translate plain text into these
+                decimal codes and back again. It is an essential utility for understanding how data is stored,
+                transmitted, and interpreted by computers.</p>
+
+            <h3>What It Does</h3>
+            <p>Converts text characters into their ASCII decimal values and translates ASCII codes back into readable
+                text sequences.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Text to ASCII:</strong> Type words in the top box to generate a sequence of numbers.</li>
+                <li><strong>ASCII to Text:</strong> Paste space-separated numbers in the bottom box to reveal the hidden
+                    message.</li>
+                <li><strong>Copy:</strong> Use the convenient copy buttons to extract your data.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Programmers working with serial ports/IoT, students learning data structures, and cybersecurity analysts.
+            </p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What range of numbers is used?</h4>
+                <p>Standard ASCII uses 0-127. Extended ASCII and Unicode use numbers up to 255 and beyond, which this
+                    tool can also display.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 1.5rem; color: var(--text-main);">Why do I see '32' often?</h4>
+                <p>32 is the ASCII code for a "Space" character. It's the most common invisible character in text.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 1.5rem; color: var(--text-main);">Can it handle emojis?</h4>
+                <p>Yes, it will output the Unicode decimal value for emojis (often very large numbers like 128512).</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const textIn = document.getElementById('text-input');
+        const asciiIn = document.getElementById('ascii-input');
+
+        function toAscii() {
+            const text = textIn.value;
+            let codes = [];
+            for (let i = 0; i < text.length; i++) {
+                codes.push(text.charCodeAt(i));
+            }
+            asciiIn.value = codes.join(' ');
+        }
+
+        function toText() {
+            const val = asciiIn.value.trim();
+            if (!val) {
+                textIn.value = '';
+                return;
+            }
+
+            // Split by any whitespace or comma
+            const parts = val.split(/[\s,]+/);
+            let text = '';
+
+            for (let part of parts) {
+                const code = parseInt(part);
+                if (!isNaN(code)) {
+                    text += String.fromCharCode(code);
+                }
+            }
+            textIn.value = text;
+        }
+
+        function clearAll() {
+            textIn.value = '';
+            asciiIn.value = '';
+        }
+
+        function copyToClipboard(id) {
+            const el = document.getElementById(id);
+            el.select();
+            document.execCommand('copy');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Metadata Editor | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-body);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-surface);
+        }
+
+        .editor {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Audio Tools</a> / Metadata
+            Editor</div>
+        <h1 style="text-align: center; margin-bottom: 2rem;">Metadata Editor</h1>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📝</div>
+                    <p>Click to upload MP3</p>
+                    <input type="file" id="file-input" accept="audio/mp3" style="display: none;">
+                </div>
+                <p style="text-align:center; font-size:0.9rem; color:var(--text-muted); margin-top:0.5rem">Currently
+                    supports MP3 files only.</p>
+
+                <div id="editor" class="editor">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="tag-title">
+                    </div>
+                    <div class="form-group">
+                        <label>Artist</label>
+                        <input type="text" id="tag-artist">
+                    </div>
+                    <div class="form-group">
+                        <label>Album</label>
+                        <input type="text" id="tag-album">
+                    </div>
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="tag-year">
+                    </div>
+
+                    <button class="action-btn" onclick="saveTags()">Save & Download</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Complete Guide to ID3 Tags & Metadata</h2>
+            <p>The Adiminium Metadata Editor allows you to modify the hidden information stored inside your MP3 files.
+                This data, known as ID3 Tags, is what music players (like Spotify, iTunes, or your car stereo) display
+                when a song is playing. Without metadata, your file is just "Unknown Artist - Track 01". With metadata,
+                it becomes a professional release.</p>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Why "ID3"?</strong> It stands for "Identify an MP3". Before ID3 tags were invented in 1996,
+                there was no way to store the artist name inside the file itself!
+            </div>
+
+            <h3>Key Fields Explained</h3>
+            <ul>
+                <li><strong>Title:</strong> The actual name of the song (e.g., "Bohemian Rhapsody").</li>
+                <li><strong>Artist:</strong> The performer or band (e.g., "Queen").</li>
+                <li><strong>Album:</strong> The collection the song belongs to (e.g., "A Night at the Opera").</li>
+                <li><strong>Year:</strong> The release year. Critical for sorting music chronologically.</li>
+                <li><strong>Genre:</strong> Helps streaming algorithms and players categorize your mood (e.g., "Rock",
+                    "Pop", "Podcast").</li>
+            </ul>
+
+            <h3>Why Metadata Matters</h3>
+            <ol>
+                <li><strong>Professionalism:</strong> Sending a demo to a record label? If the file says
+                    "audio_final_v3.mp3" with no artist name, it might get lost. Tagged files show you care.</li>
+                <li><strong>Organization:</strong> Music libraries rely 100% on tags to sort your collection. Untagged
+                    files end up in the "Unknown" void.</li>
+                <li><strong>Copyright/Credit:</strong> While not a legal lock, having your name in the Artist/Composer
+                    tag is the first step in asserting ownership of your work.</li>
+            </ol>
+
+            <h3>How It Works</h3>
+            <p>This tool uses the <strong>browser-id3-writer</strong> library to inject binary data frames into the
+                header of your MP3 file.
+                <br>MP3 files are structured as a series of frames. The ID3 tag usually lives at the very beginning
+                (ID3v2) or the very end (ID3v1) of the file. We rewrite these headers without re-encoding the audio
+                stream, meaning <strong>zero loss of audio quality</strong>.
+            </p>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Select an MP3 file. (Note: Only MP3 is supported for ID3 tagging).</li>
+                <li><strong>Edit:</strong> The tool reads existing tags. Change the text in the input fields.</li>
+                <li><strong>Save:</strong> Click "Save & Download". A new MP3 file is generated with your updated tags
+                    embedded.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Can I add Album Art?</h4>
+                <p>Currently, this version supports text tags only. We are working on adding Cover Art (APIC frame)
+                    support in the next update!</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Does this work for WAV files?</h4>
+                <p>No. WAV files use a different metadata standard called "RIFF Info Chunks", which is less standardized
+                    than ID3. This tool is specifically for MP3s.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Will this change the file creation date?</h4>
+                <p>Yes. Since you are downloading a modified copy, your operating system will see it as a "new" file
+                    created today. The internal "Year" tag, however, will remain whatever you set it to.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/browser-id3-writer@4.0.0/dist/browser-id3-writer.min.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        let file;
+
+        fileInput.addEventListener('change', (e) => {
+            file = e.target.files[0];
+            if (file) {
+                document.getElementById('drop-zone').style.display = 'none';
+                editor.style.display = 'block';
+            }
+        });
+
+        async function saveTags() {
+            if (!file) return;
+
+            const arrayBuffer = await file.arrayBuffer();
+            const writer = new ID3Writer(arrayBuffer);
+
+            const title = document.getElementById('tag-title').value;
+            const artist = document.getElementById('tag-artist').value;
+            const album = document.getElementById('tag-album').value;
+            const year = document.getElementById('tag-year').value;
+
+            if (title) writer.setFrame('TIT2', title);
+            if (artist) writer.setFrame('TPE1', [artist]);
+            if (album) writer.setFrame('TALB', album);
+            if (year) writer.setFrame('TYER', parseInt(year));
+
+            writer.addTag();
+
+            const taggedBlob = writer.getBlob();
+            const url = URL.createObjectURL(taggedBlob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "tagged_" + file.name;
+            a.click();
+        }
+    </script>
+</body>
+
+</html>

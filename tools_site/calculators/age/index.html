@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .calc-wrapper {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-family: sans-serif;
+            color-scheme: dark;
+            /* Forces native picker to be dark mode friendly if using dark theme */
+        }
+
+        /* Fix for light mode if theme is toggled */
+        :root[data-theme="light"] input {
+            color-scheme: light;
+        }
+
+        input::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300C853' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3e%3c/rect%3e%3cline x1='16' y1='2' x2='16' y2='6'%3e%3c/line%3e%3cline x1='8' y1='2' x2='8' y2='6'%3e%3c/line%3e%3cline x1='3' y1='10' x2='21' y2='10'%3e%3c/line%3e%3c/svg%3e");
+            opacity: 1;
+            filter: none;
+            /* remove previous filters */
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            margin-right: 0.5rem;
+        }
+
+        :root[data-theme="light"] input::-webkit-calendar-picker-indicator {
+            filter: none;
+            /* No inversion needed, green works on white too */
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .result-box {
+            margin-top: 2rem;
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg-body);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .age-main {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .age-detail {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Calculators</a> / Age
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Age Calculator</h1>
+
+        <div class="calc-wrapper">
+            <div class="input-group">
+                <label>Date of Birth</label>
+                <input type="date" id="dob">
+            </div>
+            <button class="btn-action" onclick="calculateAge()">Calculate Age</button>
+
+            <div class="result-box" id="result-box">
+                <div class="age-main" id="age-main">25 Years</div>
+                <div class="age-detail" id="age-detail">4 Months, 12 Days</div>
+                <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">Next Birthday in: <span
+                        id="next-bday"></span></div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>The Age Calculator is a precision time-tracking tool that tells you exactly how long you have been
+                alive—down to the year, month, and day. We often forget exactly how old we are in terms of months or
+                days, or we need to calculate someone's exact age for a form or legal document. This tool takes your
+                date of birth and calculates the duration between then and today (or any specific future/past date). It
+                accounts for leap years and the varying lengths of months to provide an accurate result. It's a fun and
+                useful way to gain a new perspective on time.</p>
+
+            <h3>What It Does</h3>
+            <p>Calculates the precise time difference between a birthdate and the current date, outputting the result in
+                years, months, and days.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Select Birthdate:</strong> Use the date picker to choose your day, month, and year of birth.
+                </li>
+                <li><strong>Calculate:</strong> Click the button to generate your age breakdown.</li>
+                <li><strong>Read Results:</strong> View your age in years, months, and days.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>People filling out official forms, parents tracking their baby's age in months, or anyone curious about
+                their exact age statistics.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it account for leap years?</h4>
+                <p>Yes, the calculator logic fully accounts for leap years (listing February as 29 days) to ensure
+                    day-perfect accuracy.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I calculate age for a future date?</h4>
+                <p>Currently, it defaults to "today," but you can interpret the result as the duration from the start
+                    date to the current moment.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is my birthdate saved?</h4>
+                <p>Absolutely not. Your birthdate is processed locally in your browser and is discarded the moment you
+                    leave or refresh the page.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        function calculateAge() {
+            const dobVal = document.getElementById('dob').value;
+            if (!dobVal) return;
+
+            const dob = new Date(dobVal);
+            const now = new Date();
+
+            let years = now.getFullYear() - dob.getFullYear();
+            let months = now.getMonth() - dob.getMonth();
+            let days = now.getDate() - dob.getDate();
+
+            if (days < 0) {
+                months--;
+                days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            // Next Birthday
+            let nextBday = new Date(now.getFullYear(), dob.getMonth(), dob.getDate());
+            if (now > nextBday) {
+                nextBday.setFullYear(now.getFullYear() + 1);
+            }
+            const diffTime = Math.abs(nextBday - now);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            document.getElementById('result-box').style.display = 'block';
+            document.getElementById('age-main').textContent = `${years} Years`;
+            document.getElementById('age-detail').textContent = `${months} Months, ${days} Days`;
+            document.getElementById('next-bday').textContent = `${diffDays} days`;
+        }
+    </script>
+</body>
+
+</html>

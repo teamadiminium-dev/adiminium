@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Tools | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .category-hero {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .category-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tool-link {
+            display: block;
+            padding: 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .tool-link:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .tool-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / Image Tools
+        </div>
+
+        <div class="category-hero">
+            <h1>Image Tools 🖼️</h1>
+            <p>Process images entirely in your browser. Resize, crop, convert, and optimize without sending data to a
+                server.</p>
+        </div>
+
+        <div class="grid">
+            <a href="converter/index.html" class="tool-link">
+                <div class="card-icon">🔄</div>
+                <div class="tool-name">Format Converter</div>
+                <div class="tool-desc">Batch convert between JPG, PNG, and WebP.</div>
+            </a>
+
+            <a href="image_to_base64/index.html" class="tool-link">
+                <div class="card-icon">🔢</div>
+                <div class="tool-name">Image to Base64</div>
+                <div class="tool-desc">Convert images to Data URI strings for embedding.</div>
+            </a>
+
+            <a href="base64_to_image/index.html" class="tool-link">
+                <div class="card-icon">🖼️</div>
+                <div class="tool-name">Base64 to Image</div>
+                <div class="tool-desc">Decode Base64 strings back into image files.</div>
+            </a>
+
+            <a href="size_estimator/index.html" class="tool-link">
+                <div class="card-icon">📏</div>
+                <div class="tool-name">Size Estimator</div>
+                <div class="tool-desc">Predict file size before exporting.</div>
+            </a>
+
+            <a href="lazy_load_tester/index.html" class="tool-link">
+                <div class="card-icon">⏱️</div>
+                <div class="tool-name">Lazy Load Tester</div>
+                <div class="tool-desc">Simulate slow network connections for testing.</div>
+            </a>
+
+            <a href="responsive_generator/index.html" class="tool-link">
+                <div class="card-icon">📱</div>
+                <div class="tool-name">Responsive Generator</div>
+                <div class="tool-desc">Generate srcset tags and resized assets.</div>
+            </a>
+
+            <a href="aspect_ratio_fixer/index.html" class="tool-link">
+                <div class="card-icon">🔳</div>
+                <div class="tool-name">Aspect Ratio Fixer</div>
+                <div class="tool-desc">Add padding to fit instagram/youtube ratios.</div>
+            </a>
+
+            <a href="thumbnail_generator/index.html" class="tool-link">
+                <div class="card-icon">📑</div>
+                <div class="tool-name">Thumbnail Generator</div>
+                <div class="tool-desc">Bulk create small previews of your images.</div>
+            </a>
+
+            <a href="blur_tool/index.html" class="tool-link">
+                <div class="card-icon">💧</div>
+                <div class="tool-name">Blur Tool</div>
+                <div class="tool-desc">Apply Gaussian blur to hide details.</div>
+            </a>
+
+            <a href="sharpen_tool/index.html" class="tool-link">
+                <div class="card-icon">✨</div>
+                <div class="tool-name">Sharpen Tool</div>
+                <div class="tool-desc">Enhance image details and edges.</div>
+            </a>
+
+            <a href="pixelate_tool/index.html" class="tool-link">
+                <div class="card-icon">👾</div>
+                <div class="tool-name">Pixelate Tool</div>
+                <div class="tool-desc">Create retro 8-bit style simple censoring.</div>
+            </a>
+
+            <a href="resizer/index.html" class="tool-link">
+                <div class="card-icon">📐</div>
+                <div class="tool-name">Image Resizer</div>
+                <div class="tool-desc">Change image dimensions by pixel or percentage.</div>
+            </a>
+
+            <a href="cropper/index.html" class="tool-link">
+                <div class="card-icon">✂️</div>
+                <div class="tool-name">Image Cropper</div>
+                <div class="tool-desc">Crop images to specific aspect ratios or freehand.</div>
+            </a>
+
+            <a href="rotator/index.html" class="tool-link">
+                <div class="card-icon">🔄</div>
+                <div class="tool-name">Image Rotator</div>
+                <div class="tool-desc">Rotate, flip, and correct image orientation.</div>
+            </a>
+
+            <a href="compressor/index.html" class="tool-link">
+                <div class="card-icon">🗜️</div>
+                <div class="tool-name">Image Compressor</div>
+                <div class="tool-desc">Reduce file size while maintaining visual quality.</div>
+            </a>
+
+            <a href="quality_reducer/index.html" class="tool-link">
+                <div class="card-icon">📉</div>
+                <div class="tool-name">Quality Reducer</div>
+                <div class="tool-desc">Adjust compression levels with real-time preview.</div>
+            </a>
+
+            <a href="dpi_changer/index.html" class="tool-link">
+                <div class="card-icon">🖨️</div>
+                <div class="tool-name">DPI Changer</div>
+                <div class="tool-desc">Modify print resolution settings (DPI/PPI).</div>
+            </a>
+
+            <a href="metadata_viewer/index.html" class="tool-link">
+                <div class="card-icon">ℹ️</div>
+                <div class="tool-name">Metadata Viewer</div>
+                <div class="tool-desc">View EXIF, IPTC, and XMP data hidden in images.</div>
+            </a>
+
+            <a href="metadata_remover/index.html" class="tool-link">
+                <div class="card-icon">🛡️</div>
+                <div class="tool-name">Metadata Remover</div>
+                <div class="tool-desc">Strip GPS and camera data for privacy.</div>
+            </a>
+
+            <a href="renamer/index.html" class="tool-link">
+                <div class="card-icon">🏷️</div>
+                <div class="tool-name">Bulk Renamer</div>
+                <div class="tool-desc">Rename multiple image files with custom patterns.</div>
+            </a>
+
+            <a href="previewer/index.html" class="tool-link">
+                <div class="card-icon">👁️</div>
+                <div class="tool-name">Image Previewer</div>
+                <div class="tool-desc">Distraction-free viewer with zoom and pan.</div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="../js/theme.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/particles.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .image-preview-card {
+            flex: 1;
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-preview-card h3 {
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .image-preview-card img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .file-info {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .compression-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            justify-content: center;
+            min-width: 250px;
+            padding: 1rem;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            color: var(--text-main);
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Image Compressor
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Online Image Compressor</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🗜️</div>
+                <p>Drag & Drop your image here or click to browse</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="image-preview-card">
+                    <h3>Original</h3>
+                    <img id="orig-preview" src="" alt="Original">
+                    <div class="file-info" id="orig-info">0 KB</div>
+                </div>
+
+                <div class="compression-controls">
+                    <div class="control-group">
+                        <label>Compression Level</label>
+                        <select id="compression-level">
+                            <option value="0.9">Light (High Quality)</option>
+                            <option value="0.7" selected>Balanced (Recommended)</option>
+                            <option value="0.5">Aggressive (Medium Quality)</option>
+                            <option value="0.3">Extreme (Low Quality)</option>
+                        </select>
+                    </div>
+
+                    <button class="action-btn" onclick="compress()">Compress Image</button>
+
+                    <div id="result-info"
+                        style="text-align:center; padding: 1rem; border-radius:8px; background:var(--bg-body); display:none">
+                        <p style="color:var(--primary-color); font-weight:700; margin-bottom:0.5rem">Saved <span
+                                id="saved-pct">0</span>%</p>
+                        <p class="file-info" id="new-info">0 KB</p>
+                    </div>
+
+                    <a id="download-btn" class="action-btn"
+                        style="text-align:center; text-decoration:none; display:none;">Download Result</a>
+                    <button onclick="resetTool()"
+                        style="background:transparent; border:none; color:var(--text-muted); cursor:pointer">Start
+                        Over</button>
+                </div>
+            </div>
+
+            <section class="description-section">
+                <h2>The Comprehensive Guide to Image Compression</h2>
+                <p>The Adiminium Image Compressor is your go-to tool for reducing file weight without losing visual
+                    weight. In a world where website load speed correlates directly with user retention and SEO ranking,
+                    "heavy" images are the enemy. This tool optimizes the internal encoding of your images to strip away
+                    metadata and redundant pixel data, often reducing file sizes by 70% or more.</p>
+
+                <div class="tip-box"
+                    style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                    <strong>Web Standard:</strong> Aim to keep full-width banner images under 200KB, and smaller content
+                    images under 50KB for optimal website performance.
+                </div>
+
+                <h3>Lossy vs. Lossless Compression</h3>
+                <p>There are two ways to crush a file:</p>
+                <ul>
+                    <li><strong>Lossless:</strong> Like zipping a file. No data is lost, but size reduction is minimal
+                        (5-10%). Good for archiving.</li>
+                    <li><strong>Lossy (This Tool):</strong> We smartly discard information the human eye can't see. For
+                        example, in a blue sky with 10,000 shades of blue, we might reduce it to 5,000 shades. The eye
+                        sees "Blue Sky", but the file is half the size!</li>
+                </ul>
+
+                <h3>Understanding Settings</h3>
+                <ul>
+                    <li><strong>Light (0.9):</strong> Barely touches the image. Good for photography portfolios where
+                        quality is paramount.</li>
+                    <li><strong>Balanced (0.7):</strong> The sweet spot. Great reduction (50%+) with no visible
+                        artifacts on standard screens. Recommended for blogs and social media.</li>
+                    <li><strong>Aggressive (0.5):</strong> You might start seeing some "blockiness" (artifacts) if you
+                        zoom in, but the file size will be tiny. Good for thumbnails.</li>
+                    <li><strong>Extreme (0.3):</strong> Maximum crush. Use this only if strict file size limits (like an
+                        email attachment limit) are your priority.</li>
+                </ul>
+
+                <h3>Step-by-Step Guide</h3>
+                <ol>
+                    <li><strong>Upload:</strong> Select your high-res image.</li>
+                    <li><strong>Compare:</strong> The tool will show you a "Before" and "After" size estimate.</li>
+                    <li><strong>Adjust:</strong> Select a compression level.</li>
+                    <li><strong>Save:</strong> Download the optimized version.</li>
+                </ol>
+
+                <h3>Frequently Asked Questions</h3>
+                <div class="faq-item">
+                    <h4>Does this remove EXIF data?</h4>
+                    <p>Yes. The process of re-encoding on the canvas usually strips metadata like GPS location and
+                        Camera settings. This is actually a privacy feature!</p>
+                </div>
+
+                <div class="faq-item">
+                    <h4>Why did my PNG file get bigger?</h4>
+                    <p>PNGs are tricky. They are designed to be lossless. If you have a complex photo as a PNG,
+                        "compressing" it might actually just re-save it. For photos, always convert to JPEG or WebP
+                        first for real savings.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h4>Can I compress animated GIFs?</h4>
+                    <p>No, this tool currently processes static frames. Compressing GIFs requires complex frame-by-frame
+                        analysis not yet guided by this engine.</p>
+                </div>
+            </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const origPreview = document.getElementById('orig-preview');
+        const origInfo = document.getElementById('orig-info');
+
+        let originalFile = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFile(e.dataTransfer.files[0]);
+        });
+
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function loadFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            originalFile = file;
+
+            origInfo.textContent = formatBytes(file.size);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                origPreview.src = e.target.result;
+                dropZone.style.display = 'none';
+                editor.style.display = 'flex'; // Changed to flex to show side-by-side if CSS supports, or wrap
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function compress() {
+            if (!originalFile) return;
+
+            const quality = parseFloat(document.getElementById('compression-level').value);
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                // Determine format
+                // If PNG and transparency matters, using JPEG will kill it. 
+                // Let's force JPEG for high compression if it's acceptable or WebP
+                // For this generic tool, let's use JPEG for aggressive compression or preserve source if compatible
+
+                let mime = originalFile.type;
+                if (mime === 'image/png') {
+                    // PNG compression in canvas is lossles/low-impact. 
+                    // To compress significantly we might need JPEG or WebP.
+                    // Let's switch to WebP for better compression + transparency
+                    mime = 'image/webp';
+                }
+
+                const dataUrl = canvas.toDataURL(mime, quality);
+
+                // Calculate new size
+                // Base64 length * 0.75 approx bytes
+                const head = 'data:' + mime + ';base64,';
+                const size = Math.round((dataUrl.length - head.length) * 3 / 4);
+
+                document.getElementById('new-info').textContent = formatBytes(size);
+
+                const savings = Math.round(((originalFile.size - size) / originalFile.size) * 100);
+                document.getElementById('saved-pct').textContent = savings > 0 ? savings : 0;
+
+                document.getElementById('result-info').style.display = 'block';
+
+                const dlBtn = document.getElementById('download-btn');
+                dlBtn.style.display = 'block';
+                dlBtn.href = dataUrl;
+                // Add extension
+                let ext = mime.split('/')[1];
+                dlBtn.download = `compressed_${originalFile.name.split('.')[0]}.${ext}`;
+            };
+            img.src = origPreview.src;
+        }
+
+        function resetTool() {
+            originalFile = null;
+            document.getElementById('result-info').style.display = 'none';
+            document.getElementById('download-btn').style.display = 'none';
+            dropZone.style.display = 'block';
+            editor.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online Duplicate Text Remover. Instantly find and remove duplicate lines from your text. Sort and clean up list data, emails, or keywords efficiently.">
+    <meta name="keywords"
+        content="remove duplicate lines, duplicate text remover, dedup list, unique list generator, remove duplicate emails, text cleaner, list sorter">
+    <title>Duplicate Text Remover | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 350px;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: monospace;
+            resize: vertical;
+            line-height: 1.6;
+            box-shadow: var(--shadow-sm);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            background: var(--bg-surface);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        input[type="checkbox"] {
+            accent-color: var(--primary-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-action {
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            color: #000;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .btn-action span {
+            margin-left: auto;
+        }
+
+        .btn-secondary {
+            background: var(--bg-body);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-clear {
+            color: #e74c3c;
+            border-color: rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-clear:hover {
+            border-color: #e74c3c;
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.05);
+        }
+
+        .stat-badge {
+            margin-left: auto;
+            background: var(--bg-body);
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Text Tools</a> / Duplicate Remover
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Duplicate Text Remover</h1>
+
+        <div class="tool-container">
+            <div class="controls">
+                <button class="btn-action" onclick="removeDuplicates()">
+                    ✨ Remove Duplicates
+                </button>
+
+                <label class="toggle-label">
+                    <input type="checkbox" id="ignore-case"> Ignore Case (A = a)
+                </label>
+
+                <label class="toggle-label">
+                    <input type="checkbox" id="sort-results"> Sort Results
+                </label>
+
+                <div class="stat-badge" id="stats">
+                    Removed: 0 | Remaining: 0
+                </div>
+            </div>
+
+            <div class="panels">
+                <div class="panel-col">
+                    <label>Original List</label>
+                    <textarea id="text-input"
+                        placeholder="Paste your list here...&#10;Apple&#10;Banana&#10;Apple&#10;Orange"
+                        spellcheck="false"></textarea>
+                    <button class="btn-secondary btn-clear" onclick="clearAll()"
+                        style="align-self: flex-start; margin-top:0.5rem;">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Clear All
+                    </button>
+                </div>
+
+                <div class="panel-col">
+                    <label>Unique List</label>
+                    <textarea id="text-output" readonly placeholder="Result will appear here..."
+                        spellcheck="false"></textarea>
+                    <button class="btn-secondary" onclick="copyResult()"
+                        style="align-self: flex-end; margin-top:0.5rem;">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Result
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Data redundancy is a common problem in the digital age. The Duplicate Line Remover is a powerful cleaning
+                utility designed to streamline your lists. Whether you are managing email subscribers, cleaning up
+                database exports, or organizing inventory, removing duplicates manually is error-prone and slow. This
+                tool automates the process, scanning thousands of lines in milliseconds to produce a clean, unique list.
+                It offers options to ignore capitalization and sort results, ensuring your data is not just unique, but
+                organized.</p>
+
+            <h3>What It Does</h3>
+            <p>Identifies and removes duplicate lines from a text list, with optional case insensitivity and sorting.
+            </p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Paste List:</strong> Enter your list in the left text area (one item per line).</li>
+                <li><strong>Configure:</strong> Check "Ignore Case" to treat 'apple' and 'Apple' as duplicates. Check
+                    "Sort Results" to alphabetize the output.</li>
+                <li><strong>Run:</strong> Click "Remove Duplicates" to generate the cleaned list on the right.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Database administrators, digital marketers, SEO professionals, and project managers.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Are limits on list size?</h4>
+                <p>The tool works in your browser, so it can handle tens of thousands of lines easily. Very massive
+                    lists (millions of lines) depends on your computer's RAM.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it remove empty lines?</h4>
+                <p>Yes, standard behavior usually filters out completely empty lines to produce a compact, clean list.
+                </p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I undo?</h4>
+                <p>The "Original" text box keeps your input safe until you clear it. The tool generates a new output
+                    rather than overwriting your source.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const input = document.getElementById('text-input');
+        const output = document.getElementById('text-output');
+        const ignoreCase = document.getElementById('ignore-case');
+        const sortResults = document.getElementById('sort-results');
+        const statBadge = document.getElementById('stats');
+
+        function removeDuplicates() {
+            const raw = input.value;
+            if (!raw) {
+                output.value = "";
+                updateStats(0, 0);
+                return;
+            }
+
+            const lines = raw.split(/\n/);
+            const cleanLines = [];
+            const seen = new Set();
+
+            let originalCount = 0; // Non-empty lines
+            let removedCount = 0;
+
+            for (let line of lines) {
+                // Trim logic? Maybe optional. For now preservation is safer, but strictly duplicates often implies trimmed.
+                // Let's trim whitespace for better deduping.
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+
+                originalCount++;
+
+                const checkVal = ignoreCase.checked ? trimmed.toLowerCase() : trimmed;
+
+                if (!seen.has(checkVal)) {
+                    seen.add(checkVal);
+                    cleanLines.push(trimmed);
+                } else {
+                    removedCount++;
+                }
+            }
+
+            if (sortResults.checked) {
+                // Sort with locale awareness
+                cleanLines.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+            }
+
+            output.value = cleanLines.join('\n');
+            updateStats(removedCount, cleanLines.length);
+        }
+
+        function updateStats(removed, remaining) {
+            statBadge.textContent = `Removed: ${removed} | Remaining: ${remaining}`;
+        }
+
+        function clearAll() {
+            input.value = '';
+            output.value = '';
+            updateStats(0, 0);
+        }
+
+        function copyResult() {
+            output.select();
+            document.execCommand('copy');
+        }
+    </script>
+</body>
+
+</html>

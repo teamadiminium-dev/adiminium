@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Format Converter | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-direction: column;
+        }
+
+        .controls {
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        select {
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            color: var(--text-main);
+            min-width: 150px;
+        }
+
+        .file-list {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+
+        .file-item {
+            background: var(--bg-body);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .file-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Format Converter
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Image Format Converter</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔄</div>
+                <p>Drag & Drop images here (JPG, PNG, WEBP)</p>
+                <button onclick="document.getElementById('file-input').click()">Select Images</button>
+                <input type="file" id="file-input" accept="image/*" multiple style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Convert All To:</label>
+                        <select id="format-select">
+                            <option value="image/jpeg">JPEG (.jpg)</option>
+                            <option value="image/png">PNG (.png)</option>
+                            <option value="image/webp">WebP (.webp)</option>
+                            <option value="image/gif">GIF (.gif)</option>
+                            <option value="image/bmp">BMP (.bmp)</option>
+                            <option value="image/x-icon">ICO (.ico)</option>
+                        </select>
+                    </div>
+
+                    <button class="action-btn" onclick="convertAll()">Convert & Download All</button>
+                    <button onclick="resetTool()"
+                        style="background:transparent; border:none; color:var(--text-muted); cursor:pointer">Start
+                        Over</button>
+                </div>
+
+                <div class="file-list" id="file-list"></div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Ultimate Guide to Image Format Conversion</h2>
+            <p>The Adiminium Image Converter is a versatile and private utility designed to transform your visual assets
+                from one file type to another. Whether you are a web developer speeding up a site with WebP, a
+                photographer needing high-quality PNGs, or just trying to open a stubborn file, this browser-based tool
+                handles it all locally without ever uploading your personal photos to a server.</p>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Pro Tip:</strong> For the modern web, convert your heavy JPEGs and PNGs to
+                <strong>WebP</strong>. It offers 30% smaller file sizes with improved quality!
+            </div>
+
+            <h3>Supported Formats Explained</h3>
+            <p>Understanding which format to use is key to digital image management:</p>
+            <ul>
+                <li><strong>JPEG (.jpg):</strong> The standard for photos. Uses "Lossy" compression. Good for real-world
+                    images with millions of colors. not good for text or sharp lines.</li>
+                <li><strong>PNG (.png):</strong> The standard for transparent graphics (logos, icons). Uses "Lossless"
+                    compression. Crisp quality but larger file sizes.</li>
+                <li><strong>WebP (.webp):</strong> Google's modern format. Supports both transparency (like PNG) and
+                    high compression (like JPG). Supported by all modern browsers.</li>
+                <li><strong>GIF (.gif):</strong> An older format limited to 256 colors. Best used only for simple
+                    animations. For static images, use PNG instead.</li>
+                <li><strong>BMP (.bmp):</strong> An ancient, uncompressed format. Huge file sizes. Only use if
+                    specifically required by legacy software.</li>
+                <li><strong>ICO (.ico):</strong> Specifically for "Favicons" (the tiny icon in browser tabs).</li>
+            </ul>
+
+            <h3>Why Convert Locally?</h3>
+            <p>Most online converters require you to upload your files to a cloud server. This means (1) Waiting for
+                uploads, (2) Trusting them with your data, and (3) Waiting for downloads. <br>
+                Adiminium uses the power of your own computer (CPU/GPU) to convert the files instantly in the browser.
+                It's faster, safer, and works even without internet!</p>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Drag multiple images into the drop zone. We support batch processing!</li>
+                <li><strong>Choose Output:</strong> typically, select <strong>JPG</strong> for photos or
+                    <strong>PNG</strong> for graphics.</li>
+                <li><strong>Convert:</strong> Click "Convert All".</li>
+                <li><strong>Download:</strong> Files will download individually, or as a handy ZIP archive if you
+                    converted many at once.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>What about HEIC (iPhone) photos?</h4>
+                <p>If your browser (like Safari or latest Chrome) supports reading HEIC natively, we can convert them to
+                    JPG. If not, the browser might block the file.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Does quality decrease?</h4>
+                <p>Converting to a "Lossy" format like JPEG always removes some data to save space. We use a high
+                    quality setting (92%) which is virtually indistinguishable from the original.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I convert a transparent PNG to JPG?</h4>
+                <p>Yes, but since JPEG does not support transparency, the see-through background will be replaced with
+                    <strong>White</strong> (or sometimes Black, depending on browser defaults).</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const fileList = document.getElementById('file-list');
+        const formatSelect = document.getElementById('format-select');
+
+        let files = [];
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFiles(e.target.files));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFiles(e.dataTransfer.files);
+        });
+
+        function loadFiles(fileListObj) {
+            files = Array.from(fileListObj).filter(f => f.type.startsWith('image/'));
+            if (files.length === 0) return;
+
+            dropZone.style.display = 'none';
+            editor.style.display = 'flex';
+            renderList();
+        }
+
+        function renderList() {
+            fileList.innerHTML = '';
+            files.forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'file-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="thumb">
+                        <div class="file-name">${file.name}</div>
+                    `;
+                    fileList.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function convertAll() {
+            const format = formatSelect.value;
+            let ext = 'jpg';
+            if (format.includes('png')) ext = 'png';
+            if (format.includes('webp')) ext = 'webp';
+            if (format.includes('gif')) ext = 'gif';
+            if (format.includes('bmp')) ext = 'bmp';
+            if (format.includes('icon')) ext = 'ico';
+
+            if (files.length === 1) {
+                // Single file download
+                if (format === 'image/x-icon') {
+                    const canvas = await fileToCanvas(files[0]);
+                    const icoBlob = generateIcoBlob(canvas);
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(icoBlob);
+                    link.download = files[0].name.split('.')[0] + '.' + ext;
+                    link.click();
+                } else {
+                    const canvas = await fileToCanvas(files[0]);
+                    const url = canvas.toDataURL(format, 0.92);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = files[0].name.split('.')[0] + '.' + ext;
+                    link.click();
+                }
+            } else {
+                // Zip download
+                const zip = new JSZip();
+
+                for (let file of files) {
+                    const canvas = await fileToCanvas(file);
+                    const name = file.name.split('.')[0] + '.' + ext;
+
+                    if (format === 'image/x-icon') {
+                        const icoBlob = generateIcoBlob(canvas);
+                        zip.file(name, icoBlob);
+                    } else {
+                        // Get base64 data without prefix
+                        const url = canvas.toDataURL(format, 0.92);
+                        const data = url.split(',')[1];
+                        zip.file(name, data, { base64: true });
+                    }
+                }
+
+                zip.generateAsync({ type: "blob" }).then((content) => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(content);
+                    link.download = "converted_images.zip";
+                    link.click();
+                });
+            }
+        }
+
+        function fileToCanvas(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function generateIcoBlob(canvas) {
+            // Generate PNG data first
+            const pngDataUrl = canvas.toDataURL('image/png');
+            const byteString = atob(pngDataUrl.split(',')[1]);
+            const pngBuffer = new Uint8Array(byteString.length);
+            for (let i = 0; i < byteString.length; i++) {
+                pngBuffer[i] = byteString.charCodeAt(i);
+            }
+
+            const header = new Uint8Array([0, 0, 1, 0, 1, 0]);
+
+            const entry = new Uint8Array(16);
+            const view = new DataView(entry.buffer);
+
+            // Width & Height (0 means 256)
+            view.setUint8(0, canvas.width >= 256 ? 0 : canvas.width);
+            view.setUint8(1, canvas.height >= 256 ? 0 : canvas.height);
+            view.setUint8(2, 0); // Colors
+            view.setUint8(3, 0); // Reserved
+            view.setUint16(4, 1, true); // Planes
+            view.setUint16(6, 32, true); // bpp
+            view.setUint32(8, pngBuffer.length, true); // Size
+            view.setUint32(12, 22, true); // Offset (6 header + 16 entry)
+
+            const icoFile = new Uint8Array(header.length + entry.length + pngBuffer.length);
+            icoFile.set(header, 0);
+            icoFile.set(entry, header.length);
+            icoFile.set(pngBuffer, header.length + entry.length);
+
+            return new Blob([icoFile], { type: 'image/x-icon' });
+        }
+
+        function resetTool() {
+            files = [];
+            dropZone.style.display = 'block';
+            editor.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+
+</html>

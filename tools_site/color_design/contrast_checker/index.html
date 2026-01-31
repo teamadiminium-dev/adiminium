@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Contrast Checker | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .checker-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto 3rem auto;
+        }
+
+        @media (min-width: 768px) {
+            .checker-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .inputs-panel {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .color-control {
+            margin-bottom: 2rem;
+        }
+
+        .color-control label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .color-wrapper {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 0;
+            background: none;
+        }
+
+        input[type="text"] {
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            padding: 0.8rem;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: 'Fira Code', monospace;
+            width: 100%;
+        }
+
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .preview-card {
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .ratio-display {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        .status-pass {
+            background: rgba(0, 200, 83, 0.2);
+            color: #00c853;
+        }
+
+        .status-fail {
+            background: rgba(255, 82, 82, 0.2);
+            color: #ff5252;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .result-item {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .result-value {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Color & Design</a> / Contrast Checker
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Web Accessibility Contrast Checker</h1>
+
+        <div class="checker-grid">
+            <div class="inputs-panel">
+                <div class="color-control">
+                    <label>Text Color (Foreground)</label>
+                    <div class="color-wrapper">
+                        <input type="color" id="fg-picker" value="#FFFFFF" oninput="updateFromPicker('fg')">
+                        <input type="text" id="fg-text" value="#FFFFFF" oninput="updateFromText('fg')" maxlength="7">
+                    </div>
+                </div>
+
+                <div class="color-control">
+                    <label>Background Color</label>
+                    <div class="color-wrapper">
+                        <input type="color" id="bg-picker" value="#00C853" oninput="updateFromPicker('bg')">
+                        <input type="text" id="bg-text" value="#00C853" oninput="updateFromText('bg')" maxlength="7">
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div id="preview-box" class="preview-card">
+                    <div class="ratio-display" id="contrast-ratio">1.00</div>
+                    <div>Contrast Ratio</div>
+                    <div id="rating-status" class="rating-badge">Checking...</div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-item">
+                        <div class="result-title">Normal Text</div>
+                        <div class="result-value" id="normal-aa">AA: Pass</div>
+                        <div class="result-value" id="normal-aaa">AAA: Fail</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-title">Large Text (18pt+)</div>
+                        <div class="result-value" id="large-aa">AA: Pass</div>
+                        <div class="result-value" id="large-aaa">AAA: Pass</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Web accessibility is crucial for inclusive design. The Adiminium Contrast Checker helps you ensure that
+                your text is readable for everyone, including users with visual impairments. By inputting your
+                foreground and background colors, the tool calculates the precise contrast ratio according to the Web
+                Content Accessibility Guidelines (WCAG). It instantly tells you if your color combination passes the AA
+                and AAA standards for both normal and large text, allowing you to design with confidence and compliance.
+            </p>
+
+            <h3>What It Does</h3>
+            <p>Calculates the contrast ratio between two colors and verifies WCAG compliance.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Select Colors:</strong> Use the color pickers or type hex codes for Foreground and
+                    Background.</li>
+                <li><strong>Check Ratio:</strong> The large number shows the contrast ratio (e.g., 4.5:1).</li>
+                <li><strong>Verify Compliance:</strong> Review the Pass/Fail status for AA (minimum standard) and AAA
+                    (enhanced standard).</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Web designers, developers, accessibility auditors, and product managers.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What is a good contrast ratio?</h4>
+                <p>WCAG Level AA requires a ratio of at least 4.5:1 for normal text and 3:1 for large text.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What is Level AAA?</h4>
+                <p>Level AAA is the highest standard, requiring a ratio of 7:1 for normal text and 4.5:1 for large text.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        // DOM Elements
+        const fgPicker = document.getElementById('fg-picker');
+        const fgText = document.getElementById('fg-text');
+        const bgPicker = document.getElementById('bg-picker');
+        const bgText = document.getElementById('bg-text');
+        const previewBox = document.getElementById('preview-box');
+        const ratioDisplay = document.getElementById('contrast-ratio');
+        const ratingStatus = document.getElementById('rating-status');
+
+        const normalAA = document.getElementById('normal-aa');
+        const normalAAA = document.getElementById('normal-aaa');
+        const largeAA = document.getElementById('large-aa');
+        const largeAAA = document.getElementById('large-aaa');
+
+        function hexToRgb(hex) {
+            const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+            hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function luminance(r, g, b) {
+            const a = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+        }
+
+        function calculateRatio(l1, l2) {
+            const lighter = Math.max(l1, l2);
+            const darker = Math.min(l1, l2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        function updateFromPicker(type) {
+            if (type === 'fg') {
+                fgText.value = fgPicker.value.toUpperCase();
+            } else {
+                bgText.value = bgPicker.value.toUpperCase();
+            }
+            updateCalc();
+        }
+
+        function updateFromText(type) {
+            let val = (type === 'fg' ? fgText.value : bgText.value);
+            if (!val.startsWith('#')) val = '#' + val;
+
+            if (/^#[0-9A-F]{6}$/i.test(val)) {
+                if (type === 'fg') {
+                    fgPicker.value = val;
+                } else {
+                    bgPicker.value = val;
+                }
+                updateCalc();
+            }
+        }
+
+        function getStatusHtml(pass) {
+            return pass ?
+                '<span style="color:#00c853">Pass</span>' :
+                '<span style="color:#ff5252">Fail</span>';
+        }
+
+        function updateCalc() {
+            const fg = hexToRgb(fgPicker.value);
+            const bg = hexToRgb(bgPicker.value);
+
+            // Update preview styles
+            previewBox.style.color = fgPicker.value;
+            previewBox.style.backgroundColor = bgPicker.value;
+            previewBox.style.borderColor = fgPicker.value; // border matches text
+
+            if (!fg || !bg) return; // invalid hex
+
+            const l1 = luminance(fg.r, fg.g, fg.b);
+            const l2 = luminance(bg.r, bg.g, bg.b);
+            const ratio = calculateRatio(l1, l2);
+            const ratioFixed = ratio.toFixed(2);
+
+            ratioDisplay.textContent = ratioFixed;
+
+            // Status Logic
+            let statusText = "Poor";
+            let statusClass = "status-fail";
+            if (ratio >= 7) {
+                statusText = "Excellent (AAA)";
+                statusClass = "status-pass";
+            } else if (ratio >= 4.5) {
+                statusText = "Good (AA)";
+                statusClass = "status-pass";
+            } else if (ratio >= 3) {
+                statusText = "Fair (Large Text)";
+                statusClass = "status-fail"; // Considered fail for body text usually
+            }
+
+            ratingStatus.textContent = statusText;
+            ratingStatus.className = `rating-badge ${statusClass}`;
+
+            // WCAG Breakdown
+            // Normal Text: AA >= 4.5, AAA >= 7
+            normalAA.innerHTML = `AA: ${getStatusHtml(ratio >= 4.5)}`;
+            normalAAA.innerHTML = `AAA: ${getStatusHtml(ratio >= 7)}`;
+
+            // Large Text: AA >= 3, AAA >= 4.5
+            largeAA.innerHTML = `AA: ${getStatusHtml(ratio >= 3)}`;
+            largeAAA.innerHTML = `AAA: ${getStatusHtml(ratio >= 4.5)}`;
+        }
+
+        // Init
+        updateCalc();
+    </script>
+</body>
+
+</html>

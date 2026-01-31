@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Transform Generator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .generator-container {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        .controls-panel {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .preview-stage {
+            background-color: var(--bg-surface);
+            border-radius: 16px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Grid background for perspective reference */
+        .preview-stage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(var(--border-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.2;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .transform-box {
+            width: 150px;
+            height: 150px;
+            background: var(--primary-color);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        .transform-ghost {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 2px dashed var(--text-muted);
+            border-radius: 8px;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .code-output {
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Fira Code', monospace;
+            position: relative;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        button.reset-btn {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 1rem;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button.reset-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Color & Design</a> / CSS Transform Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">CSS Transform Generator</h1>
+
+        <div class="generator-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label>Scale <span><span id="scale-val">1</span>x</span></label>
+                    <input type="range" class="transform-input" id="scale" min="0.1" max="2" step="0.1" value="1">
+                </div>
+
+                <div class="control-group">
+                    <label>Rotate <span><span id="rotate-val">0</span>deg</span></label>
+                    <input type="range" class="transform-input" id="rotate" min="0" max="360" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label>Translate X <span><span id="tx-val">0</span>px</span></label>
+                    <input type="range" class="transform-input" id="translateX" min="-200" max="200" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label>Translate Y <span><span id="ty-val">0</span>px</span></label>
+                    <input type="range" class="transform-input" id="translateY" min="-200" max="200" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label>Skew X <span><span id="sx-val">0</span>deg</span></label>
+                    <input type="range" class="transform-input" id="skewX" min="-90" max="90" value="0">
+                </div>
+
+                <div class="control-group">
+                    <label>Skew Y <span><span id="sy-val">0</span>deg</span></label>
+                    <input type="range" class="transform-input" id="skewY" min="-90" max="90" value="0">
+                </div>
+
+                <button class="reset-btn" onclick="resetTransforms()">Reset All Transforms</button>
+            </div>
+
+            <div class="preview-panel">
+                <div class="preview-stage">
+                    <div class="transform-ghost"></div>
+                    <div id="transform-box" class="transform-box">Box</div>
+                </div>
+
+                <div class="code-output">
+                    <div id="css-code">transform: none;</div>
+                    <button class="copy-btn" onclick="copyCSS()">Copy CSS</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>CSS Transforms allow you to manipulate elements in 2D and 3D space, creating interesting layouts and
+                effects without disrupting the document flow. The Adiminium CSS Transform Generator provides intuitive
+                sliders to scale (resize), rotate (spin), translate (move), and skew (distort) elements. A "ghost" box
+                remains in the original position so you can easily visualize the deformation. The tool generates the
+                precise, combined CSS `transform` property string.</p>
+
+            <h3>What It Does</h3>
+            <p>Generates the `transform` CSS property for scaling, rotation, translation, and skewing.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Scale:</strong> Resize the element (smaller or larger).</li>
+                <li><strong>Rotate:</strong> Spin the element 0-360 degrees.</li>
+                <li><strong>Translate:</strong> Move the element X (horizontal) or Y (vertical) without affecting
+                    neighbors.</li>
+                <li><strong>Skew:</strong> Distort the element along the X or Y axis.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Designers creating unique layouts, buttons, or hover states.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const inputs = document.querySelectorAll('.transform-input');
+        const box = document.getElementById('transform-box');
+        const cssCode = document.getElementById('css-code');
+
+        function updateTransforms() {
+            const scale = document.getElementById('scale').value;
+            const rotate = document.getElementById('rotate').value;
+            const tx = document.getElementById('translateX').value;
+            const ty = document.getElementById('translateY').value;
+            const sx = document.getElementById('skewX').value;
+            const sy = document.getElementById('skewY').value;
+
+            // Update Labels
+            document.getElementById('scale-val').textContent = scale;
+            document.getElementById('rotate-val').textContent = rotate;
+            document.getElementById('tx-val').textContent = tx;
+            document.getElementById('ty-val').textContent = ty;
+            document.getElementById('sx-val').textContent = sx;
+            document.getElementById('sy-val').textContent = sy;
+
+            // Build string
+            let transformString = '';
+
+            if (scale != 1) transformString += `scale(${scale}) `;
+            if (rotate != 0) transformString += `rotate(${rotate}deg) `;
+            if (tx != 0) transformString += `translateX(${tx}px) `;
+            if (ty != 0) transformString += `translateY(${ty}px) `;
+            if (sx != 0) transformString += `skewX(${sx}deg) `;
+            if (sy != 0) transformString += `skewY(${sy}deg) `;
+
+            if (transformString === '') {
+                transformString = 'none';
+                box.style.transform = 'none';
+            } else {
+                box.style.transform = transformString;
+            }
+
+            cssCode.textContent = `transform: ${transformString.trim()};`;
+        }
+
+        function resetTransforms() {
+            document.getElementById('scale').value = 1;
+            document.getElementById('rotate').value = 0;
+            document.getElementById('translateX').value = 0;
+            document.getElementById('translateY').value = 0;
+            document.getElementById('skewX').value = 0;
+            document.getElementById('skewY').value = 0;
+            updateTransforms();
+        }
+
+        inputs.forEach(input => {
+            input.addEventListener('input', updateTransforms);
+        });
+
+        function copyCSS() {
+            navigator.clipboard.writeText(cssCode.textContent).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

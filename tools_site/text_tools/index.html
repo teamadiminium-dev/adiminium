@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Tools | Adiminium Tools</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        /* Standard Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .tool-card {
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            background: var(--bg-surface);
+            transition: all var(--transition-normal);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .tool-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / Text Tools
+        </div>
+
+        <h1 style="margin-bottom: 0.5rem;">Text Utilities</h1>
+        <p style="color: var(--text-muted); margin-bottom: 3rem;">Manipulate text, count words, and generate content.
+        </p>
+
+        <div class="grid">
+            <a href="word_counter/index.html" class="tool-card">
+                <div class="card-icon">📝</div>
+                <div class="card-title">Word & Character Counter</div>
+                <div class="card-desc">Real-time stats for words, chars, sentences, and reading time.</div>
+            </a>
+
+            <a href="case_converter/index.html" class="tool-card">
+                <div class="card-icon">🔠</div>
+                <div class="card-title">Case Converter</div>
+                <div class="card-desc">UPPERCASE, lowercase, Title Case, etc.</div>
+            </a>
+
+            <a href="duplicate_remover/index.html" class="tool-card">
+                <div class="card-icon">✂️</div>
+                <div class="card-title">Duplicate Remover</div>
+                <div class="card-desc">Remove duplicates, clean lists, and sort unique lines.</div>
+            </a>
+
+            <a href="text_reverser/index.html" class="tool-card">
+                <div class="card-icon">↩️</div>
+                <div class="card-title">Text Reverser</div>
+                <div class="card-desc">Reverse text strings, words, or letters instantly.</div>
+            </a>
+
+            <a href="palindrome_checker/index.html" class="tool-card">
+                <div class="card-icon">🔄</div>
+                <div class="card-title">Palindrome Checker</div>
+                <div class="card-desc">Check if text reads the same backwards (ignores case).</div>
+            </a>
+
+            <a href="lorem_ipsum/index.html" class="tool-card">
+                <div class="card-icon">📄</div>
+                <div class="card-title">Lorem Ipsum Generator</div>
+                <div class="card-desc">Generate placeholder text for designs (paras, words).</div>
+            </a>
+
+            <a href="emoji_translator/index.html" class="tool-card">
+                <div class="card-icon">😃</div>
+                <div class="card-title">Emoji Translator</div>
+                <div class="card-desc">Convert plain text keywords into fun emojis instantly.</div>
+            </a>
+
+            <a href="password_strength/index.html" class="tool-card">
+                <div class="card-icon">🔒</div>
+                <div class="card-title">Password Strength</div>
+                <div class="card-desc">Test complexity and security of your passwords safely.</div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/theme.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/particles.js"></script>
+</body>
+
+</html>

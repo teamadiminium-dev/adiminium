@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Number Generator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .generator-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        .options-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            align-items: center;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+
+        button.generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: 0.2s;
+        }
+
+        button.generate-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--bg-body);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .big-number {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+            word-break: break-all;
+        }
+
+        .multi-numbers {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .number-chip {
+            background: var(--bg-surface);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Randomness</a> / Number Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Random Number Generator</h1>
+
+        <div class="generator-container">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Min</label>
+                    <input type="number" id="min" value="1">
+                </div>
+                <div class="control-group">
+                    <label>Max</label>
+                    <input type="number" id="max" value="100">
+                </div>
+                <div class="control-group">
+                    <label>Quantity</label>
+                    <input type="number" id="qty" value="1" min="1" max="1000">
+                </div>
+            </div>
+
+            <div class="options-row">
+                <label class="toggle-label">
+                    <input type="checkbox" id="allow-dupes"> Allow Duplicates
+                </label>
+                <label class="toggle-label">
+                    <input type="checkbox" id="sort-results"> Sort Results
+                </label>
+            </div>
+
+            <button class="generate-btn" onclick="generateNumbers()">Generate Numbers</button>
+
+            <div class="result-box">
+                <div id="result-display" class="big-number">-</div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Whether you're picking contest winners, conducting statistical sampling, or just deciding who pays for
+                lunch, you need unbiased randomness. The Adiminium Number Generator produces truly pseudo-random
+                integers within any range you define. Unlike picking a number "out of your head" (which follows
+                predictable human patterns), this tool uses your browser's cryptographic algorithms to ensure fairness.
+                You can generate single digits or massive lists of unique values.</p>
+
+            <h3>What It Does</h3>
+            <p>Generates one or more random integers between a Minimum and Maximum value.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Range:</strong> Set the start (Min) and end (Max) points.</li>
+                <li><strong>Quantity:</strong> Choose how many numbers to pick at once.</li>
+                <li><strong>Options:</strong> Toggle "Sort Results" to order them, or "Allow Duplicates" if you want
+                    independent draws (like rolling dice).</li>
+                <li><strong>Generate:</strong> Click to see your results displayed instantly.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Teachers, researchers, lottery players, and developers testing logic.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Are the numbers truly random?</h4>
+                <p>They are generated using high-quality pseudo-random number generators (PRNG) suitable for most
+                    non-scientific applications.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I generate negative numbers?</h4>
+                <p>Yes! Just enter a negative value in the Min or Max fields (e.g., Min: -50, Max: 50).</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What if I ask for more unique numbers than
+                    the range allows?</h4>
+                <p>The tool will automatically stop when all possible unique numbers in the range have been selected.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        function generateNumbers() {
+            const min = parseInt(document.getElementById('min').value);
+            const max = parseInt(document.getElementById('max').value);
+            const qty = parseInt(document.getElementById('qty').value);
+            const allowDupes = document.getElementById('allow-dupes').checked;
+            const sortResults = document.getElementById('sort-results').checked;
+            const display = document.getElementById('result-display');
+
+            if (min >= max) {
+                display.textContent = "Max must be greater than Min";
+                display.className = "big-number";
+                display.style.fontSize = "1.5rem";
+                return;
+            }
+
+            const rangeSize = max - min + 1;
+            if (!allowDupes && qty > rangeSize) {
+                display.textContent = "Range too small for unique quantity";
+                display.className = "big-number";
+                display.style.fontSize = "1.5rem";
+                return;
+            }
+
+            let results = [];
+
+            if (!allowDupes) {
+                // Shuffle method for unique numbers
+                // If range is huge and qty is small, Set is better
+                if (rangeSize > 10000 && qty < 1000) {
+                    const s = new Set();
+                    while (s.size < qty) {
+                        s.add(Math.floor(Math.random() * rangeSize) + min);
+                    }
+                    results = Array.from(s);
+                } else {
+                    // Full array shuffle for small ranges
+                    let pool = [];
+                    for (let i = min; i <= max; i++) pool.push(i);
+                    for (let i = pool.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [pool[i], pool[j]] = [pool[j], pool[i]];
+                    }
+                    results = pool.slice(0, qty);
+                }
+            } else {
+                for (let i = 0; i < qty; i++) {
+                    results.push(Math.floor(Math.random() * rangeSize) + min);
+                }
+            }
+
+            if (sortResults) {
+                results.sort((a, b) => a - b);
+            }
+
+            // Render
+            if (results.length === 1) {
+                display.className = "big-number";
+                display.style.fontSize = "4rem";
+                display.textContent = results[0];
+            } else {
+                display.className = "multi-numbers";
+                display.innerHTML = results.map(n => `<div class="number-chip">${n}</div>`).join('');
+            }
+        }
+    </script>
+</body>
+
+</html>

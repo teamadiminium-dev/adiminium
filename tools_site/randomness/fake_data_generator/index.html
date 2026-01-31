@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Data Generator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .generator-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        select,
+        input[type="number"] {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+        }
+
+        button.generate-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            height: 100%;
+        }
+
+        button.generate-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .results-container {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .json-view {
+            width: 100%;
+            height: 400px;
+            background: var(--bg-body);
+            border: none;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-main);
+            resize: vertical;
+        }
+
+        .toolbar {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            background: var(--bg-surface);
+        }
+
+        button.action-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        button.action-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Randomness</a> / Fake Data Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Fake Data Generator</h1>
+
+        <div class="generator-container">
+            <div class="controls">
+                <div class="control-group">
+                    <label>Data Type</label>
+                    <select id="data-type">
+                        <option value="user">User Profiles (Full)</option>
+                        <option value="name">Names Only</option>
+                        <option value="email">Emails Only</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Quantity</label>
+                    <input type="number" id="quantity" value="5" min="1" max="100">
+                </div>
+
+                <div class="control-group" style="flex: 0; padding-top: 1.4rem;">
+                    <button class="generate-btn" onclick="generateData()">Generate</button>
+                </div>
+            </div>
+
+            <div class="results-container">
+                <div class="toolbar">
+                    <button class="action-btn" onclick="copyData()">Copy JSON</button>
+                    <!-- Future: Download CSV -->
+                </div>
+                <textarea id="output" class="json-view" readonly></textarea>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Developing applications often requires filling databases or UI components with placeholder content. The
+                Adiminium Fake Data Generator creates realistic-looking user data instantly on the frontend. Generating
+                thousands of records by hand is tedious; this tool automates the creation of names, emails, addresses,
+                and phone numbers. It outputs clean JSON format, ready to be pasted directly into your JavaScript
+                objects, databases, or API mock responses.</p>
+
+            <h3>What It Does</h3>
+            <p>Generates arrays of mock data objects (User profiles, Names, Emails).</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Data Type:</strong> Select "User Profiles" for complete objects, or simpler lists like
+                    "Names Only".</li>
+                <li><strong>Quantity:</strong> Enter how many records you need (max 100 for performance).</li>
+                <li><strong>Generate:</strong> Hit the button to populate the text area.</li>
+                <li><strong>Copy:</strong> Use the "Copy JSON" button to grab the code.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Frontend developers, QA testers, and database administrators needing seed data.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is this real data?</h4>
+                <p>No, all data is randomly generated using algorithms. Any resemblance to real persons is purely
+                    coincidental.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I export to CSV?</h4>
+                <p>Currently, we support JSON copy-paste, which is the most common format for web development.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const firstNames = ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Elizabeth', 'David', 'Barbara', 'Richard', 'Susan'];
+        const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez'];
+        const domains = ['gmail.com', 'yahoo.com', 'outlook.com', 'example.com', 'test.co'];
+        const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego'];
+        const streets = ['Main St', 'Oak Ave', 'Maple Dr', 'Cedar Ln', 'Park Blvd', 'Elm St', 'Washington Ave'];
+
+        function getRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateData() {
+            const type = document.getElementById('data-type').value;
+            const qty = Math.min(100, Math.max(1, parseInt(document.getElementById('quantity').value)));
+            const output = document.getElementById('output');
+
+            let data = [];
+
+            for (let i = 0; i < qty; i++) {
+                const first = getRandom(firstNames);
+                const last = getRandom(lastNames);
+
+                if (type === 'name') {
+                    data.push(`${first} ${last}`);
+                } else if (type === 'email') {
+                    data.push(`${first.toLowerCase()}.${last.toLowerCase()}@${getRandom(domains)}`);
+                } else {
+                    // Full User
+                    data.push({
+                        id: i + 1,
+                        name: `${first} ${last}`,
+                        email: `${first.toLowerCase()}.${last.toLowerCase()}@${getRandom(domains)}`,
+                        phone: `+1 (${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+                        address: `${Math.floor(Math.random() * 9999)} ${getRandom(streets)}`,
+                        city: getRandom(cities),
+                        active: Math.random() > 0.5
+                    });
+                }
+            }
+
+            output.value = JSON.stringify(data, null, 2);
+        }
+
+        function copyData() {
+            const output = document.getElementById('output');
+            output.select();
+            document.execCommand('copy');
+
+            // Visual feedback
+            const btn = document.querySelector('.action-btn');
+            const original = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = original, 2000);
+        }
+
+        // Init
+        generateData();
+    </script>
+</body>
+
+</html>

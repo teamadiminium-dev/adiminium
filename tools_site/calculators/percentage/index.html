@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Calculator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .calc-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: 0.2s;
+        }
+
+        .calc-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .calc-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-calc {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn-calc:hover {
+            opacity: 0.9;
+        }
+
+        .result {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Calculators</a> / Percentage
+        </div>
+
+        <h1 style="margin-bottom: 2rem;">Percentage Calculator</h1>
+
+        <!-- Mode 1: What is P% of N? -->
+        <div class="calc-card">
+            <div class="calc-title">Find Percentage of a Number</div>
+            <div class="input-row">
+                <span>What is</span>
+                <div class="input-wrapper"><input type="number" id="p1_per" placeholder="P"></div>
+                <span>% of</span>
+                <div class="input-wrapper"><input type="number" id="p1_num" placeholder="Number"></div>
+            </div>
+            <button class="btn-calc" onclick="calc1()">Calculate</button>
+            <div class="result" id="res1"></div>
+        </div>
+
+        <!-- Mode 2: N1 is what % of N2? -->
+        <div class="calc-card">
+            <div class="calc-title">Find What Percentage It Is</div>
+            <div class="input-row">
+                <div class="input-wrapper"><input type="number" id="p2_num1" placeholder="Number"></div>
+                <span>is what % of</span>
+                <div class="input-wrapper"><input type="number" id="p2_num2" placeholder="Total"></div>
+            </div>
+            <button class="btn-calc" onclick="calc2()">Calculate</button>
+            <div class="result" id="res2"></div>
+        </div>
+
+        <!-- Mode 3: Change from N1 to N2 -->
+        <div class="calc-card">
+            <div class="calc-title">Percentage Increase / Decrease</div>
+            <div class="input-row">
+                <span>From</span>
+                <div class="input-wrapper"><input type="number" id="p3_from" placeholder="Old Value"></div>
+                <span>to</span>
+                <div class="input-wrapper"><input type="number" id="p3_to" placeholder="New Value"></div>
+            </div>
+            <button class="btn-calc" onclick="calc3()">Calculate</button>
+            <div class="result" id="res3"></div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Percentages can be confusing, but our Percentage Calculator makes them intuitive and instant. Whether you
+                are trying to figure out a discount during a sale, calculating the tip for a dinner bill, or determining
+                the percentage increase of your investments, this tool covers all common scenarios. We have broken down
+                the concept of "percentage" into three distinct, easy-to-use modes: finding the percentage of a number,
+                finding what percentage one number is of another, and calculating percentage change. This utility is
+                designed to save you time and mental math effort, delivering accurate results instantly without any
+                complex formulas.</p>
+
+            <h3>What It Does</h3>
+            <p>It converts abstract math problems into simple "fill in the blank" forms. Calculate simple percentages
+                (e.g., 20% of 500), reverse percentages (e.g., 50 is what % of 200?), and percentage difference
+                (increase/decrease).</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Choose Mode:</strong> Identify what you are trying to find (Percentage Value, Percentage Of,
+                    or Change).</li>
+                <li><strong>Input Data:</strong> Enter the known numbers into the respective fields.</li>
+                <li><strong>Calculate:</strong> Click the "Calculate" button to see the result immediately.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Ideal for shoppers calculating discounts, business owners adjusting prices, students learning about
+                ratios, and anyone managing personal finances.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I calculate percentage decrease?</h4>
+                <p>Yes. In the "Percentage Change" mode, if the final value is lower than the initial value, the tool
+                    will show a negative percentage, indicating a decrease.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">How do I calculate a discount?</h4>
+                <p>Use the first mode: "What is X% of Y?". If an item is 20% off $50, enter 20 and 50 to see the
+                    discount amount ($10).</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it support decimals?</h4>
+                <p>Absolutely. You can enter values like "12.5%" or "$19.99" and get precise decimal results.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        function calc1() {
+            const p = parseFloat(document.getElementById('p1_per').value);
+            const n = parseFloat(document.getElementById('p1_num').value);
+            if (isNaN(p) || isNaN(n)) return;
+            const res = (p / 100) * n;
+            document.getElementById('res1').textContent = `Result: ${res}`;
+        }
+
+        function calc2() {
+            const n1 = parseFloat(document.getElementById('p2_num1').value);
+            const n2 = parseFloat(document.getElementById('p2_num2').value);
+            if (isNaN(n1) || isNaN(n2) || n2 === 0) return;
+            const res = (n1 / n2) * 100;
+            document.getElementById('res2').textContent = `Result: ${res.toFixed(2)}%`;
+        }
+
+        function calc3() {
+            const oldV = parseFloat(document.getElementById('p3_from').value);
+            const newV = parseFloat(document.getElementById('p3_to').value);
+            if (isNaN(oldV) || isNaN(newV) || oldV === 0) return;
+            const change = ((newV - oldV) / oldV) * 100;
+            const type = change > 0 ? "Increase" : "Decrease";
+            document.getElementById('res3').textContent = `Result: ${Math.abs(change).toFixed(2)}% ${type}`;
+        }
+    </script>
+</body>
+
+</html>

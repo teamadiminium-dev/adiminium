@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online Number Base Converter tool. Convert between Binary, Decimal, Octal, and Hexadecimal instantly. Perfect for programmers and computer science students.">
+    <meta name="keywords"
+        content="number base converter, binary converter, hex converter, decimal to binary, octal converter, radix converter, programmer tools">
+    <title>Number Base Converter | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .converter-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-family: monospace;
+            /* Monospace for code-like feel */
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .swap-btn {
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 auto 1.5rem;
+            color: var(--primary-color);
+            transition: transform 0.2s;
+        }
+
+        .swap-btn:hover {
+            transform: rotate(180deg);
+            border-color: var(--primary-color);
+        }
+
+        .result-box {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .main-result {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            word-break: break-all;
+            font-family: monospace;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Converters</a> / Number Base
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Number Base Converter</h1>
+
+        <div class="converter-container">
+            <div class="input-group">
+                <label>Enter Number</label>
+                <input type="text" id="input-val" placeholder="e.g. 1010" oninput="convert()">
+                <div class="error-msg" id="error-msg">Invalid character for selected base</div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <div class="input-group" style="flex: 1;">
+                    <label>From Base</label>
+                    <select id="from-base" onchange="convert()">
+                        <option value="2">Binary (2)</option>
+                        <option value="8">Octal (8)</option>
+                        <option value="10" selected>Decimal (10)</option>
+                        <option value="16">Hexadecimal (16)</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="flex: 1;">
+                    <label>To Base</label>
+                    <select id="to-base" onchange="convert()">
+                        <option value="2" selected>Binary (2)</option>
+                        <option value="8">Octal (8)</option>
+                        <option value="10">Decimal (10)</option>
+                        <option value="16">Hexadecimal (16)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="swap-btn" onclick="swapBases()" title="Swap Bases">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+            </button>
+
+            <div class="result-box">
+                <div class="main-result" id="result-val">---</div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>In the world of computing, data isn't always base-10. The Number Base Converter allows you to seamlessly
+                translate numbers between the formats computers use and the decimals humans understand. It supports
+                Binary (Base-2), Octal (Base-8), Decimal (Base-10), and Hexadecimal (Base-16). This tool is
+                indispensable for programmers debugging low-level code, network engineers calculating subnets, or
+                students learning computer science fundamentals. It includes real-time validation to prevent errors like
+                entering '2' in a binary string.</p>
+
+            <h3>What It Does</h3>
+            <p>Converts integer values between Binary, Octal, Decimal, and Hexadecimal notations.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Enter Number:</strong> Type the value in the input field.</li>
+                <li><strong>Select Bases:</strong> Choose the source base (From) and the target base (To).</li>
+                <li><strong>Validate:</strong> Ensure your input only contains valid digits for the selected source
+                    base.</li>
+                <li><strong>Result:</strong> View the converted string instantly.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Software developers, computer science students, network administrators, and digital logic designers.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Why are letters used in Hex?</h4>
+                <p>Hexadecimal requires 16 digits. Since we only have 0-9, we use A-F to represent values 10 through 15.
+                </p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it support negative numbers?</h4>
+                <p>Currently, this tool supports unsigned positive integers.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What is the max value?</h4>
+                <p>It can handle standard Javascript integers safely up to 2^53 - 1.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const inputEl = document.getElementById('input-val');
+        const fromSel = document.getElementById('from-base');
+        const toSel = document.getElementById('to-base');
+        const resultEl = document.getElementById('result-val');
+        const errorEl = document.getElementById('error-msg');
+
+        function swapBases() {
+            const temp = fromSel.value;
+            fromSel.value = toSel.value;
+            toSel.value = temp;
+            convert();
+        }
+
+        function convert() {
+            const val = inputEl.value.trim();
+            const from = parseInt(fromSel.value);
+            const to = parseInt(toSel.value);
+
+            if (!val) {
+                resultEl.textContent = '---';
+                errorEl.style.display = 'none';
+                return;
+            }
+
+            // Validation checks
+            try {
+                // Check for invalid chars for the specific base
+                // Regex validation depends on base
+                let isValid = false;
+                if (from === 2) isValid = /^[01]+$/.test(val);
+                else if (from === 8) isValid = /^[0-7]+$/.test(val);
+                else if (from === 10) isValid = /^[0-9]+$/.test(val);
+                else if (from === 16) isValid = /^[0-9A-Fa-f]+$/.test(val);
+
+                if (!isValid) {
+                    errorEl.style.display = 'block';
+                    resultEl.textContent = '---';
+                    return;
+                }
+
+                errorEl.style.display = 'none';
+
+                // Core Conversion
+                const decimalValue = parseInt(val, from);
+                const result = decimalValue.toString(to).toUpperCase();
+
+                resultEl.textContent = result;
+            } catch (e) {
+                // Fallback
+                resultEl.textContent = 'Error';
+            }
+        }
+    </script>
+</body>
+
+</html>

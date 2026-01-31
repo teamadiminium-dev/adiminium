@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .calc-wrapper {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-muted);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-tab.active {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            color: var(--text-main);
+            background: var(--bg-body);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .radio-label:hover {
+            border-color: var(--primary-color);
+        }
+
+        input[type="radio"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .result-box {
+            margin-top: 2rem;
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--bg-body);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .bmi-val {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .bmi-cat {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .btn-tab {
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-tab.active {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        .radio-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.5rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .radio-label input[type="radio"] {
+            width: auto;
+            margin: 0;
+            accent-color: var(--primary-color);
+        }
+
+        .radio-label:has(input[type="radio"]:checked) {
+            background: var(--primary-dim);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Calculators</a> / BMI
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">BMI Calculator</h1>
+
+        <div class="calc-wrapper">
+            <!-- Unit System Tabs -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; justify-content: center;">
+                <button class="btn-tab active" onclick="setSystem('metric')" id="tab-metric">Metric</button>
+                <button class="btn-tab" onclick="setSystem('imperial')" id="tab-imperial">Imperial</button>
+            </div>
+
+            <!-- Gender Selection -->
+            <div class="input-group" style="text-align: center;">
+                <label style="margin-bottom: 0.8rem;">Gender</label>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <label class="radio-label">
+                        <input type="radio" name="gender" value="male" checked> Male
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="gender" value="female"> Female
+                    </label>
+                </div>
+            </div>
+
+            <!-- Metric Inputs -->
+            <div id="inputs-metric">
+                <div class="input-group">
+                    <label>Height (cm)</label>
+                    <input type="number" id="h-cm" placeholder="e.g. 175">
+                </div>
+                <div class="input-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="w-kg" placeholder="e.g. 70">
+                </div>
+            </div>
+
+            <!-- Imperial Inputs -->
+            <div id="inputs-imperial" style="display: none;">
+                <label>Height</label>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <input type="number" id="h-ft" placeholder="Feet">
+                    <input type="number" id="h-in" placeholder="Inches">
+                </div>
+                <div class="input-group">
+                    <label>Weight (lbs)</label>
+                    <input type="number" id="w-lbs" placeholder="e.g. 160">
+                </div>
+            </div>
+
+            <button class="btn-action" onclick="calculateBMI()">Calculate BMI</button>
+
+            <div class="result-box" id="result-box">
+                <div class="bmi-val" id="bmi-val">--</div>
+                <div class="bmi-cat" id="bmi-cat">--</div>
+                <div style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);" id="gender-msg"></div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>The BMI (Body Mass Index) Calculator is a simple yet effective tool for screening weight categories that
+                may lead to health problems. By analyzing the relationship between your height and weight, it generates
+                a score that categorizes you into Underweight, Normal weight, Overweight, or Obesity. While BMI is not a
+                diagnostic tool for body fatness or health, it provides a general indication of whether your weight
+                falls within a healthy range for your height. This tool is designed to be private and instant—no health
+                data is stored or transmitted, so you can check your metrics with complete confidentiality.</p>
+
+            <h3>What It Does</h3>
+            <p>It calculates a numerical value based on your weight and height input and maps it to standard BMI
+                categories established by health organizations.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Select Units:</strong> Choose between Metric (kg/cm) or Imperial (lbs/feet+inches).</li>
+                <li><strong>Enter Details:</strong> Input your current weight and height accurately.</li>
+                <li><strong>Calculate:</strong> Press the button to see your BMI score and corresponding category.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Anyone monitoring their general physical health, fitness enthusiasts tracking progress, or individuals
+                starting a weight management journey.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is BMI accurate for athletes?</h4>
+                <p>Not always. BMI does not distinguish between muscle and fat. Athletes with high muscle mass may be
+                    categorized as "overweight" even if they have low body fat.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does this data go to any doctor?</h4>
+                <p>No. This tool runs entirely in your browser. Your health data is never saved, sent, or shared with
+                    anyone.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What is a "healthy" BMI?</h4>
+                <p>Generally, a BMI between 18.5 and 24.9 is considered normal weight, though individual health involves
+                    many more factors.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        let currentSystem = 'metric';
+
+        function setSystem(sys) {
+            currentSystem = sys;
+            document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${sys}`).classList.add('active');
+
+            if (sys === 'metric') {
+                document.getElementById('inputs-metric').style.display = 'block';
+                document.getElementById('inputs-imperial').style.display = 'none';
+            } else {
+                document.getElementById('inputs-metric').style.display = 'none';
+                document.getElementById('inputs-imperial').style.display = 'block';
+            }
+        }
+
+        function calculateBMI() {
+            let heightM = 0;
+            let weightKg = 0;
+
+            if (currentSystem === 'metric') {
+                const cm = parseFloat(document.getElementById('h-cm').value);
+                const kg = parseFloat(document.getElementById('w-kg').value);
+                if (!cm || !kg) return;
+                heightM = cm / 100;
+                weightKg = kg;
+            } else {
+                const ft = parseFloat(document.getElementById('h-ft').value) || 0;
+                const inc = parseFloat(document.getElementById('h-in').value) || 0;
+                const lbs = parseFloat(document.getElementById('w-lbs').value);
+                if ((!ft && !inc) || !lbs) return;
+
+                // Convert to Metric
+                heightM = ((ft * 12) + inc) * 0.0254;
+                weightKg = lbs * 0.453592;
+            }
+
+            if (heightM <= 0 || weightKg <= 0) return;
+
+            const bmi = weightKg / (heightM * heightM);
+            const bmiFixed = bmi.toFixed(1);
+
+            let cat = '';
+            let color = '';
+
+            if (bmi < 18.5) { cat = 'Underweight'; color = '#3498db'; }
+            else if (bmi < 25) { cat = 'Normal Weight'; color = '#00C853'; }
+            else if (bmi < 30) { cat = 'Overweight'; color = '#f1c40f'; }
+            else { cat = 'Obese'; color = '#e74c3c'; }
+
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+
+            document.getElementById('result-box').style.display = 'block';
+            const valEl = document.getElementById('bmi-val');
+            const catEl = document.getElementById('bmi-cat');
+
+            valEl.textContent = bmiFixed;
+            valEl.style.color = color;
+            catEl.textContent = cat;
+            catEl.style.color = color;
+
+            // Standard BMI is unisex, but we acknowledge the input
+            document.getElementById('gender-msg').textContent = `Result for: ${gender.charAt(0).toUpperCase() + gender.slice(1)}`;
+        }
+    </script>
+</body>
+
+</html>

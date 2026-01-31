@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Gradient Generator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .preview-box {
+            height: 300px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background-image:
+                linear-gradient(45deg, #ccc 25%, transparent 25%),
+                linear-gradient(-45deg, #ccc 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ccc 75%),
+                linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            /* Checkerboard background for transparency */
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .gradient-display {
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 2rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .color-stops {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .code-box {
+            position: relative;
+            background: var(--bg-body);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Color & Design</a> / Gradient Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">CSS Gradient Generator</h1>
+
+        <div class="tool-container">
+            <div class="panels">
+                <div class="preview-box">
+                    <div id="gradient-preview" class="gradient-display"></div>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Colors</label>
+                        <div class="color-stops">
+                            <input type="color" id="color1" value="#00c853" oninput="updateGradient()">
+                            <input type="color" id="color2" value="#b2ff59" oninput="updateGradient()">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Direction (<span id="angle-val">90</span>deg)</label>
+                        <input type="range" id="angle" min="0" max="360" value="90" oninput="updateGradient()">
+                    </div>
+
+                    <div class="control-group">
+                        <label>CSS Code</label>
+                        <div class="code-box">
+                            <span id="css-output">background: linear-gradient(90deg, #00c853, #b2ff59);</span>
+                            <button class="copy-btn" onclick="copyCSS()">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Gradients add depth and dimension to web designs, but hand-coding CSS gradients can be tedious. The
+                Adiminium CSS Gradient Generator simplifies this process with a visual editor. You can select your start
+                and end colors using a color picker, adjust the angle slider to find the perfect direction, and
+                instantly see the result on screen. Once you're satisfied with your custom gradient, the tool
+                automatically generates the cross-browser compatible CSS code for you to copy and paste directly into
+                your stylesheet.</p>
+
+            <h3>What It Does</h3>
+            <p>Visually creates CSS linear gradients and generates the ready-to-use code snippet.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Select Colors:</strong> Click the color circles to open the color picker and choose your
+                    gradient stops.</li>
+                <li><strong>Adjust Angle:</strong> specific the direction of the gradient using the slider (0-360
+                    degrees).</li>
+                <li><strong>Preview:</strong> Watch the gradient update in real-time in the preview box.</li>
+                <li><strong>Copy Code:</strong> Click the "Copy" button to save the CSS to your clipboard.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Web designers, frontend developers, and UI/UX specialists.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I add more than 2 colors?</h4>
+                <p>Currently, this tool supports simple dual-color linear gradients. Advanced multi-stop features are
+                    coming in a future update.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is this code compatible with all browsers?
+                </h4>
+                <p>Yes. The standard `linear-gradient` syntax is supported by all modern browsers (Chrome, Firefox,
+                    Safari, Edge).</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it support radial gradients?</h4>
+                <p>Not yet. We are focused on perfecting the linear gradient workflow first, but radial support is on
+                    our roadmap.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const color1 = document.getElementById('color1');
+        const color2 = document.getElementById('color2');
+        const angle = document.getElementById('angle');
+        const angleVal = document.getElementById('angle-val');
+        const preview = document.getElementById('gradient-preview');
+        const output = document.getElementById('css-output');
+
+        function updateGradient() {
+            const c1 = color1.value;
+            const c2 = color2.value;
+            const deg = angle.value;
+
+            angleVal.textContent = deg;
+
+            const style = `linear-gradient(${deg}deg, ${c1}, ${c2})`;
+            preview.style.background = style;
+            output.textContent = `background: ${style};`;
+        }
+
+        function copyCSS() {
+            const css = output.textContent;
+            navigator.clipboard.writeText(css).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+
+        // Init
+        updateGradient();
+    </script>
+</body>
+
+</html>

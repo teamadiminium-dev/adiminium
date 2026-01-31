@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thumbnail Generator | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            display: none;
+            flex-direction: column;
+        }
+
+        .action-bar {
+            background: var(--bg-surface);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .thumbnails-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .thumb-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .thumb-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .thumb-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Thumbnail Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Thumbnail Generator</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🖼️</div>
+                <p>Drag & Drop one or more images</p>
+                <button onclick="document.getElementById('file-input').click()">Select Images</button>
+                <input type="file" id="file-input" accept="image/*" multiple style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="action-bar">
+                    <label>Max Size (px):</label>
+                    <select id="size-select">
+                        <option value="150">150x150 (Icon)</option>
+                        <option value="300" selected>300x300 (Small)</option>
+                        <option value="600">600x600 (Medium)</option>
+                        <option value="1280">1280x720 (YouTube HD)</option>
+                    </select>
+
+                    <label>Fit Mode:</label>
+                    <select id="fit-mode">
+                        <option value="cover">Cover (Crop)</option>
+                        <option value="contain" selected>Contain (Aspect Ratio)</option>
+                    </select>
+
+                    <button class="action-btn" onclick="processAll()">Regenerate</button>
+                    <button class="action-btn" onclick="downloadAll()">Download ZIP</button>
+                    <button onclick="location.reload()"
+                        style="background:transparent; border:none; cursor:pointer; color:var(--text-muted)">Clear</button>
+                </div>
+
+                <div class="thumbnails-grid" id="grid"></div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Bulk Processing Guide: Thumbnail Generator</h2>
+            <p>The Adiminium Thumbnail Generator is a workflow accelerator. In any web project or photo gallery, you
+                rarely display full-resolution 4K images instantly—that would crash the browser. Instead, you display
+                small, lightweight "Thumbnail" versions. This tool lets you create those assets in bulk.</p>
+
+            <h3>Cover vs. Contain (The Golden Rule)</h3>
+            <p>When fitting an image into a square box, you have two choices:</p>
+            <ul>
+                <li><strong>Cover (Crop):</strong> "Fill the box." We zoom in until the box is full. Edges of the image
+                    will be cut off. Best for grids of avatars or product tiles where uniform alignment is key.</li>
+                <li><strong>Contain (Fit):</strong> "Show the whole image." We zoom out until the image fits. Empty
+                    space might appear on sides (letterboxing). Best for art galleries where you can't crop the artwork.
+                </li>
+            </ul>
+
+            <h3>Use Cases</h3>
+            <ol>
+                <li><strong>E-commerce:</strong> You have 50 product photos of different sizes. Use this to make 50
+                    uniform 300x300 square thumbnails for your catalog page.</li>
+                <li><strong>Video Platforms:</strong> Generate 1280x720 "Poster" images for your video player.</li>
+                <li><strong>File Management:</strong> Create tiny 150px icons for a custom file uploader UI.</li>
+            </ol>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Batch Upload:</strong> Select 10, 20, or 50 images at once. The tool uses your CPU's
+                    multi-threading to process them.</li>
+                <li><strong>Set Rules:</strong> "I want 300px squares, and I want them Cropped (Cover)."</li>
+                <li><strong>Regenerate:</strong> Click the button. The grid updates instantly.</li>
+                <li><strong>Download ZIP:</strong> Instead of clicking "Save" 50 times, click "Download ZIP" once to get
+                    a clean archive of all your new assets.</li>
+            </ol>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Filename Handling:</strong> The specific files in the ZIP will be prefixed with `thumb_`. For
+                example, `vacation.jpg` becomes `thumb_vacation.jpg`. This makes it safe to extract them into the same
+                folder as your originals without overwriting them.
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const grid = document.getElementById('grid');
+
+        let loadedFiles = [];
+        let generatedBlobs = [];
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFiles(e.target.files));
+
+        function loadFiles(fileList) {
+            loadedFiles = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+            if (loadedFiles.length === 0) return;
+
+            dropZone.style.display = 'none';
+            editor.style.display = 'flex';
+            processAll();
+        }
+
+        async function processAll() {
+            grid.innerHTML = '';
+            generatedBlobs = [];
+
+            const size = parseInt(document.getElementById('size-select').value);
+            const mode = document.getElementById('fit-mode').value;
+
+            // If known 16:9 preset
+            let targetW = size;
+            let targetH = size;
+            if (size === 1280) targetH = 720;
+
+            for (let i = 0; i < loadedFiles.length; i++) {
+                const file = loadedFiles[i];
+                const blob = await generateThumb(file, targetW, targetH, mode);
+                const url = URL.createObjectURL(blob);
+
+                generatedBlobs.push({ name: `thumb_${file.name}`, blob: blob });
+
+                const div = document.createElement('div');
+                div.className = 'thumb-item';
+                div.innerHTML = `
+                     <img src="${url}">
+                     <div class="thumb-info">${file.name}</div>
+                     <a href="${url}" download="thumb_${file.name}" class="action-btn">Save</a>
+                 `;
+                grid.appendChild(div);
+            }
+        }
+
+        function generateThumb(file, w, h, mode) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+
+                        if (mode === 'cover') {
+                            // Crop to fill
+                            const scale = Math.max(w / img.width, h / img.height);
+                            const x = (w - img.width * scale) / 2;
+                            const y = (h - img.height * scale) / 2;
+                            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                        } else {
+                            // Contain
+                            const scale = Math.min(w / img.width, h / img.height);
+                            const x = (w - img.width * scale) / 2;
+                            const y = (h - img.height * scale) / 2;
+                            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                        }
+
+                        canvas.toBlob(resolve, 'image/jpeg', 0.85);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function downloadAll() {
+            const zip = new JSZip();
+            generatedBlobs.forEach(item => {
+                zip.file(item.name, item.blob);
+            });
+            zip.generateAsync({ type: "blob" }).then(content => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = "thumbnails.zip";
+                link.click();
+            });
+        }
+    </script>
+</body>
+
+</html>

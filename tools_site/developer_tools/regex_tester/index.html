@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online Regex Tester and Debugger. Test JavaScript regular expressions in real-time with highlighting. essential for developers to validate patterns.">
+    <meta name="keywords"
+        content="regex tester, javascript regex, regular expression debugger, regex online, check regex, regex highlight, regular expression tool">
+    <title>Regex Tester & Debugger | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .regex-bar {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: var(--bg-body);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--primary-color);
+        }
+
+        .main-input {
+            flex: 1;
+            border: none;
+            background: none;
+            padding: 0.8rem 0;
+            color: var(--text-main);
+            outline: none;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .flags-container {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            align-items: center;
+        }
+
+        .flag-option {
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            user-select: none;
+        }
+
+        .flag-option.active {
+            background: var(--primary-dim);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .panel-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .box-title {
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        textarea,
+        .results-box {
+            width: 100%;
+            height: 350px;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: 'Fira Code', monospace;
+            resize: vertical;
+            line-height: 1.6;
+            overflow: auto;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .results-box {
+            background: var(--bg-surface);
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .match {
+            background: rgba(0, 200, 83, 0.2);
+            border-bottom: 2px solid var(--primary-color);
+            border-radius: 2px;
+            padding-bottom: 1px;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            min-height: 1.5em;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Developer Tools</a> / Regex Tester
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Regex Tester & Debugger</h1>
+
+        <div class="tool-container">
+            <div class="regex-bar">
+                <span style="font-size:1.5rem; color:var(--text-muted); font-family: 'Fira Code', monospace;">/</span>
+                <div class="input-group">
+                    <input type="text" id="regex-input" class="main-input" placeholder="expression..." value="[A-Z]\w+"
+                        oninput="testRegex()">
+                </div>
+                <span style="font-size:1.5rem; color:var(--text-muted); font-family: 'Fira Code', monospace;">/</span>
+
+                <div class="flags-container" id="flags-wrap">
+                    <div class="flag-option active" data-flag="g" onclick="toggleFlag(this)">g</div>
+                    <div class="flag-option" data-flag="i" onclick="toggleFlag(this)">i</div>
+                    <div class="flag-option" data-flag="m" onclick="toggleFlag(this)">m</div>
+                </div>
+            </div>
+
+            <div class="error-msg" id="error-output"></div>
+
+            <div class="panels">
+                <div class="panel-col">
+                    <div class="box-title">Test String</div>
+                    <textarea id="test-string" oninput="testRegex()" spellcheck="false"
+                        placeholder="Paste your text here to test against the regex pattern...">Hello World, this is a Regex Test. Adiminium is cool.</textarea>
+                </div>
+
+                <div class="panel-col">
+                    <div class="box-title">
+                        <span>Match Preview</span>
+                        <span id="match-count" style="color:var(--primary-color);">0 matches</span>
+                    </div>
+                    <div id="results-box" class="results-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Regular Expressions (Regex) are incredibly powerful but notoriously difficult to master. The Regex Tester
+                & Debugger is a sandbox environment where you can prototype and verify your patterns before deploying
+                them to production. It provides real-time highlighting of matches within your test string, allowing you
+                to visually see exactly what your pattern is catching. With support for standard flags like Global,
+                Case-Insensitive, and Multiline, it simulates a real JavaScript regex environment perfectly.</p>
+
+            <h3>What It Does</h3>
+            <p>Tests Regular Expression patterns against a sample string and highlights matches in real-time.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Pattern:</strong> Enter your regex in the top bar (e.g., <code>[a-z]+</code>).</li>
+                <li><strong>Flags:</strong> Toggle flags like <code>g</code> (Global) or <code>i</code> (Insensitive) on
+                    the right.</li>
+                <li><strong>Test String:</strong> Paste your sample text below. Matches are highlighted instantly in
+                    green.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Software engineers, data scrapers, and QA testers validating input constraints.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Which flavor is this?</h4>
+                <p>This tool uses the JavaScript RegExp engine. It supports modern features like lookaheads and capture
+                    groups supported by your browser.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Why isn't it matching?</h4>
+                <p>Check your flags! If you want to match multiple occurrences, you must enable the <strong>g
+                        (Global)</strong> flag.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">How do I match a dot?</h4>
+                <p>The dot <code>.</code> is a special character meaning "any character". To match a literal dot, escape
+                    it with a backslash: <code>\.</code></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const regexInput = document.getElementById('regex-input');
+        const testString = document.getElementById('test-string');
+        const resultsBox = document.getElementById('results-box');
+        const errorOutput = document.getElementById('error-output');
+        const matchCount = document.getElementById('match-count');
+        const flagsContainer = document.getElementById('flags-wrap');
+
+        function toggleFlag(el) {
+            el.classList.toggle('active');
+            testRegex();
+        }
+
+        function getFlags() {
+            let flags = '';
+            document.querySelectorAll('.flag-option.active').forEach(el => {
+                flags += el.dataset.flag;
+            });
+            return flags;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function testRegex() {
+            const pattern = regexInput.value;
+            const text = testString.value;
+            const flags = getFlags();
+
+            errorOutput.textContent = "";
+
+            if (!pattern) {
+                resultsBox.innerHTML = escapeHtml(text);
+                matchCount.textContent = "0 matches";
+                return;
+            }
+
+            try {
+                const regex = new RegExp(pattern, flags);
+
+                // If global flag is not set, we only get one match. 
+                // But for highlighting efficiently in HTML, it's easier to assume global for "display all" 
+                // but user might not want that. Let's respect the flag.
+                // Actually, replace() with a string or non-global regex only replaces the first one.
+
+                // We will wrap matches in <span class="match">...</span>
+                // However, directly using text.replace(regex, ...) destroys the original text if capture groups involved? 
+                // No, replace can take a function.
+
+                let count = 0;
+
+                // Note: String.replace with a regex will replace matches. 
+                // We need to be careful about infinite loops if the regex matches empty string (like a*)
+                // and global flag is on. Browser handles this generally, but let's be safe.
+
+                const highlighted = text.replace(regex, (match) => {
+                    count++;
+                    return `<span class="match">${escapeHtml(match)}</span>`;
+                });
+
+                // If NO matches were found, and replace didn't run, highlighted == text.
+                // Except we need to escape HTML of non-matches too! 
+                // Wait, text.replace replaces the RAW text with HTML. 
+                // The non-matched parts are still RAW text which might contain HTML characters.
+
+                // Better approach: Use split/match logic or:
+                // 1. exec() in a loop to find indices.
+                // 2. reconstruction string with escaping.
+
+                let matches = [];
+                let match;
+
+                // We need a cloned regex with 'g' to find all indices for highlighting context 
+                // even if user didn't select 'g'? 
+                // If user didn't select 'g', they expect only first match highlighted.
+
+                // PROBLEM: infinite loop if regex matches empty string
+
+                // Let's stick to a safe reconstruction loop
+                let outputHtml = "";
+                let lastIndex = 0;
+
+                // If global, we iterate. If not, we just run once.
+
+                if (flags.includes('g')) {
+                    // exec() loop
+                    while ((match = regex.exec(text)) !== null) {
+                        // Add text before match (escaped)
+                        outputHtml += escapeHtml(text.substring(lastIndex, match.index));
+
+                        // Add match (escaped and wrapped)
+                        // Handle empty match
+                        if (match[0].length === 0) {
+                            regex.lastIndex++; // Advance to avoid infinite loop
+                            // We don't visibly highlight empty matches usually, or we show a marker?
+                            // For simplicity, skip empty visuals or maybe show a tiny marker?
+                            // outputHtml += "[empty]"; 
+                        } else {
+                            outputHtml += `<span class="match">${escapeHtml(match[0])}</span>`;
+                        }
+
+                        lastIndex = regex.lastIndex;
+                        count++;
+                    }
+                } else {
+                    // Single match
+                    match = regex.exec(text);
+                    if (match) {
+                        outputHtml += escapeHtml(text.substring(0, match.index));
+                        if (match[0].length === 0) {
+                            // Empty match
+                        } else {
+                            outputHtml += `<span class="match">${escapeHtml(match[0])}</span>`;
+                        }
+                        lastIndex = match.index + match[0].length;
+                        count = 1;
+                    }
+                }
+
+                // Add remaining text
+                outputHtml += escapeHtml(text.substring(lastIndex));
+
+                resultsBox.innerHTML = outputHtml;
+                matchCount.textContent = count + (count === 1 ? " match" : " matches");
+
+            } catch (e) {
+                errorOutput.textContent = e.message;
+                resultsBox.innerHTML = escapeHtml(text);
+                matchCount.textContent = "Error";
+            }
+        }
+
+        // Init
+        testRegex();
+    </script>
+</body>
+
+</html>

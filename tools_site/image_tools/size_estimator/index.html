@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Size Estimator | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .calculator-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media(min-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        input,
+        select {
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        .results {
+            background: var(--bg-body);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-val {
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .raw-size {
+            color: #ff6b6b;
+        }
+
+        .note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Size Estimator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Image File Size Estimator</h1>
+
+        <div class="tool-container">
+            <p style="text-align:center; margin-bottom:2rem; color:var(--text-muted)">
+                Estimate the file size of an image before you export it. Useful for planning bandwidth budgets.
+            </p>
+
+            <div class="calculator-card">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Width (px)</label>
+                        <input type="number" id="width" value="1920" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Height (px)</label>
+                        <input type="number" id="height" value="1080" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Bit Depth</label>
+                        <select id="depth">
+                            <option value="8">8-bit (Standard Web)</option>
+                            <option value="16">16-bit (High Color)</option>
+                            <option value="24" selected>24-bit (True Color - JPG/PNG)</option>
+                            <option value="32">32-bit (True Color + Alpha)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="results">
+                    <div class="result-row">
+                        <span>Uncompressed (Raw Data)</span>
+                        <span class="result-val raw-size" id="raw-res">5.93 MB</span>
+                    </div>
+                    <div class="result-row">
+                        <span>JPEG (High Quality ~90%)</span>
+                        <span class="result-val" id="jpg-high">~500 KB</span>
+                    </div>
+                    <div class="result-row">
+                        <span>JPEG (Web Quality ~70%)</span>
+                        <span class="result-val" id="jpg-med">~150 KB</span>
+                    </div>
+                    <div class="result-row">
+                        <span>PNG (Lossless)</span>
+                        <span class="result-val" id="png-res">~3-4 MB</span>
+                    </div>
+                    <div class="result-row">
+                        <span>WebP (Lossy)</span>
+                        <span class="result-val" id="webp-res">~100 KB</span>
+                    </div>
+                </div>
+
+                <p class="note">Note: These are theoretical estimates based on typical compression ratios. Real file
+                    sizes depend heavily on image complexity (noise, gradients, details).</p>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Planning Guide: Image Budgeting Calculator</h2>
+            <p>The Adiminium Image Size Estimator is a "What If?" calculator for digital asset managers. Before you even
+                open Photoshop or send a brief to a photographer, you need to know how large the files will be. This
+                helps in budgeting for server storage cost, bandwidth limits, and performance goals.</p>
+
+            <h3>The Math Behind Pixels</h3>
+            <p>An image is just a grid of data.
+                <br><strong>Raw Size = Width × Height × Color Depth.</strong>
+                <br>Example: A 1920x1080 screen has about 2 million pixels.
+                <br>At 24-bit color (standard), that's 2 million × 3 bytes (R, G, B) = ~6 Megabytes (MB).
+                <br>So why are web images usually only 200KB? <strong>Compression.</strong>
+            </p>
+
+            <h3>Compression Types Explained</h3>
+            <ul>
+                <li><strong>JPEG (Lossy):</strong> The champion of the web. It uses math to discard invisible data. We
+                    estimate strict optimization (10:1 to 20:1 ratios) which is typical for web use.</li>
+                <li><strong>PNG (Lossless):</strong> Preserves every pixel perfect. It works like a ZIP file for images.
+                    Complex photos don't compress well in PNG (maybe 2:1 ratio), but simple logos/line-art compress
+                    amazingly (50:1). Our estimator assumes a "Complex Photo" worst-case scenario.</li>
+                <li><strong>WebP (Modern):</strong> Google's modern format. It typically shaves another 30% off JPEGs
+                    for the same quality.</li>
+            </ul>
+
+            <h3>Use Cases</h3>
+            <ol>
+                <li><strong>Server Budgeting:</strong> "If we have 1 million users upload 1 avatar each, how much S3
+                    storage do we need?" (Input 400x400px -> Multiply result by 1M).</li>
+                <li><strong>Performance Budget:</strong> "Can we afford a full-screen video background?" (Input
+                    1920x1080 -> See that uncompressed frames are huge, realize you need heavy compression).</li>
+            </ol>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const inputs = document.querySelectorAll('input, select');
+
+        inputs.forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + ['B', 'KB', 'MB', 'GB'][i];
+        }
+
+        function calculate() {
+            const w = parseInt(document.getElementById('width').value) || 0;
+            const h = parseInt(document.getElementById('height').value) || 0;
+            const d = parseInt(document.getElementById('depth').value) || 24;
+
+            const totalPixels = w * h;
+            const bits = totalPixels * d;
+            const bytes = bits / 8;
+
+            document.getElementById('raw-res').textContent = formatBytes(bytes);
+
+            // Estimates
+            // JPEG High: ~10% of raw (10:1)
+            document.getElementById('jpg-high').textContent = '~' + formatBytes(bytes * 0.15);
+
+            // JPEG Med: ~5% of raw (20:1)
+            document.getElementById('jpg-med').textContent = '~' + formatBytes(bytes * 0.05);
+
+            // PNG: ~50-70% of raw depending on content, let's say 60%
+            document.getElementById('png-res').textContent = '~' + formatBytes(bytes * 0.6);
+
+            // WebP: ~30% smaller than JPG Med
+            document.getElementById('webp-res').textContent = '~' + formatBytes(bytes * 0.035);
+        }
+
+        // Initial run
+        calculate();
+    </script>
+</body>
+
+</html>

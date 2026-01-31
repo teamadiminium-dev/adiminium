@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 to Image Converter | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .grid-split {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media(min-width: 768px) {
+            .grid-split {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+        }
+
+        .preview-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        .preview-box img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 4px;
+            background: var(--bg-body);
+            /* Checkerboard maybe? */
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .placeholder-text {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .download-wrapper {
+            display: none;
+            width: 100%;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Base64 to Image
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Base64 to Image</h1>
+
+        <div class="tool-container">
+            <div class="grid-split">
+                <div>
+                    <h3 style="margin-bottom:1rem">Paste Base64 String here</h3>
+                    <textarea id="input" placeholder="data:image/png;base64,iVBORw0..."></textarea>
+                </div>
+
+                <div class="preview-box">
+                    <p class="placeholder-text" id="placeholder">Image Preview</p>
+                    <img id="preview-img" src="" alt="Decoded Preview">
+                    <div class="download-wrapper" id="download-wrapper">
+                        <a id="download-btn" class="action-btn">Download Image</a>
+                        <p style="margin-top:1rem; font-size:0.9rem; color:var(--text-muted)" id="img-info"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Developer's Guide to Base64 Decoding</h2>
+            <p>The Adiminium Base64 to Image Converter is an essential utility for developers, data scientists, and
+                security analysts. It bridges the gap between raw data streams and visual media. If you have ever stared
+                at a massive block of random text starting with `iVBORw0KGgo...` and wondered "What is this?", this tool
+                answers that question instantly.</p>
+
+            <h3>What is Base64?</h3>
+            <p>Base64 is a way to represent binary data (like an image file) using only 64 safe, printable ASCII
+                characters (A-Z, a-z, 0-9, +, /).
+                <br><strong>Why do we do this?</strong>
+            <ul>
+                <li>To send images inside JSON API responses.</li>
+                <li>To embed images directly inside HTML/CSS files to avoid extra server requests.</li>
+                <li>To store images in text-based databases (like NoSQL) without needing separate file storage.</li>
+            </ul>
+            </p>
+
+            <h3>Use Cases for this Tool</h3>
+            <ol>
+                <li><strong>Debugging APIs:</strong> Your backend sends an image as a string. Use this to verify the
+                    string is actually a valid image and not corrupted.</li>
+                <li><strong>Extracting Embedded Assets:</strong> You find a data uri in a css file (`background-image:
+                    url(data:...)`) and want to save it as a real .png file to edit it.</li>
+                <li><strong>Email Templates:</strong> Recovering images from raw email sources where attachments are
+                    encoded.</li>
+            </ol>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Locate String:</strong> Copy the long text string from your code or database.</li>
+                <li><strong>Paste:</strong> Drop it into the text area.</li>
+                <li><strong>Smart Clean:</strong> Whether you include the prefix `data:image/png;base64,` or not, our
+                    tool tries to figure it out.</li>
+                <li><strong>Preview:</strong> The browser decodes it instantly.</li>
+                <li><strong>Download:</strong> Save it as a standard file (PNG/JPG/GIF) to your desktop.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Why is the Base64 string so long?</h4>
+                <p>Base64 encoding is not efficient compression. In fact, it increases the file size by exactly 33%. A
+                    100KB image becomes a ~133KB text string.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Is my data safe?</h4>
+                <p>Absolutely. The decoding happens 100% in your browser using JavaScript. That sensitive image data is
+                    never sent to our servers.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const input = document.getElementById('input');
+        const previewImg = document.getElementById('preview-img');
+        const placeholder = document.getElementById('placeholder');
+        const downloadWrapper = document.getElementById('download-wrapper');
+        const downloadBtn = document.getElementById('download-btn');
+        const imgInfo = document.getElementById('img-info');
+
+        input.addEventListener('input', () => {
+            const val = input.value.trim();
+            if (!val) {
+                reset();
+                return;
+            }
+
+            // Check if user pasted just base64 without prefix, try to auto-detect
+            let src = val;
+            if (!val.startsWith('data:image')) {
+                // Heuristic: try adding png header if missing
+                // Ideally user provides full string
+                src = 'data:image/png;base64,' + val.replace(/^data:image\/[a-z]+;base64,/, '');
+            } else {
+                src = val;
+            }
+
+            previewImg.src = src;
+
+            previewImg.onload = () => {
+                placeholder.style.display = 'none';
+                previewImg.style.display = 'block';
+                downloadWrapper.style.display = 'block';
+
+                imgInfo.textContent = `${previewImg.width} x ${previewImg.height} px`;
+
+                // Extract extension from header if present
+                let ext = 'png';
+                const match = src.match(/data:image\/([a-z]+);/);
+                if (match) {
+                    ext = match[1];
+                }
+
+                downloadBtn.href = src;
+                downloadBtn.download = `decoded_image.${ext}`;
+            };
+
+            previewImg.onerror = () => {
+                // Invalid base64
+                // Silent fail or show error?
+            };
+        });
+
+        function reset() {
+            placeholder.style.display = 'block';
+            previewImg.style.display = 'none';
+            downloadWrapper.style.display = 'none';
+            previewImg.src = '';
+        }
+    </script>
+</body>
+
+</html>

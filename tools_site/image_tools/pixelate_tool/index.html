@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Pixelate Tool | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            display: none;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .canvas-container {
+            text-align: center;
+            background: var(--bg-body);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            max-height: 70vh;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            image-rendering: pixelated;
+            /* Essential for crisp blocks */
+        }
+
+        .controls {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Pixelate Tool
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Image Pixelate Tool</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">👾</div>
+                <p>Upload an image to pixelate it</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="controls">
+                    <div>
+                        <label>Block Size: <span id="val">10</span>px</label>
+                        <br>
+                        <input type="range" id="size" min="2" max="100" value="10" oninput="process()">
+                    </div>
+
+                    <button class="action-btn" onclick="downloadImage()">Download</button>
+                    <button onclick="location.reload()"
+                        style="background:transparent; border:none; cursor:pointer; color:var(--text-muted)">New
+                        Image</button>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Guide to Pixel Art & Censor Effects</h2>
+            <p>The Adiminium Pixelate Tool is a creative utility that downsamples your image resolution to create a
+                blocky, 8-bit aesthetic. Whether you are trying to hide a face in a news report or trying to turn a
+                modern photo into retro video-game artwork, this tool handles the math for you.</p>
+
+            <h3>Two Main Use Cases</h3>
+            <ol>
+                <li><strong>Censorship / Redaction:</strong> When blurring isn't enough, pixelation is the standard for
+                    hiding identity. It is often used to obscure faces, brand logos, or offensive gestures in media.
+                    Because it destroys fine detail, it makes identification impossible.</li>
+                <li><strong>Retro / Pixel Art:</strong> The "8-bit" or "16-bit" look is a popular design trend. By
+                    running a high-res photo through pixelation and then reducing the color palette (in another tool),
+                    you can create convincing retro game backgrounds.</li>
+            </ol>
+
+            <h3>How It Works</h3>
+            <p>The tool works by dividing the image into a grid of squares (defined by "Block Size"). For each square,
+                it calculates the average color of all the pixels inside it, and then fills the entire square with that
+                single solid color. This effectively lowers the "spatial frequency" of the image.</p>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Load your image into the browser.</li>
+                <li><strong>Set Block Size:</strong>
+                    <ul>
+                        <li><em>Small (2-5px):</em> Adds a subtle texture, looks like a low-quality digital download.
+                        </li>
+                        <li><em>Medium (10-20px):</em> The classic "Minecraft" look. Objects are recognizable but
+                            abstract.</li>
+                        <li><em>Large (50px+):</em> Abstract art. Unrecognizable blocks of color.</li>
+                    </ul>
+                </li>
+                <li><strong>Download:</strong> The tool rescales the image back to its original dimensions (so your
+                    1000px image is still 1000px wide, just blocky) and saves it.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Is the text readable after pixelation?</h4>
+                <p>If the block size is larger than the stroke width of the text, it becomes unreadable. Always test it
+                    to be sure!</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I utilize this for Minecraft map art?</h4>
+                <p>Yes! This gives you a great preview of what an image would look like if built out of blocks. You just
+                    need to match the colors to available blocks.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const sizeInp = document.getElementById('size');
+        const valDisp = document.getElementById('val');
+
+        let loadedImg = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+        function loadFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    loadedImg = img;
+                    dropZone.style.display = 'none';
+                    editor.style.display = 'flex';
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    process();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function process() {
+            if (!loadedImg) return;
+
+            const size = parseInt(sizeInp.value);
+            valDisp.textContent = size;
+
+            // Turn off smoothing for pixel art look
+            ctx.imageSmoothingEnabled = false;
+
+            // Calculate scaled down dimensions
+            const w = Math.ceil(canvas.width / size);
+            const h = Math.ceil(canvas.height / size);
+
+            // Draw scaled down
+            ctx.drawImage(loadedImg, 0, 0, w, h);
+
+            // Draw scaled up
+            ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'pixelated-image.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Converter | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-body);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-surface);
+        }
+
+        .controls {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Audio Tools</a> /
+            Converter</div>
+        <h1 style="text-align: center; margin-bottom: 2rem;">Audio Converter</h1>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔄</div>
+                    <p>Click to upload audio</p>
+                    <input type="file" id="file-input" accept="audio/*" style="display: none;">
+                </div>
+
+                <div id="controls" class="controls">
+                    <label>Convert To:</label>
+                    <select id="format-select">
+                        <option value="wav">WAV (Lossless)</option>
+                        <option value="mp3">MP3 (Compressed)</option>
+                    </select>
+
+                    <div id="mp3-opts" style="margin-top:1rem; display:none;">
+                        <label>Bitrate:</label>
+                        <select id="bitrate-select">
+                            <option value="128">128 kbps</option>
+                            <option value="192" selected>192 kbps</option>
+                            <option value="320">320 kbps</option>
+                        </select>
+                    </div>
+
+                    <button class="action-btn" style="margin-top: 2rem; width: 100%;"
+                        onclick="process()">Convert</button>
+                    <div id="status" style="margin-top:1rem; text-align:center;"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Comprehensive Guide to Audio Conversion</h2>
+            <p>The Adiminium Audio Converter is your universal adapter for digital sound. Audio files come in many
+                "flavors" (codecs), each with its own pros and cons. Whether you need an MP3 for your phone or a WAV for
+                professional editing, this tool bridges the gap instantly and securely.</p>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Quality Rule:</strong> You can always convert High Quality (WAV) to Low Quality (MP3), but
+                converting MP3 to WAV <em>does not</em> bring back lost quality. It just makes the file bigger!
+            </div>
+
+            <h3>Supported Formats Explained</h3>
+            <p>Our converter focuses on the two most critical formats in the audio world:</p>
+            <ul>
+                <li><strong>MP3 (MPEG-1 Audio Layer III):</strong> The king of compression. MP3s discard sound data that
+                    the human ear barely notices (Psychoacoustics) to shrink file sizes by 90%.
+                    <br><em>Best for:</em> Websites, Podcasts, Music streaming, storing on phones.
+                </li>
+                <li><strong>WAV (Waveform Audio File):</strong> The studio standard. WAVs are uncompressed, bit-perfect
+                    copies of the original sound. Ideally suited for further editing.
+                    <br><em>Best for:</em> Video editing, Music production, Archiving master files.
+                </li>
+            </ul>
+
+            <h3>Understanding Bitrate (MP3)</h3>
+            <p>When converting to MP3, you choose a "Bitrate". This determines the quality vs. size balance:</p>
+            <ul>
+                <li><strong>128 kbps:</strong> Standard internet radio quality. Smallest size, acceptable for speech.
+                </li>
+                <li><strong>192 kbps:</strong> A great balance. Often used for high-quality podcasts and standard
+                    streaming.</li>
+                <li><strong>320 kbps:</strong> The highest MP3 quality. Virtually indistinguishable from CD quality for
+                    most listeners.</li>
+            </ul>
+
+            <h3>How It Works</h3>
+            <p>This tool uses the <strong>LAME</strong> encoder (Lame Aint an Mp3 Encoder), which is arguably the
+                world's best MP3 encoding engine. We run LAME directly inside your browser via WebAssembly/JavaScript.
+                This means your private audio data never leaves your computer to go to a server.</p>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Select any audio file your browser can play (AAC/M4A, OGG, WebM, WAV, MP3).
+                </li>
+                <li><strong>Choose Output:</strong> Select <strong>WAV</strong> for quality or <strong>MP3</strong> for
+                    size.</li>
+                <li><strong>Configure:</strong> If you chose MP3, select your desired bitrate (192kbps is recommended).
+                </li>
+                <li><strong>Convert:</strong> Click the button. The decoding and encoding process happens in real-time.
+                </li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Can I convert iPhone voice memos (M4A)?</h4>
+                <p>Yes! Most modern browsers support M4A/AAC decoding natively, so we can convert them to standard MP3
+                    or WAV for you.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Why is WAV conversion instant but MP3 takes time?</h4>
+                <p>WAV is just raw data—we just write the headers. MP3 conversion requires complex mathematical
+                    calculations (Fast Fourier Transforms) to compress the audio, which takes a few seconds of CPU time.
+                </p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Is it secure?</h4>
+                <p>100%. Unlike online converters that require you to upload your sensitive meeting recordings to a
+                    cloud server, Adiminium processes everything locally. Disconnect your internet and it will still
+                    work!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const controls = document.getElementById('controls');
+        const formatSelect = document.getElementById('format-select');
+        const mp3Opts = document.getElementById('mp3-opts');
+        let file;
+
+        fileInput.addEventListener('change', (e) => {
+            file = e.target.files[0];
+            if (file) {
+                document.getElementById('drop-zone').style.display = 'none';
+                controls.style.display = 'block';
+            }
+        });
+
+        formatSelect.addEventListener('change', () => {
+            mp3Opts.style.display = formatSelect.value === 'mp3' ? 'block' : 'none';
+        });
+
+        async function process() {
+            const status = document.getElementById('status');
+            const format = formatSelect.value;
+            status.textContent = "Decoding...";
+
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const ab = await file.arrayBuffer();
+            const audioBuffer = await audioCtx.decodeAudioData(ab);
+
+            if (format === 'wav') {
+                status.textContent = "Encoding WAV...";
+                const blob = bufferToWav(audioBuffer);
+                download(blob, 'wav');
+            } else {
+                status.textContent = "Encoding MP3 (this may take a moment)...";
+                // LameJS requires 16-bit PCM samples
+                // We'll run this in a minimal timeout to avoid blocking UI immediately, 
+                // though JS is single threaded so it will block during loop.
+                setTimeout(() => encodeMp3(audioBuffer), 50);
+            }
+        }
+
+        function encodeMp3(buffer) {
+            const status = document.getElementById('status');
+            const channels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, parseInt(document.getElementById('bitrate-select').value));
+            const mp3Data = [];
+
+            // Get samples
+            // For LameJS stereo we need left and right
+            // We need to scale float32 (-1 to 1) to int16
+
+            const left = buffer.getChannelData(0);
+            const right = channels > 1 ? buffer.getChannelData(1) : left;
+
+            const sampleBlockSize = 1152; // multiple of 576
+            const left16 = new Int16Array(left.length);
+            const right16 = new Int16Array(right.length);
+
+            for (let i = 0; i < left.length; i++) {
+                left16[i] = Math.max(-1, Math.min(1, left[i])) * 32767;
+                right16[i] = Math.max(-1, Math.min(1, right[i])) * 32767;
+            }
+
+            for (let i = 0; i < left16.length; i += sampleBlockSize) {
+                const leftChunk = left16.subarray(i, i + sampleBlockSize);
+                const rightChunk = right16.subarray(i, i + sampleBlockSize);
+
+                let mp3buf;
+                if (channels === 1) {
+                    mp3buf = mp3encoder.encodeBuffer(leftChunk);
+                } else {
+                    mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+                }
+                if (mp3buf.length > 0) mp3Data.push(mp3buf);
+            }
+
+            const mp3buf = mp3encoder.flush();
+            if (mp3buf.length > 0) mp3Data.push(mp3buf);
+
+            const blob = new Blob(mp3Data, { type: 'audio/mp3' });
+            download(blob, 'mp3');
+            status.textContent = "Done!";
+        }
+
+        function download(blob, ext) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `converted_${file.name.replace(/\.[^.]+$/, '')}.${ext}`;
+            a.click();
+            document.getElementById('status').textContent = "Done!";
+        }
+
+        function bufferToWav(abuffer) {
+            const numOfChan = abuffer.numberOfChannels;
+            const length = abuffer.length * numOfChan * 2 + 44;
+            const buffer = new ArrayBuffer(length);
+            const view = new DataView(buffer);
+            const channels = [];
+            let i, sample, offset = 0, pos = 0;
+
+            setUint32(0x46464952); setUint32(length - 8); setUint32(0x45564157);
+            setUint32(0x20746d66); setUint32(16); setUint16(1); setUint16(numOfChan);
+            setUint32(abuffer.sampleRate); setUint32(abuffer.sampleRate * 2 * numOfChan);
+            setUint16(numOfChan * 2); setUint16(16);
+            setUint32(0x61746164); setUint32(length - pos - 4);
+
+            for (i = 0; i < numOfChan; i++) channels.push(abuffer.getChannelData(i));
+
+            while (pos < abuffer.length) {
+                for (i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][pos]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+                    view.setInt16(44 + offset, sample, true);
+                    offset += 2;
+                }
+                pos++;
+            }
+            return new Blob([buffer], { type: "audio/wav" });
+            function setUint16(d) { view.setUint16(pos, d, true); pos += 2; }
+            function setUint32(d) { view.setUint32(pos, d, true); pos += 4; }
+        }
+    </script>
+</body>
+
+</html>

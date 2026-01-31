@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Quality Reducer | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-direction: column;
+        }
+
+        .compare-wrapper {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .preview-box {
+            flex: 1;
+            min-width: 300px;
+            background: var(--bg-body);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .preview-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .preview-info {
+            margin-top: 1rem;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            padding: 2rem;
+            background: var(--bg-body);
+            border-radius: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            margin: 1rem auto;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Quality Reducer
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Quality Reducer</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📉</div>
+                <p>Drag & Drop your image here or click to browse</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="controls">
+                    <label>Quality: <span id="quality-val">50</span>%</label>
+                    <input type="range" id="quality-slider" min="1" max="100" value="50">
+                    <p style="font-size:0.8rem; color:var(--text-muted)">Lower quality means smaller file size but more
+                        artifacts.</p>
+                </div>
+
+                <div class="compare-wrapper">
+                    <div class="preview-box">
+                        <h4>Original</h4>
+                        <img id="orig-img" src="" alt="Original">
+                        <div class="preview-info" id="orig-info">0 KB</div>
+                    </div>
+
+                    <div class="preview-box">
+                        <h4>Reduced</h4>
+                        <img id="new-img" src="" alt="Reduced">
+                        <div class="preview-info" id="new-info">0 KB</div>
+                    </div>
+                </div>
+
+                <a id="download-btn" class="action-btn" style="text-decoration:none; text-align:center;">Download
+                    Reduced Image</a>
+                <button onclick="resetTool()"
+                    style="background:transparent; border:none; color:var(--text-muted); cursor:pointer">Start
+                    Over</button>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Optimization Guide: Understanding Lossy Compression</h2>
+            <p>The Adiminium Quality Reducer gives you manual control over the "Lossy Compression" process. Unlike
+                "Lossless" compression (which just rearranges data more efficiently), Lossy compression actually
+                <em>discards</em> visual information to save space. The trick is to discard only the data the human eye
+                is bad at seeing.</p>
+
+            <h3>How JPEG Compression Works</h3>
+            <p>JPEG divides images into 8x8 pixel blocks and looks for patterns. It aggressively simplifies color
+                variations (chroma subsampling) because human eyes detect brightness (luma) better than color. </p>
+
+            <h3>The Sweet Spot Guide</h3>
+            <p>Where should you set the slider?</p>
+            <ul>
+                <li><strong>90-100% (High):</strong> "Archival Web". Hard to distinguish from original. Use for hero
+                    banners and portfolio photos. Size savings: ~50%.</li>
+                <li><strong>70-85% (Medium):</strong> "The Sweet Spot". Minor artifacts visible only if you zoom in.
+                    Standard for e-commerce and blog posts. Size savings: ~80%.</li>
+                <li><strong>50-65% (Low):</strong> "Utility". Visible artifacts (blockiness) around text and sharp
+                    edges. Good for thumbnails or background textures covered by dark overlays. Size savings: ~95%.</li>
+                <li><strong>1-30% (Destructive):</strong> For artistic "glitch art" or extremely bandwidth-constrained
+                    environments.</li>
+            </ul>
+
+            <h3>Comparison Feature</h3>
+            <p>The most dangerous part of compression is over-doing it. That's why we built the <strong>Real-Time
+                    Comparator</strong>.
+                <br>Don't trust the numbers. Trust your eyes. Slide the quality down until you <em>just</em> start to
+                see the image break apart, then slide it back up 5%.
+            </p>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Does this work on PNGs?</h4>
+                <p>PNG is a "Lossless" format, so it doesn't have a simple 1-100 quality slider in the same way.
+                    However, if you upload a PNG here, we intelligently convert it to a high-quality JPEG or WebP
+                    (depending on browser support) to allow you to reduce the file size significantly, as long as you
+                    don't need transparency.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const origImg = document.getElementById('orig-img');
+        const newImg = document.getElementById('new-img');
+        const qualitySlider = document.getElementById('quality-slider');
+        const qualityVal = document.getElementById('quality-val');
+
+        let originalFile = null;
+        let imgObj = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFile(e.dataTransfer.files[0]);
+        });
+
+        qualitySlider.addEventListener('input', (e) => {
+            qualityVal.textContent = e.target.value;
+            processImage();
+        });
+
+        qualitySlider.addEventListener('change', (e) => {
+            processImage();
+        });
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + ['B', 'KB', 'MB'][i];
+        }
+
+        function loadFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            originalFile = file;
+            document.getElementById('orig-info').textContent = formatBytes(file.size);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                origImg.src = e.target.result;
+                imgObj = new Image();
+                imgObj.onload = () => {
+                    dropZone.style.display = 'none';
+                    editor.style.display = 'flex';
+                    processImage();
+                };
+                imgObj.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function processImage() {
+            if (!imgObj) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = imgObj.width;
+            canvas.height = imgObj.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(imgObj, 0, 0);
+
+            const q = parseInt(qualitySlider.value) / 100;
+
+            // Use JPEG for visible quality reduction (PNG is lossless)
+            // Or WebP
+            let mime = 'image/jpeg';
+            if (originalFile.type === 'image/webp') mime = 'image/webp';
+
+            // If user uploads PNG, force JPEG or WebP to allow quality reduction
+            if (originalFile.type === 'image/png') mime = 'image/jpeg';
+
+            const dataUrl = canvas.toDataURL(mime, q);
+            newImg.src = dataUrl;
+
+            // Calc size
+            const head = 'data:' + mime + ';base64,';
+            const size = Math.round((dataUrl.length - head.length) * 3 / 4);
+            document.getElementById('new-info').textContent = formatBytes(size);
+
+            const dl = document.getElementById('download-btn');
+            dl.href = dataUrl;
+            dl.download = `reduced_${originalFile.name.split('.')[0]}.${mime.split('/')[1]}`;
+        }
+
+        function resetTool() {
+            originalFile = null;
+            imgObj = null;
+            dropZone.style.display = 'block';
+            editor.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+
+</html>

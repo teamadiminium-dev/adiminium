@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Password Generator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .generator-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .password-display {
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.5rem;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 1rem;
+            flex-shrink: 0;
+        }
+
+        .controls {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-group label {
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 50%;
+            accent-color: var(--primary-color);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+        }
+
+        button.generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: 0.2s;
+        }
+
+        button.generate-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .strength-meter {
+            height: 5px;
+            background: #ddd;
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Randomness</a> / Password Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Random Password Generator</h1>
+
+        <div class="generator-container">
+            <div class="password-display">
+                <span id="password-output">...</span>
+                <button class="copy-btn" onclick="copyPassword()">Copy</button>
+            </div>
+            <div class="strength-meter">
+                <div class="strength-bar" id="strength-bar"></div>
+            </div>
+            <div style="text-align:right; font-size:0.8rem; margin-top:0.3rem;" id="strength-text"></div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Length: <span id="length-val">12</span></label>
+                    <input type="range" id="length" min="4" max="50" value="12" oninput="updateLength()">
+                </div>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="uppercase" checked> Uppercase (A-Z)
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="lowercase" checked> Lowercase (a-z)
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="numbers" checked> Numbers (0-9)
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="symbols" checked> Symbols (!@#$)
+                    </label>
+                </div>
+
+                <button class="generate-btn" onclick="generatePassword()">Generate New Password</button>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>In today's digital world, reusing passwords is a major security risk. The Adiminium Password Generator
+                helps you create robust, unbreakable passwords with a single click. Unlike simple human-made keywords,
+                these random strings are highly resistant to dictionary and brute-force attacks. You can customize the
+                length and complexity (including numbers and symbols) to meet specific site requirements. All generation
+                happens locally in your browser, so your passwords are never sent to a server.</p>
+
+            <h3>What It Does</h3>
+            <p>Generates random, secure character strings based on user-defined criteria.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Length:</strong> Use the slider to choose how many characters you need (12+ recommended).
+                </li>
+                <li><strong>Complexity:</strong> Check the boxes to include Uppercase letters, Lowercase letters,
+                    Numbers, and Symbols.</li>
+                <li><strong>Generate:</strong> Click the button to create a fresh password.</li>
+                <li><strong>Copy:</strong> Use the Copy button to save it to your clipboard.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Security-conscious users, IT admins, and anyone signing up for new services.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is it safe?</h4>
+                <p>Yes, perfectly safe. The code runs entirely in your browser using JavaScript's random libraries.
+                    Nothing is transmitted over the internet.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">How long should my password be?</h4>
+                <p>We recommend at least 12 characters. For critical accounts like banking or email, 16+ is even better.
+                </p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Why random characters?</h4>
+                <p>Random characters have high "entropy," meaning they are mathematically harder for computers to guess
+                    than words or phrases.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const output = document.getElementById('password-output');
+        const lengthSlider = document.getElementById('length');
+        const lengthVal = document.getElementById('length-val');
+
+        const chars = {
+            upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            lower: 'abcdefghijklmnopqrstuvwxyz',
+            numbers: '0123456789',
+            symbols: '!@#$%^&*()_+~`|}{[]:;?><,./-='
+        };
+
+        function updateLength() {
+            lengthVal.textContent = lengthSlider.value;
+            generatePassword();
+        }
+
+        function generatePassword() {
+            const length = parseInt(lengthSlider.value);
+            const hasUpper = document.getElementById('uppercase').checked;
+            const hasLower = document.getElementById('lowercase').checked;
+            const hasNumber = document.getElementById('numbers').checked;
+            const hasSymbol = document.getElementById('symbols').checked;
+
+            let charPool = '';
+            if (hasUpper) charPool += chars.upper;
+            if (hasLower) charPool += chars.lower;
+            if (hasNumber) charPool += chars.numbers;
+            if (hasSymbol) charPool += chars.symbols;
+
+            if (charPool === '') {
+                output.textContent = 'Select at least one option';
+                return;
+            }
+
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * charPool.length);
+                password += charPool[randomIndex];
+            }
+
+            output.textContent = password;
+            calculateStrength(length, hasUpper, hasLower, hasNumber, hasSymbol);
+        }
+
+        function calculateStrength(len, up, low, num, sym) {
+            let score = 0;
+            if (up) score++;
+            if (low) score++;
+            if (num) score++;
+            if (sym) score++;
+
+            if (len >= 12) score++;
+            if (len >= 16) score++;
+
+            const bar = document.getElementById('strength-bar');
+            const txt = document.getElementById('strength-text');
+
+            let color = '#ff4d4d';
+            let label = 'Weak';
+            let width = '30%';
+
+            if (score >= 4 && len >= 8) {
+                color = '#ffa600';
+                label = 'Medium';
+                width = '60%';
+            }
+            if (score >= 5 && len >= 12) {
+                color = '#00cc66';
+                label = 'Strong';
+                width = '100%';
+            }
+
+            bar.style.width = width;
+            bar.style.background = color;
+            txt.textContent = label;
+            txt.style.color = color;
+        }
+
+        function copyPassword() {
+            navigator.clipboard.writeText(output.textContent).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+
+        // Init
+        generatePassword();
+
+        // Add listeners
+        document.querySelectorAll('input[type="checkbox"]').forEach(i => i.addEventListener('change', generatePassword));
+    </script>
+</body>
+
+</html>

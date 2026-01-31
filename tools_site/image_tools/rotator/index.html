@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Rotator | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-direction: column;
+        }
+
+        .preview-area {
+            width: 100%;
+            height: 500px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #preview-img {
+            max-width: 100%;
+            max-height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .controls-toolbar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: var(--bg-body);
+            border-radius: 8px;
+        }
+
+        .tool-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            font-size: 1.2rem;
+            transition: 0.2s;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tool-btn.primary {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .tool-btn.primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Image Rotator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Online Image Rotator</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔄</div>
+                <p>Drag & Drop your image here or click to browse</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="controls-toolbar">
+                    <button class="tool-btn" onclick="rotate(-90)" title="Rotate Left">↺ Left</button>
+                    <button class="tool-btn" onclick="rotate(90)" title="Rotate Right">↻ Right</button>
+                    <button class="tool-btn" onclick="flip('h')" title="Flip Horizontal">↔ Flip H</button>
+                    <button class="tool-btn" onclick="flip('v')" title="Flip Vertical">↕ Flip V</button>
+                    <button class="tool-btn" onclick="resetTransforms()" title="Reset">Reset</button>
+                    <button class="tool-btn primary" onclick="downloadImage()">Download</button>
+                </div>
+
+                <div class="preview-area">
+                    <img id="preview-img" src="" alt="Preview">
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>A Quick Guide to Orientation & Rotation</h2>
+            <p>The Adiminium Image Rotator is a straightforward utility for fixing the single most common frustration in
+                digital photography: The Wrong Orientation. Whether you took a vertical selfie that displayed
+                horizontally on your PC, or you scanned a document upside down, this tool sets things right.</p>
+
+            <h3>Rotation vs. Flipping</h3>
+            <p>They might look similar, but they are geometrically different:</p>
+            <ul>
+                <li><strong>Rotation (Turn):</strong> Moving the image around a center axis.
+                    <br><em>Example:</em> Turning a Landscape photo 90&deg; to make it Portrait. The top becomes the
+                    right side.
+                </li>
+                <li><strong>Flipping (Mirror):</strong> Reflecting the image across an axis.
+                    <br><em>Example:</em> "Horizontal Flip" is like looking in a mirror. Text becomes unreadable
+                    (backwards). This is often used for "Selfie Cameras" which mirror image by default.
+                </li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ol>
+                <li><strong>Scanned Document Fixes:</strong> Scanners often ingest paper upside down. A quick 180&deg;
+                    flip makes it readable.</li>
+                <li><strong>Artistic Mirroring:</strong> Duplicate an image, Flip it Horizontally, and place them
+                    side-by-side (in another tool) to create cool symmetrical patterns.</li>
+                <li><strong>Orientation Flags (EXIF):</strong> Sometimes a photo looks right on your phone but wrong on
+                    your TV. This is because the "Orientation Flag" is just metadata. By rotating and Saving here, we
+                    "bake in" the rotation permanently so it looks correct everywhere.</li>
+            </ol>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Load:</strong> Open your image.</li>
+                <li><strong>Rotate Left/Right:</strong> Rotates 90 degrees. Click twice for 180 degrees.</li>
+                <li><strong>Flip H/V:</strong> Toggles the mirror effect.</li>
+                <li><strong>Reset:</strong> If you get dizzy, hit Reset to go back to the original state.</li>
+                <li><strong>Download:</strong> Saves the new pixels in the new orientation.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Does quality suffer?</h4>
+                <p>Rotation in 90-degree increments is mathematically clean. However, since we re-save the file (e.g. as
+                    PNG/JPG), the compression algorithm runs again. For 99% of uses, this quality change is invisible.
+                </p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Why is the downloaded file size different?</h4>
+                <p>Compression engines (like JPEG) work in 8x8 blocks. When you rotate an image, these blocks change
+                    content (vertical lines become horizontal), so the compressor might find it slightly easier or
+                    harder to compress, changing file size slightly.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const previewImg = document.getElementById('preview-img');
+
+        let originalImage = null;
+        let currentRotation = 0;
+        let flipH = 1;
+        let flipV = 1;
+
+        // Event Listeners
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFile(e.dataTransfer.files[0]);
+        });
+
+        function loadFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    previewImg.src = e.target.result;
+                    resetTransforms();
+                    dropZone.style.display = 'none';
+                    editor.style.display = 'flex';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateTransform() {
+            // Visual transform for preview
+            previewImg.style.transform = `rotate(${currentRotation}deg) scale(${flipH}, ${flipV})`;
+        }
+
+        function rotate(deg) {
+            currentRotation = (currentRotation + deg) % 360;
+            updateTransform();
+        }
+
+        function flip(axis) {
+            if (axis === 'h') flipH *= -1;
+            if (axis === 'v') flipV *= -1;
+            updateTransform();
+        }
+
+        function resetTransforms() {
+            currentRotation = 0;
+            flipH = 1;
+            flipV = 1;
+            updateTransform();
+        }
+
+        function downloadImage() {
+            if (!originalImage) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // We need to calculate new bounding box
+            const rads = currentRotation * Math.PI / 180;
+            const sin = Math.abs(Math.sin(rads));
+            const cos = Math.abs(Math.cos(rads));
+
+            const newWidth = originalImage.width * cos + originalImage.height * sin;
+            const newHeight = originalImage.width * sin + originalImage.height * cos;
+
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            // Transform context
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(rads);
+            ctx.scale(flipH, flipV);
+
+            // Draw image centering it
+            ctx.drawImage(originalImage, -originalImage.width / 2, -originalImage.height / 2);
+
+            const link = document.createElement('a');
+            link.download = 'rotated-image.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+
+</html>

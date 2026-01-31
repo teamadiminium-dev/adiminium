@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online Emoji Translator. Convert plain text into fun emoji messages instantly. Emojify your social media posts, captions, and texts automatically.">
+    <meta name="keywords"
+        content="emoji translator, text to emoji, emojify text, emoji converter, fun text generator, social media caption tool, emoji maker">
+    <title>Emoji Translator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .translation-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .translation-panel {
+                grid-template-columns: 1fr 1fr;
+                align-items: start;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-family: inherit;
+            resize: vertical;
+            line-height: 1.5;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-copy {
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .emoji-decoration {
+            font-size: 3rem;
+            text-align: center;
+            margin: 1rem 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Text Tools</a> / Emoji Translator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Emoji Translator 😃</h1>
+
+        <div class="tool-container">
+            <div class="translation-panel">
+                <div class="input-group">
+                    <label>Plain Text Input</label>
+                    <textarea id="input-text" placeholder="I love pizza and cats so much!" spellcheck="false"
+                        oninput="translateToEmoji()"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Emojified Result</label>
+                    <textarea id="output-text" readonly placeholder="I ❤️ 🍕 and 🐱 so much!"></textarea>
+                    <button class="btn-copy" onclick="copyResult()">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Text is informative, but emojis are emotional. The Emoji Translator is a fun tool that breathes life into
+                plain sentences. It scans your text for keywords like "happy," "pizza," "love," or "rocket" and
+                instantly replaces them with their corresponding unicode emoji icons. Whether you want to spice up your
+                Instagram captions, create eye-catching tweets, or just send a colorful message to a friend, this tool
+                saves you the hassle of searching through the emoji keyboard for every single icon.</p>
+
+            <h3>What It Does</h3>
+            <p>Automatically replaces specific words in your text with matching emojis.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Type:</strong> Enter your sentence in the left panel (e.g., "I love cats").</li>
+                <li><strong>View:</strong> Watch the right panel instantly update (e.g., "I ❤️ 🐱").</li>
+                <li><strong>Copy:</strong> Click the copy button to use your new emojified text anywhere.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Social media managers, influencers, teens, and anyone who loves expressive communication.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Do you support all emojis?</h4>
+                <p>We support a large dictionary of common terms. If a word doesn't have a match, it stays as text.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Will this work on Instagram/TikTok?</h4>
+                <p>Yes! Emojis are standard unicode characters, so they work on any platform that supports text.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I suggest new mappings?</h4>
+                <p>Our dictionary is updated periodically to include new slang and icons.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const input = document.getElementById('input-text');
+        const output = document.getElementById('output-text');
+
+        // Basic dictionary - can be expanded
+        const emojiMap = {
+            "love": "❤️", "like": "👍", "happy": "😊", "sad": "😢", "cry": "😭",
+            "smile": "🙂", "laugh": "😂", "lol": "🤣", "angry": "😠", "fire": "🔥",
+            "cool": "😎", "sun": "☀️", "moon": "🌙", "star": "⭐", "heart": "💖",
+            "pizza": "🍕", "burger": "🍔", "food": "🍱", "drink": "🥤", "beer": "🍺",
+            "coffee": "☕", "cat": "🐱", "dog": "🐶", "bird": "🐦", "monkey": "🐵",
+            "money": "💰", "idea": "💡", "time": "⏰", "watch": "⌚", "home": "🏠",
+            "car": "🚗", "bus": "🚌", "plane": "✈️", "music": "🎵", "song": "🎤",
+            "dance": "💃", "book": "📖", "study": "📚", "work": "💼", "computer": "💻",
+            "phone": "📱", "game": "🎮", "win": "🏆", "yes": "✅", "no": "❌",
+            "question": "❓", "stop": "🛑", "warning": "⚠️", "hello": "👋", "bye": "👋",
+            "world": "🌍", "party": "🎉", "birthday": "🎂", "check": "✔️", "ok": "👌",
+            "good": "👍", "bad": "👎", "strong": "💪", "run": "🏃", "walk": "🚶",
+            "sleep": "😴", "dream": "💭", "rain": "🌧️", "snow": "❄️", "tree": "🌳",
+            "flower": "🌸", "rose": "🌹", "ghost": "👻", "skull": "💀", "alien": "👽"
+        };
+
+        function translateToEmoji() {
+            const raw = input.value;
+            // Split by word boundaries but keep punctuation? 
+            // A simple regex replace might be safer to preserve structure
+            // We want to replace whole words only, case insensitive
+
+            let translated = raw;
+
+            // Iterate through dictionary keys - inefficient for huge dicts but fine here
+            for (const [word, emoji] of Object.entries(emojiMap)) {
+                // Regex: word boundary, case insensitive, global
+                const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                translated = translated.replace(regex, emoji);
+            }
+
+            output.value = translated;
+        }
+
+        function copyResult() {
+            output.select();
+            document.execCommand('copy');
+        }
+    </script>
+</body>
+
+</html>

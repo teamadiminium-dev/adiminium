@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Grid Generator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .generator-container {
+                grid-template-columns: 300px 1fr;
+            }
+        }
+
+        .controls-panel {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input[type="range"],
+        input[type="number"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+            padding: 0.4rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+        }
+
+        input[type="range"] {
+            padding: 0;
+        }
+
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .preview-stage {
+            background-color: var(--bg-surface);
+            border-radius: 16px;
+            min-height: 400px;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            overflow: auto;
+        }
+
+        .grid-container {
+            display: grid;
+            background: #eee;
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            border: 1px dashed #ccc;
+        }
+
+        .grid-item {
+            background: var(--primary-color);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            padding: 1rem;
+        }
+
+        .grid-item:nth-child(even) {
+            background: var(--primary-dim);
+            color: var(--primary-color);
+        }
+
+        .code-output {
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Fira Code', monospace;
+            position: relative;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Color & Design</a> / CSS Grid Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">CSS Grid Generator</h1>
+
+        <div class="generator-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label>Columns <span><span id="col-val">3</span></span></label>
+                    <input type="range" id="cols" min="1" max="12" value="3" oninput="updateGrid()">
+                </div>
+
+                <div class="control-group">
+                    <label>Rows <span><span id="row-val">3</span></span></label>
+                    <input type="range" id="rows" min="1" max="12" value="3" oninput="updateGrid()">
+                </div>
+
+                <div class="control-group">
+                    <label>Column Gap <span><span id="col-gap-val">10</span>px</span></label>
+                    <input type="range" id="col-gap" min="0" max="50" value="10" oninput="updateGrid()">
+                </div>
+
+                <div class="control-group">
+                    <label>Row Gap <span><span id="row-gap-val">10</span>px</span></label>
+                    <input type="range" id="row-gap" min="0" max="50" value="10" oninput="updateGrid()">
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div class="preview-stage">
+                    <div id="grid-container" class="grid-container">
+                        <!-- Items generated by JS -->
+                    </div>
+                </div>
+
+                <div class="code-output">
+                    <div id="css-code">.container {
+                        display: grid;
+                        }</div>
+                    <button class="copy-btn" onclick="copyCSS()">Copy CSS</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>CSS Grid Layout is the most powerful layout system available in CSS, but the syntax can be intimidating.
+                The Adiminium CSS Grid Generator visualizes the grid structure for you. You can define the number of
+                columns and rows, and adjust the gutters (gaps) between them. The tool dynamically creates grid items to
+                fill your layout, so you can immediately see how your content would flow. It outputs the essential CSS
+                properties to get your grid system up and running.</p>
+
+            <h3>What It Does</h3>
+            <p>Generates a basic CSS Grid layout with configurable columns, rows, and gaps.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Columns & Rows:</strong> Drag the sliders to set the grid dimensions (currently uses `1fr`
+                    for equal sizing).</li>
+                <li><strong>Gaps:</strong> Adjust vertical and horizontal spacing between grid items.</li>
+                <li><strong>Visual Preview:</strong> Watch the grid items re-flow instantly as you adjust parameters.
+                </li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Developers needing a quick boilerplate for grid-based page layouts or component structures.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const colsInput = document.getElementById('cols');
+        const rowsInput = document.getElementById('rows');
+        const colGapInput = document.getElementById('col-gap');
+        const rowGapInput = document.getElementById('row-gap');
+
+        const gridContainer = document.getElementById('grid-container');
+        const cssCode = document.getElementById('css-code');
+
+        function updateGrid() {
+            const cols = colsInput.value;
+            const rows = rowsInput.value;
+            const cGap = colGapInput.value;
+            const rGap = rowGapInput.value;
+
+            // Labels
+            document.getElementById('col-val').textContent = cols;
+            document.getElementById('row-val').textContent = rows;
+            document.getElementById('col-gap-val').textContent = cGap;
+            document.getElementById('row-gap-val').textContent = rGap;
+
+            // Update Style
+            gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            gridContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+            gridContainer.style.columnGap = `${cGap}px`;
+            gridContainer.style.rowGap = `${rGap}px`;
+
+            // Regenerate Items
+            const totalItems = cols * rows;
+            gridContainer.innerHTML = '';
+            for (let i = 1; i <= totalItems; i++) {
+                const item = document.createElement('div');
+                item.className = 'grid-item';
+                item.textContent = i;
+                gridContainer.appendChild(item);
+            }
+
+            // Update Code
+            cssCode.textContent = `.container {
+  display: grid;
+  grid-template-columns: repeat(${cols}, 1fr);
+  grid-template-rows: repeat(${rows}, 1fr);
+  grid-column-gap: ${cGap}px;
+  grid-row-gap: ${rGap}px;
+}`;
+        }
+
+        function copyCSS() {
+            navigator.clipboard.writeText(cssCode.textContent).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+
+        // Init
+        updateGrid();
+    </script>
+</body>
+
+</html>

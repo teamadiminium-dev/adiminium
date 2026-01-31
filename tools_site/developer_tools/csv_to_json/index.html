@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online CSV to JSON Converter. Convert CSV data into structured JSON format instantly. Handles headers, quotes, and large datasets.">
+    <meta name="keywords"
+        content="csv to json, csv converter, json converter, csv to json python style, csv parse, developer tools, free online converter">
+    <title>CSV to JSON Converter | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 850px) {
+            .panels {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .panel-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .editor-wrap {
+            position: relative;
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 500px;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-family: 'Fira Code', monospace;
+            resize: vertical;
+            line-height: 1.5;
+            transition: all 0.2s;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        textarea[readonly] {
+            background: var(--bg-surface);
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            background: var(--bg-surface);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn-action {
+            padding: 0.6rem 1.2rem;
+            background: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            color: #000;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-body);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .status-msg {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .status-msg.error {
+            color: #e74c3c;
+        }
+
+        .status-msg.success {
+            color: #00c853;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Developer Tools</a> / CSV to JSON
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">CSV to JSON Converter</h1>
+
+        <div class="tool-container">
+            <div class="toolbar">
+                <div class="action-group">
+                    <button class="btn-action" onclick="convert()">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                        Convert CSV to JSON
+                    </button>
+                </div>
+                <div class="status-msg" id="status-msg">Ready to convert</div>
+                <div class="action-group">
+                    <button class="btn-secondary" onclick="loadSample()">Load Sample</button>
+                    <button class="btn-secondary" onclick="clearAll()">Clear</button>
+                    <button class="btn-secondary" onclick="copyOutput()">Copy JSON</button>
+                </div>
+            </div>
+
+            <div class="panels">
+                <div class="panel-col">
+                    <label style="font-weight:600; color:var(--text-muted); margin-bottom:0.5rem;">Input CSV (Comma
+                        Separated)</label>
+                    <div class="editor-wrap">
+                        <textarea id="csv-input"
+                            placeholder="id,name,email&#10;1,John Doe,john@example.com&#10;2,Jane Smith,jane@example.com"
+                            spellcheck="false"></textarea>
+                    </div>
+                </div>
+
+                <div class="panel-col">
+                    <label style="font-weight:600; color:var(--text-muted); margin-bottom:0.5rem;">JSON Output</label>
+                    <div class="editor-wrap">
+                        <textarea id="json-output" readonly placeholder="Result will appear here..."
+                            spellcheck="false"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Data migration often involves moving from legacy spreadsheets to modern web applications. The CSV to JSON
+                Converter creates a bridge between these worlds. It parses Comma Separated Values (CSV)—the standard
+                format for Excel exports—and transforms it into JavaScript Object Notation (JSON), the standard for web
+                APIs and NoSQL databases. Unlike simple string splitters, our tool respects quoted values (allowing
+                commas inside cells) and automatically treats the first row as headers to create structured property
+                names.</p>
+
+            <h3>What It Does</h3>
+            <p>Parses CSV text and converts it into an array of JSON objects.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Input CSV:</strong> Paste your CSV data into the left panel. Ensure the first line contains
+                    headers (e.g., id,name,email).</li>
+                <li><strong>Convert:</strong> Click the "Convert CSV to JSON" button.</li>
+                <li><strong>Output:</strong> Copy the resulting JSON array from the right panel.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Data scientists, backend developers, and administrators conducting database migrations.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it handle commas in data?</h4>
+                <p>Yes. If a value is enclosed in quotes (e.g., "New York, NY"), the comma is treated as part of the
+                    text, not a separator.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is there a file size limit?</h4>
+                <p>Since it runs in your browser, it depends on your computer's RAM. It comfortably handles thousands of
+                    rows, but millions might slow it down.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Are numbers converted?</h4>
+                <p>To ensure data integrity (like preventing phone numbers from losing leading zeros), we treat all
+                    values as strings by default.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const input = document.getElementById('csv-input');
+        const output = document.getElementById('json-output');
+        const statusMsg = document.getElementById('status-msg');
+
+        function setStatus(msg, type) {
+            statusMsg.textContent = msg;
+            statusMsg.className = 'status-msg ' + type;
+        }
+
+        // CSV Parser that handles quotes
+        function parseCSV(text) {
+            const lines = text.trim().split(/\r?\n/);
+            if (lines.length === 0) return [];
+
+            // Helper to parse a single line handling quotes
+            function parseLine(line) {
+                const result = [];
+                let current = '';
+                let inQuote = false;
+
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+
+                    if (char === '"') {
+                        // Toggle quote state
+                        // Handle escaped quotes "" -> " if needed, usually CSV uses "" for " inside quotes
+                        if (inQuote && line[i + 1] === '"') {
+                            current += '"';
+                            i++; // Skip next quote
+                        } else {
+                            inQuote = !inQuote;
+                        }
+                    } else if (char === ',' && !inQuote) {
+                        result.push(current);
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                result.push(current);
+                return result;
+            }
+
+            const headers = parseLine(lines[0]);
+            const results = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                // simple skip empty lines
+                if (!lines[i].trim()) continue;
+
+                const values = parseLine(lines[i]);
+                const obj = {};
+
+                // Map headers to values
+                for (let j = 0; j < headers.length; j++) {
+                    // Try to convert numbers strings to actual numbers
+                    let val = values[j] || "";
+                    if (!isNaN(val) && val.trim() !== '') {
+                        // It's a number-like string, check if we should convert? 
+                        // Standard CSV to JSON usually keeps strings unless configured otherwise.
+                        // Let's keep strict string for safety or try number?
+                        // Let's keep string to be safe against phone numbers etc.
+                    }
+                    obj[headers[j]] = val;
+                }
+                results.push(obj);
+            }
+            return results;
+        }
+
+        function convert() {
+            const raw = input.value;
+            if (!raw.trim()) {
+                setStatus("Please enter CSV data", "error");
+                return;
+            }
+
+            try {
+                const json = parseCSV(raw);
+                output.value = JSON.stringify(json, null, 2);
+                setStatus(`Success! Converted ${json.length} rows.`, "success");
+            } catch (e) {
+                output.value = "";
+                setStatus("Error parsing CSV: " + e.message, "error");
+            }
+        }
+
+        function loadSample() {
+            input.value = `id,name,role,joined_date
+101,Alice Johnson,Developer,2023-01-15
+102,Bob Smith,Manager,2022-11-20
+103,"O'Connor, Liam",Designer,2023-03-10`;
+            convert();
+        }
+
+        function clearAll() {
+            input.value = "";
+            output.value = "";
+            setStatus("Ready to convert", "");
+        }
+
+        function copyOutput() {
+            if (!output.value) return;
+            output.select();
+            document.execCommand('copy');
+            setStatus("JSON copied to clipboard!", "success");
+        }
+    </script>
+</body>
+
+</html>

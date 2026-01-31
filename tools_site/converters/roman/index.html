@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online Roman Numeral Converter. Instantly convert Roman numerals to decimal numbers and vice versa. Learn about Roman numerals history and usage.">
+    <meta name="keywords"
+        content="roman numeral converter, decimal to roman, roman to decimal, roman numerals chart, latin numerals, MMXXIV converter, roman numbers">
+    <title>Roman Numeral Converter | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .converter-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            text-align: center;
+            font-family: monospace;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .icon-arrow {
+            text-align: center;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            opacity: 0.8;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Converters</a> / Roman Numeral
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Roman Numeral Converter</h1>
+
+        <div class="converter-container">
+            <div class="input-group">
+                <label>Decimal Number (Arabic)</label>
+                <input type="number" id="dec-input" placeholder="e.g. 2026" oninput="convertToRoman()">
+            </div>
+
+            <div class="icon-arrow">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+            </div>
+
+            <div class="input-group">
+                <label>Roman Numeral</label>
+                <input type="text" id="rom-input" placeholder="e.g. MMXXVI" oninput="convertToDecimal()"
+                    style="text-transform: uppercase;">
+                <div class="error-msg" id="error-msg">Invalid Roman Numeral</div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>The Roman Numeral Converter bridges the gap between antiquity and modern mathematics. Roman numerals,
+                originating in ancient Rome, are still used today in names of monarchs, book chapters, clocks, and Super
+                Bowl titles. This tool allows for bidirectional conversion: translate a modern number (like 2024) into
+                Roman style (MMXXIV), or interpret a Roman string back into a decimal number. It follows standard
+                subtractive notation (e.g., IV is 4, not IIII) to ensure historical accuracy.</p>
+
+            <h3>What It Does</h3>
+            <p>Converts Arabic numerals (integers) to Roman Numerals and vice versa.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Decimal to Roman:</strong> Enter a number (e.g., 50) in the top box to see 'L'.</li>
+                <li><strong>Roman to Decimal:</strong> Enter letters (e.g., XVI) in the bottom box to see '16'.</li>
+                <li><strong>Clear:</strong> Delete input to reset both fields.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>History buffs, students learning Latin numbering, copyright date readers, and tattoo enthusiasts planning
+                date tattoos.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Why is the limit 3999?</h4>
+                <p>Standard Roman numerals do not have a specific symbol for 5,000 or larger without using special
+                    vincular (formatting) lines over letters, which this tool does not currently support.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is IIII valid for 4?</h4>
+                <p>Historically yes, especially on clock faces, but in standard subtractive notation (which we use), 4
+                    is written as IV.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Is there a zero in Roman Numerals?</h4>
+                <p>No. The Romans did not have a specific numeral for zero; they simply didn't write anything.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const decInput = document.getElementById('dec-input');
+        const romInput = document.getElementById('rom-input');
+        const errorMsg = document.getElementById('error-msg');
+
+        function convertToRoman() {
+            let num = parseInt(decInput.value);
+            errorMsg.style.display = 'none';
+
+            if (!decInput.value) {
+                romInput.value = '';
+                return;
+            }
+
+            if (isNaN(num) || num < 1 || num > 3999) {
+                // Roman numerals traditionally only go up to 3999 (MMMCMXCIX) without vincular syntax
+                romInput.value = '';
+                return;
+            }
+
+            const lookup = {
+                M: 1000, CM: 900,
+                D: 500, CD: 400,
+                C: 100, XC: 90,
+                L: 50, XL: 40,
+                X: 10, IX: 9,
+                V: 5, IV: 4,
+                I: 1
+            };
+
+            let roman = '';
+            for (let i in lookup) {
+                while (num >= lookup[i]) {
+                    roman += i;
+                    num -= lookup[i];
+                }
+            }
+            romInput.value = roman;
+        }
+
+        function convertToDecimal() {
+            let str = romInput.value.toUpperCase().trim();
+            errorMsg.style.display = 'none';
+
+            if (!str) {
+                decInput.value = '';
+                return;
+            }
+
+            // Simple validation regex for valid roman numerals
+            if (!/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/.test(str)) {
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            const lookup = {
+                M: 1000,
+                D: 500,
+                C: 100,
+                L: 50,
+                X: 10,
+                V: 5,
+                I: 1
+            };
+
+            let decimal = 0;
+            let lastVal = 0;
+
+            // Iterate backwards
+            for (let i = str.length - 1; i >= 0; i--) {
+                const char = str[i];
+                const val = lookup[char];
+
+                if (!val) { // Should be caught by regex but safety check
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+
+                if (val < lastVal) {
+                    decimal -= val;
+                } else {
+                    decimal += val;
+                }
+                lastVal = val;
+            }
+
+            decInput.value = decimal;
+        }
+    </script>
+</body>
+
+</html>

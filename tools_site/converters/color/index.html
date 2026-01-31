@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online Hex to RGB Converter. Convert hexadecimal color codes to RGB values and vice versa. Includes a color picker and live preview for web designers and developers.">
+    <meta name="keywords"
+        content="hex to rgb, rgb to hex, color converter, hex color code, rgb values, web design tools, css color">
+    <title>Hex to RGB Converter | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .converter-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .preview-box {
+            height: 150px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .rgb-inputs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .rgb-col {
+            flex: 1;
+        }
+
+        .rgb-label {
+            text-align: center;
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-muted);
+        }
+
+        .rgb-val {
+            width: 100%;
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        /* Range Sliders */
+        input[type="range"] {
+            width: 100%;
+            margin-top: 0.5rem;
+            accent-color: var(--primary-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Converters</a> / Hex to RGB
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Hex to RGB Converter</h1>
+
+        <div class="converter-container">
+            <div class="preview-box" id="preview" style="background: #00C853;">
+                #00C853
+            </div>
+
+            <div class="input-group">
+                <label>Hex Color Code</label>
+                <input type="text" id="hex-input" value="#00C853" maxlength="7" oninput="updateFromHex()">
+            </div>
+
+            <div class="input-group">
+                <label>RGB Values (Red, Green, Blue)</label>
+                <div class="rgb-inputs">
+                    <div class="rgb-col">
+                        <div class="rgb-label">R</div>
+                        <input type="number" class="rgb-val" id="r-val" value="0" min="0" max="255"
+                            oninput="updateFromRGB()">
+                        <input type="range" id="r-range" min="0" max="255" value="0" oninput="slideRGB()">
+                    </div>
+                    <div class="rgb-col">
+                        <div class="rgb-label">G</div>
+                        <input type="number" class="rgb-val" id="g-val" value="200" min="0" max="255"
+                            oninput="updateFromRGB()">
+                        <input type="range" id="g-range" min="0" max="255" value="200" oninput="slideRGB()">
+                    </div>
+                    <div class="rgb-col">
+                        <div class="rgb-label">B</div>
+                        <input type="number" class="rgb-val" id="b-val" value="83" min="0" max="255"
+                            oninput="updateFromRGB()">
+                        <input type="range" id="b-range" min="0" max="255" value="83" oninput="slideRGB()">
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                CSS: <span id="css-val" style="font-family: monospace; color: var(--primary-color);">rgb(0, 200,
+                    83)</span>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Color is the foundation of web design, but handling different color formats can be tedious. The Hex to
+                RGB Converter is a bridge between the two most common color models used on the web. Designers often work
+                with Hex codes (like #FF5733) for concise CSS, while developers might need RGB values (255, 87, 51) for
+                dynamic manipulation in code. This tool allows you to convert between them instantly, adjust values with
+                visual sliders, and see a real-time preview of the result.</p>
+
+            <h3>What It Does</h3>
+            <p>Translates Hexadecimal color strings into Red-Green-Blue (RGB) numeric values and vice versa, with a live
+                visual preview.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Hex Input:</strong> Type a 6-digit hex code (e.g., #00FF00) to see the RGB breakdown.</li>
+                <li><strong>RGB Input:</strong> Enter numbers 0-255 in the R, G, and B boxes to generate a Hex code.
+                </li>
+                <li><strong>Sliders:</strong> Drag the sliders to visually adjust the color mix.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Web designers, frontend developers, graphic artists, and anyone working with digital media.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What is the difference between Hex and RGB?
+                </h4>
+                <p>They represent the same data. Hex is base-16 notation often used in HTML/CSS, while RGB is base-10
+                    notation used in software logic.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What is the max value for RGB?</h4>
+                <p>Each channel (Red, Green, Blue) can range from 0 to 255, allowing for over 16 million color
+                    combinations.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it support Alpha (transparency)?</h4>
+                <p>This tool currently focuses on standard RGB/Hex. For transparency, you would typically use RGBA or
+                    8-digit Hex codes.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const hexIn = document.getElementById('hex-input');
+        const rIn = document.getElementById('r-val');
+        const gIn = document.getElementById('g-val');
+        const bIn = document.getElementById('b-val');
+
+        const rSli = document.getElementById('r-range');
+        const gSli = document.getElementById('g-range');
+        const bSli = document.getElementById('b-range');
+
+        const preview = document.getElementById('preview');
+        const cssOut = document.getElementById('css-val');
+
+        function updateFromHex() {
+            let hex = hexIn.value;
+            if (hex.startsWith('#')) hex = hex.slice(1);
+
+            if (hex.length === 3) {
+                hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+            }
+
+            if (hex.length === 6 && /^[0-9A-Fa-f]{6}$/.test(hex)) {
+                const r = parseInt(hex.substring(0, 2), 16);
+                const g = parseInt(hex.substring(2, 4), 16);
+                const b = parseInt(hex.substring(4, 6), 16);
+
+                syncRGB(r, g, b);
+                updatePreview(hex, r, g, b);
+            }
+        }
+
+        function updateFromRGB() {
+            let r = parseInt(rIn.value) || 0;
+            let g = parseInt(gIn.value) || 0;
+            let b = parseInt(bIn.value) || 0;
+
+            r = Math.min(255, Math.max(0, r));
+            g = Math.min(255, Math.max(0, g));
+            b = Math.min(255, Math.max(0, b));
+
+            // Update sliders to match text input
+            rSli.value = r;
+            gSli.value = g;
+            bSli.value = b;
+
+            const hex = rgbToHex(r, g, b);
+            hexIn.value = '#' + hex;
+            updatePreview(hex, r, g, b);
+        }
+
+        function slideRGB() {
+            // Update Number inputs from Sliders
+            rIn.value = rSli.value;
+            gIn.value = gSli.value;
+            bIn.value = bSli.value;
+
+            updateFromRGB();
+        }
+
+        function syncRGB(r, g, b) {
+            rIn.value = r; rSli.value = r;
+            gIn.value = g; gSli.value = g;
+            bIn.value = b; bSli.value = b;
+        }
+
+        function rgbToHex(r, g, b) {
+            return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+
+        function updatePreview(hex, r, g, b) {
+            const color = `#${hex}`;
+            preview.style.background = color;
+            preview.textContent = color;
+
+            // Contrast check for text color
+            // Simple luminance formula
+            const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            preview.style.color = lum > 0.5 ? '#000' : '#fff';
+
+            cssOut.textContent = `rgb(${r}, ${g}, ${b})`;
+        }
+    </script>
+</body>
+
+</html>

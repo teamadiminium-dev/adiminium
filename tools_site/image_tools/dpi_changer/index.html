@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image DPI Changer | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dpi-settings {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group input,
+        .control-group select {
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-width: 150px;
+        }
+
+        .preview-info {
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .stat-item {
+            background: var(--bg-surface);
+            padding: 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .stat-val {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        button.action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button.action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / DPI Changer
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">DPI Changer</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🖨️</div>
+                <p>Drag & Drop your image here or click to browse</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="dpi-settings">
+                    <div class="control-group">
+                        <label>Target DPI</label>
+                        <select id="target-dpi">
+                            <option value="72">72 DPI (Screen)</option>
+                            <option value="96">96 DPI (Windows Standard)</option>
+                            <option value="150">150 DPI (Draft Print)</option>
+                            <option value="300" selected>300 DPI (High Quality Print)</option>
+                            <option value="custom">Custom...</option>
+                        </select>
+                        <input type="number" id="custom-dpi" style="display:none" placeholder="e.g. 600">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Target Print Width</label>
+                        <div style="display:flex; gap:0.5rem">
+                            <input type="number" id="print-width" placeholder="e.g. 4">
+                            <select id="unit" style="min-width:80px">
+                                <option value="in" selected>Inches</option>
+                                <option value="cm">cm</option>
+                                <option value="mm">mm</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-info">
+                    <h3>Output Specification</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Original Pixels</span>
+                            <span class="stat-val" id="orig-pixels">0 x 0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">New Pixels</span>
+                            <span class="stat-val" id="new-pixels">0 x 0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Print Size</span>
+                            <span class="stat-val" id="print-size">0 x 0 in</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">DPI</span>
+                            <span class="stat-val" id="final-dpi">300</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:2rem">
+                    <button class="action-btn" onclick="processDPI()">Apply & Download</button>
+                    <button onclick="resetTool()"
+                        style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; display:block; margin: 1rem auto;">Start
+                        Over</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Print-Ready Guide: Understanding DPI</h2>
+            <p>The Adiminium DPI Changer helps you bridge the gap between the digital world (Screens) and the physical
+                world (Paper). One of the most common errors in printing is sending a "Screen Resolution" image to a
+                printer, resulting in a blurry, pixelated mess. This tool calculates the math for you.</p>
+
+            <h3>DPI vs. PPI vs. Resolution</h3>
+            <ul>
+                <li><strong>Resolution (Pixels):</strong> The absolute amount of data. e.g., 1920 x 1080 pixels.</li>
+                <li><strong>DPI (Dots Per Inch):</strong> An instruction to the printer on how densely to pack those
+                    pixels.</li>
+                <li><strong>Physical Size:</strong> The result. Resolution / DPI = Inches.</li>
+            </ul>
+            <p><em>Example:</em> A 1000px wide image at 100 DPI prints at 10 inches wide. <br>
+                The same 1000px image at 500 DPI prints at 2 inches wide. (Smaller, but much sharper).</p>
+
+            <h3>Common DPI Standards</h3>
+            <ul>
+                <li><strong>72 DPI:</strong> Old standard for screens. Never use for print.</li>
+                <li><strong>96 DPI:</strong> Standard for Windows screens.</li>
+                <li><strong>150 DPI:</strong> "Good enough" for home inkjet printers or large posters viewed from 5 feet
+                    away.</li>
+                <li><strong>300 DPI:</strong> The Gold Standard. Required for magazines, brochures, and professional
+                    photo prints.</li>
+                <li><strong>600 DPI:</strong> Archival art prints and ultra-fine line art.</li>
+            </ul>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Load your digital file.</li>
+                <li><strong>Choose Target DPI:</strong> Select 300 for a photo print.</li>
+                <li><strong>Choose Target Physical Width:</strong> How big is the paper? Enter "4" for a standard 4x6
+                    photo.</li>
+                <li><strong>Auto-Calculate:</strong> The tool determines you need 1200 pixels (4 inches * 300 DPI).</li>
+                <li><strong>Process:</strong> The tool uses high-quality resampling to enlarge or shrink your image to
+                    exactly 1200 pixels wide.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Can I turn a tiny web image into a poster?</h4>
+                <p>You can try, but you can't create detail from nothing. If you ask for a 24-inch poster at 300 DPI
+                    from a 500px web image, the tool has to invent millions of pixels. The result will be soft. It's
+                    always better to start with a large high-res original.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+
+        const targetDpiSelect = document.getElementById('target-dpi');
+        const customDpiInput = document.getElementById('custom-dpi');
+        const printWidthInput = document.getElementById('print-width');
+        const unitSelect = document.getElementById('unit');
+
+        let originalImage = null;
+        let aspectRatio = 0;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFile(e.dataTransfer.files[0]);
+        });
+
+        targetDpiSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                customDpiInput.style.display = 'block';
+            } else {
+                customDpiInput.style.display = 'none';
+            }
+            updateStats();
+        });
+
+        [customDpiInput, printWidthInput, unitSelect].forEach(el => {
+            el.addEventListener('input', updateStats);
+        });
+
+        function loadFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    aspectRatio = img.width / img.height;
+
+                    document.getElementById('orig-pixels').textContent = `${img.width} x ${img.height}`;
+
+                    // Init print width (default to 4 inches or equiv)
+                    printWidthInput.value = 6;
+
+                    dropZone.style.display = 'none';
+                    editor.style.display = 'flex';
+                    updateStats();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function getTargetDpi() {
+            if (targetDpiSelect.value === 'custom') {
+                return parseInt(customDpiInput.value) || 300;
+            }
+            return parseInt(targetDpiSelect.value);
+        }
+
+        function updateStats() {
+            if (!originalImage) return;
+
+            const dpi = getTargetDpi();
+            let width = parseFloat(printWidthInput.value) || 0;
+            const unit = unitSelect.value;
+
+            // Convert to inches
+            let widthInches = width;
+            if (unit === 'cm') widthInches = width / 2.54;
+            if (unit === 'mm') widthInches = width / 25.4;
+
+            const heightInches = widthInches / aspectRatio;
+
+            // Calculate new pixels
+            const newW = Math.round(widthInches * dpi);
+            const newH = Math.round(heightInches * dpi);
+
+            document.getElementById('new-pixels').textContent = `${newW} x ${newH}`;
+            document.getElementById('print-size').textContent = `${widthInches.toFixed(2)} x ${heightInches.toFixed(2)} in`;
+            document.getElementById('final-dpi').textContent = dpi;
+        }
+
+        function processDPI() {
+            if (!originalImage) return;
+
+            const dpi = getTargetDpi();
+            let width = parseFloat(printWidthInput.value) || 0;
+            const unit = unitSelect.value;
+
+            let widthInches = width;
+            if (unit === 'cm') widthInches = width / 2.54;
+            if (unit === 'mm') widthInches = width / 25.4;
+
+            const newW = Math.round(widthInches * dpi);
+            const newH = Math.round(newW / aspectRatio);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = newW;
+            canvas.height = newH;
+            const ctx = canvas.getContext('2d');
+
+            // High quality
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            ctx.drawImage(originalImage, 0, 0, newW, newH);
+
+            const link = document.createElement('a');
+            link.download = `print_ready_${newW}x${newH}.jpg`; // JPG standard for print
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        }
+
+        function resetTool() {
+            originalImage = null;
+            dropZone.style.display = 'block';
+            editor.style.display = 'none';
+            fileInput.value = '';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Base64 Converter | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-direction: column;
+        }
+
+        .result-area {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .preview-col {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .preview-col img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+        }
+
+        .code-col {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            background: var(--bg-body);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            flex: 1;
+        }
+
+        .action-btn.secondary {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .action-btn.secondary:hover {
+            border-color: var(--primary-color);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Image to Base64
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Image to Base64 Converter</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔢</div>
+                <p>Drag & Drop an image here</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="result-area">
+                    <div class="preview-col">
+                        <h3>Preview</h3>
+                        <img id="preview-img" src="" alt="Preview">
+                        <button onclick="resetTool()"
+                            style="margin-top:1rem; background:transparent; border:none; color:var(--text-muted); cursor:pointer">Convert
+                            Another</button>
+                    </div>
+
+                    <div class="code-col">
+                        <h3>Base64 Output</h3>
+                        <textarea id="output" readonly></textarea>
+                        <div class="actions">
+                            <button class="action-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+                            <button class="action-btn secondary" onclick="downloadTxt()">Download .txt</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Frontend Optimization Guide: Image to Base64</h2>
+            <p>The Adiminium Image to Base64 Converter is a key tool in the web performance optimization toolkit. It
+                allows you to convert binary image files (JPG, PNG, GIF, SVG) into text strings that can be embedded
+                directly into your code.</p>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Performance Tip:</strong> Only use Base64 for <em>small</em> assets (like icons, logos, or tiny
+                patterns < 5KB). Determining when to untether an image from a separate HTTP request is an art form.
+                    </div>
+
+                    <h3>Why Embed Images? (Data URIs)</h3>
+                    <p>Every time a browser sees an `&lt;img src="file.png"&gt;` tag, it has to open a new network
+                        connection to the server to fetch that file. This adds latency (DNS lookup, TCP handshake).
+                        <br>By converting the image to text (`src="data:image/png;base64..."`), the image data is
+                        downloaded <em>as part of the HTML document itself</em>.
+                        <br><strong>Benefit:</strong> 0 extra network requests. Instant rendering.
+                    </p>
+
+                    <h3>The Trade-Off</h3>
+                    <p>Nothing is free. Base64 encoding uses 4 ASCII characters to represent every 3 bytes of data. This
+                        means your file size grows by <strong>33%</strong>.
+                        <br><em>Example:</em> A 100KB image becomes 133KB of text. This increases your HTML/CSS file
+                        size, which can delay the initial rendering of your page if overused.
+                    </p>
+
+                    <h3>When to Use This Tool</h3>
+                    <ol>
+                        <li><strong>Little Icons:</strong> Social media icons, navigation arrows, or bullets are perfect
+                            candidates.</li>
+                        <li><strong>Critical Path Rendering:</strong> The "Above the Fold" hero logo. You want this to
+                            load instantly without waiting for a second request.</li>
+                        <li><strong>Single-File Projects:</strong> Sending a client a single `.html` file that contains
+                            all images embedded inside it, so they don't lose the attachments.</li>
+                    </ol>
+
+                    <h3>Step-by-Step Guide</h3>
+                    <ol>
+                        <li><strong>Upload:</strong> Select your file. We support all web formats.</li>
+                        <li><strong>Copy:</strong> The tool generates the full `data:image...` string.</li>
+                        <li><strong>Paste in HTML:</strong> `&lt;img src="[PASTE HERE]" /&gt;`</li>
+                        <li><strong>Paste in CSS:</strong> `.icon { background-image: url([PASTE HERE]); }`</li>
+                    </ol>
+
+                    <h3>Frequently Asked Questions</h3>
+                    <div class="faq-item">
+                        <h4>Does this work for SVGs?</h4>
+                        <p>Yes, but often it is better to paste raw Inline SVG code rather than Base64 encoding it, as
+                            raw SVG (text) often compresses better with GZIP than Base64 strings do.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h4>Is there a size limit?</h4>
+                        <p>Browsers can handle very long strings, but for performance, we recommend staying under 10KB.
+                            If you try to paste a 5MB base64 string into your code editor, it will likely crash your
+                            editor!</p>
+                    </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const previewImg = document.getElementById('preview-img');
+        const output = document.getElementById('output');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => loadFile(e.target.files[0]));
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            loadFile(e.dataTransfer.files[0]);
+        });
+
+        function loadFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                previewImg.src = base64;
+                output.value = base64;
+                dropZone.style.display = 'none';
+                editor.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function copyToClipboard() {
+            output.select();
+            document.execCommand('copy');
+            // Visual feedback could be added
+            const btn = document.querySelector('.action-btn');
+            const original = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = original, 2000);
+        }
+
+        function downloadTxt() {
+            const blob = new Blob([output.value], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "image_base64.txt";
+            link.click();
+        }
+
+        function resetTool() {
+            dropZone.style.display = 'block';
+            editor.style.display = 'none';
+            fileInput.value = '';
+            output.value = '';
+        }
+    </script>
+</body>
+
+</html>

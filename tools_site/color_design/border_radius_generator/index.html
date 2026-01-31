@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Border Radius Generator | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .generator-container {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        .controls-panel {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .preview-stage {
+            background-color: #ffffff;
+            border-radius: 16px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            background-image:
+                linear-gradient(45deg, #eee 25%, transparent 25%),
+                linear-gradient(-45deg, #eee 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #eee 75%),
+                linear-gradient(-45deg, transparent 75%, #eee 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .preview-box {
+            width: 250px;
+            height: 250px;
+            background: transparent;
+            border: 4px solid var(--primary-color);
+            background: rgba(0, 200, 83, 0.2);
+            transition: all 0.2s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+        }
+
+        .code-output {
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Fira Code', monospace;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Color & Design</a> / Border Radius Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">CSS Border Radius Generator</h1>
+
+        <div class="generator-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label>All Corners</label>
+                    <input type="range" id="all-radius" min="0" max="125" value="0" oninput="updateAll()">
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+                <div class="control-group">
+                    <label>Top Left <span><span id="tl-val">0</span>px</span></label>
+                    <input type="range" id="tl-input" class="corner-input" min="0" max="150" value="0"
+                        oninput="updateIndividual()">
+                </div>
+
+                <div class="control-group">
+                    <label>Top Right <span><span id="tr-val">0</span>px</span></label>
+                    <input type="range" id="tr-input" class="corner-input" min="0" max="150" value="0"
+                        oninput="updateIndividual()">
+                </div>
+
+                <div class="control-group">
+                    <label>Bottom Right <span><span id="br-val">0</span>px</span></label>
+                    <input type="range" id="br-input" class="corner-input" min="0" max="150" value="0"
+                        oninput="updateIndividual()">
+                </div>
+
+                <div class="control-group">
+                    <label>Bottom Left <span><span id="bl-val">0</span>px</span></label>
+                    <input type="range" id="bl-input" class="corner-input" min="0" max="150" value="0"
+                        oninput="updateIndividual()">
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div class="preview-stage">
+                    <div id="preview-box" class="preview-box">Preview</div>
+                </div>
+
+                <div class="code-output">
+                    <div id="css-code">border-radius: 0px 0px 0px 0px;</div>
+                    <button class="copy-btn" onclick="copyCSS()">Copy CSS</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Modern web design often breaks away from the standard "boxy" look with rounded corners and organic
+                shapes. The Adiminium CSS Border Radius Generator gives you granular control over corner rounding
+                without needing to memorize the syntax. Adjust all corners simultaneously for uniform rounds, or
+                fine-tune each corner individually to create leaves, blobs, or asymmetric cards. The tool dynamically
+                generates the standard CSS property for immediate use in your stylesheets.</p>
+
+            <h3>What It Does</h3>
+            <p>Visually generates the CSS `border-radius` property with individual controls for all four corners.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>All Corners:</strong> Use the master slider to round all corners equally at once.</li>
+                <li><strong>Individual:</strong> Tweak Top-Left, Top-Right, etc. sliders for asymmetric shapes.</li>
+                <li><strong>Preview:</strong> Watch the shape morph in real-time.</li>
+                <li><strong>Copy:</strong> Copy the generated CSS snippet to your clipboard.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>UI Designers and developers creating buttons, cards, images, or unique page dividers.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I use percentages instead of pixels?
+                </h4>
+                <p>Currently, this tool outputs pixels (px) for precision. Percentage support (useful for
+                    circles/ellipses) is planned for the future.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What is the max value?</h4>
+                <p>We capped sliders at 150px for the preview box size, but in CSS you can go higher.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const allRadius = document.getElementById('all-radius');
+        const tlInput = document.getElementById('tl-input');
+        const trInput = document.getElementById('tr-input');
+        const brInput = document.getElementById('br-input');
+        const blInput = document.getElementById('bl-input');
+
+        const tlVal = document.getElementById('tl-val');
+        const trVal = document.getElementById('tr-val');
+        const brVal = document.getElementById('br-val');
+        const blVal = document.getElementById('bl-val');
+
+        const previewBox = document.getElementById('preview-box');
+        const cssCode = document.getElementById('css-code');
+
+        function updateAll() {
+            const val = allRadius.value;
+            tlInput.value = val;
+            trInput.value = val;
+            brInput.value = val;
+            blInput.value = val;
+            updateIndividual();
+        }
+
+        function updateIndividual() {
+            const tl = tlInput.value;
+            const tr = trInput.value;
+            const br = brInput.value;
+            const bl = blInput.value;
+
+            tlVal.textContent = tl;
+            trVal.textContent = tr;
+            brVal.textContent = br;
+            blVal.textContent = bl;
+
+            // Update box
+            const style = `${tl}px ${tr}px ${br}px ${bl}px`;
+            previewBox.style.borderRadius = style;
+
+            // Format Output
+            // If all equal, concise format
+            if (tl === tr && tr === br && br === bl) {
+                cssCode.textContent = `border-radius: ${tl}px;`;
+            } else {
+                cssCode.textContent = `border-radius: ${style};`;
+            }
+        }
+
+        function copyCSS() {
+            navigator.clipboard.writeText(cssCode.textContent).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

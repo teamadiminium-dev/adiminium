@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Generator | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .config-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .result-area {
+            margin-top: 2rem;
+            position: relative;
+        }
+
+        .result-box {
+            background: #1a1a1a;
+            color: #00ff9d;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            white-space: pre-wrap;
+            border: 1px solid var(--border-color);
+            min-height: 150px;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.2);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Description Styling */
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .description-section h3 {
+            color: var(--primary-color);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+
+        .description-section ul {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+
+        .description-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-box {
+            background: rgba(0, 255, 157, 0.05);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">AI Tools</a> / Prompt
+            Generator</div>
+        <h1 style="text-align: center; margin-bottom: 2rem;">AI Prompt Generator</h1>
+
+        <div class="tool-container">
+            <form onsubmit="generatePrompt(event)" class="tool-card">
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label>AI Model</label>
+                        <select id="ai-model">
+                            <option value="chatgpt">ChatGPT / LLM</option>
+                            <option value="midjourney">Midjourney / Stable Diffusion</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tone / Style</label>
+                        <select id="tone">
+                            <option value="default">Default</option>
+                            <option value="professional">Professional & Corporate</option>
+                            <option value="creative">Creative & Storytelling</option>
+                            <option value="academic">Academic & Detailed</option>
+                            <option value="coding">Technical / Coding Expert</option>
+                            <option value="photorealistic">Photorealistic (Image)</option>
+                            <option value="anime">Anime / Illustration (Image)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Main Topic / Subject</label>
+                    <textarea id="topic"
+                        placeholder="e.g., Explain quantum physics to a 5-year-old OR A cyberpunk city in rain..."></textarea>
+                </div>
+
+                <div class="config-grid">
+                    <div class="form-group">
+                        <label>Format / Aspect Ratio</label>
+                        <select id="format">
+                            <option value="text">Paragraph Text</option>
+                            <option value="list">Bulleted List</option>
+                            <option value="table">Table Format</option>
+                            <option value="code">Code Block</option>
+                            <option value="ar-16-9">--ar 16:9 (Image)</option>
+                            <option value="ar-1-1">--ar 1:1 (Image)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Act As (Role)</label>
+                        <input type="text" id="role" placeholder="e.g., Senior Software Engineer, Marketing Guru...">
+                    </div>
+                </div>
+
+                <button class="action-btn">Generate Prompt ⚡</button>
+
+                <div class="result-area">
+                    <div id="result" class="result-box">Your generated prompt will appear here...</div>
+                    <button type="button" class="copy-btn" onclick="copyToClipboard()">Copy</button>
+                </div>
+            </form>
+        </div>
+
+        <section class="description-section">
+            <h2>Mastering AI: The Ultimate Guide to Prompt Engineering</h2>
+            <p>Welcome to the ultimate resource for understanding and leveraging Artificial Intelligence through the art
+                of <strong>Prompt Engineering</strong>. In the modern era, AI models like ChatGPT, Claude, Midjourney,
+                and Stable Diffusion are powerful engines, but the <em>fuel</em> that powers them is language. The
+                quality of your output is directly dependent on the quality of your input.</p>
+
+            <div class="tip-box">
+                <strong>Key Insight:</strong> AI is not a mind reader. It is a pattern matcher. It needs explicit
+                context, constraints, and instructions to narrow down its infinite possibilities to the one specific
+                answer you want.
+            </div>
+
+            <h3>1. The Anatomy of a Perfect Prompt</h3>
+            <p>A mediocre prompt gets a mediocre answer. To unlock the full potential of Large Language Models (LLMs), a
+                prompt should typically contain four key components:</p>
+            <ul>
+                <li><strong>Role (Persona):</strong> Tell the AI who it is. "Act as a Senior Python Developer" or "Act
+                    as a Michelin Star Chef". This sets the baseline knowledge and tone.</li>
+                <li><strong>Task (Instruction):</strong> The core directive. "Write a function to sort a list" or
+                    "Create a recipe for chocolate cake". Be using active verbs.</li>
+                <li><strong>Context (Constraints):</strong> The background info. "The audience is beginners", "Use only
+                    ingredients found in a standard kitchen", or "Optimize for time complexity".</li>
+                <li><strong>Format (Output):</strong> How you want the answer. "In a markdown table", "As a JSON
+                    object", "In 3 bullet points", or "In the style of Shakespeare".</li>
+            </ul>
+
+            <h3>2. Strategies for Text Generators (ChatGPT, Claude)</h3>
+            <p>When working with text-based AI, clarity is king. Here are advanced techniques used by professionals:</p>
+            <ul>
+                <li><strong>Chain-of-Thought Prompting:</strong> Ask the AI to "think step-by-step" before giving the
+                    final answer. Research shows this significantly improves accuracy on logic and math problems.</li>
+                <li><strong>Few-Shot Prompting:</strong> Give the AI examples. Instead of just assessing sentiment,
+                    provide: "Text: I loved it (Positive). Text: It was okay (Neutral). Text: This is terrible (?)". The
+                    AI will complete the pattern.</li>
+                <li><strong>Constraint Satisfaction:</strong> Explicitly tell the AI what <em>not</em> to do. "Do not
+                    use jargon", "Keep sentences under 15 words", or "Avoid passive voice".</li>
+            </ul>
+
+            <h3>3. Strategies for Image Generators (Midjourney, Stable Diffusion)</h3>
+            <p>Image generation is a different beast. It relies less on grammar and more on visual descriptors,
+                lighting, and style references.</p>
+            <p><strong>The Golden Formula:</strong> [Subject] + [Action/Context] + [Art Style] + [Lighting/Camera] +
+                [Parameters]</p>
+            <ul>
+                <li><strong>Subject:</strong> "A cyberpunk samurai"</li>
+                <li><strong>Style:</strong> "Anime style, Studio Ghibli, Oil Painting, Unreal Engine 5 render"</li>
+                <li><strong>Lighting:</strong> "Neon lights, volumetric fog, cinematic lighting, golden hour"</li>
+                <li><strong>Parameters:</strong> "--ar 16:9" (Aspect Ratio), "--stylize 1000" (How artistic), "--niji"
+                    (Anime model)</li>
+            </ul>
+
+            <h3>4. Common Mistakes to Avoid</h3>
+            <p>Even experienced users fall into these traps:</p>
+            <ul>
+                <li><strong>Being Vague:</strong> "Write a blog post" is bad. "Write a 500-word SEO-optimized blog post
+                    about the benefits of green tea for busy professionals" is good.</li>
+                <li><strong>Overloading:</strong> Putting too many disparate instructions in one prompt can confuse the
+                    model. Break complex tasks into a conversation chain.</li>
+                <li><strong>Ignoring Hallucinations:</strong> AI can lie confidently. Always verify facts, especially
+                    for citations, code libraries, or historical dates.</li>
+            </ul>
+
+            <h3>5. The Future of Prompting</h3>
+            <p>As AI models evolve, they are becoming better at inferring intent, but the need for structure remains. We
+                are moving towards "Agentic AI", where prompts define <em>goals</em> rather than just generating text.
+                Understanding how to structure these goals is the programming language of the future.</p>
+
+            <div class="tip-box">
+                <strong>Pro Tip:</strong> Treat the AI like a brilliant but literal-minded intern. If you don't ask for
+                it, you might not get it. If you ask for it ambiguously, you might get a surprise.
+            </div>
+
+            <h3>Frequently Asked Questions</h3>
+            <p><strong>Q: Can I use these prompts for commercial work?</strong><br>
+                A: Generally, yes. Output from current AI models is usually free for commercial use, but always check
+                the specific terms of service for the tool you are using (e.g., Midjourney, OpenAI).</p>
+
+            <p><strong>Q: Why does the AI sometimes refuse to answer?</strong><br>
+                A: Most modern models have safety guardrails against generating hate speech, violence, or explicit
+                content. If your prompt triggers these filters, try rephrasing to focus on the educational or safe
+                aspects of the topic.</p>
+
+            <p><strong>Q: How long should a prompt be?</strong><br>
+                A: There is no perfect length. For Midjourney, concise descriptions often work best. For ChatGPT, longer
+                context is usually better. Focus on information density rather than word count.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        function generatePrompt(e) {
+            e.preventDefault();
+
+            const model = document.getElementById('ai-model').value;
+            const tone = document.getElementById('tone').value;
+            const topic = document.getElementById('topic').value;
+            const format = document.getElementById('format').value;
+            const role = document.getElementById('role').value;
+
+            let prompt = "";
+
+            if (model === 'chatgpt') {
+                // Text Construction
+                if (role) prompt += `Act as a ${role}. `;
+                prompt += `Your task is to: ${topic}. `;
+
+                if (tone !== 'default') {
+                    prompt += `Please maintain a ${tone} tone throughout the response. `;
+                }
+
+                if (format === 'list') prompt += "Format the output as a bulleted list. ";
+                if (format === 'table') prompt += "Format the output as a structured table. ";
+                if (format === 'code') prompt += "Provide the solution as clean, commented code. ";
+
+                prompt += "\n\nEnsure the response is comprehensive, accurate, and easier to understand.";
+
+            } else if (model === 'midjourney') {
+                // Image Construction
+                prompt += `/imagine prompt: ${topic}`;
+
+                if (tone === 'photorealistic') prompt += ", hyper-realistic, 8k, highly detailed, cinematic lighting, photography style";
+                if (tone === 'anime') prompt += ", anime style, studio ghibli, vibrant colors, cel shaded";
+                if (tone === 'creative') prompt += ", surreal, dreamlike, abstract art, vivid imagination";
+                if (tone === 'professional') prompt += ", corporate photography, clean background, stock photo style";
+
+                if (format.includes('ar-')) {
+                    prompt += ` ${format.replace('ar-', '--ar ').replace('-', ':')}`;
+                }
+
+                prompt += " --v 6.0";
+            }
+
+            // Fallback if empty
+            if (!topic) prompt = "Please enter a topic first!";
+
+            document.getElementById('result').textContent = prompt;
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('result').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const orig = btn.textContent;
+                btn.textContent = "Copied!";
+                setTimeout(() => btn.textContent = orig, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>

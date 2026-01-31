@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .editor-container {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .preview-area {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+            background: var(--bg-body);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .preview-area img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 4px;
+        }
+
+        .settings-area {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .input-row input {
+            flex: 1;
+            padding: 0.8rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+        }
+
+        .lock-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .lock-btn.active {
+            background: var(--primary-dim);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        button.action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: 0.2s;
+        }
+
+        button.action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .faq-item h4 {
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Image Resizer
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Online Image Resizer</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🖼️</div>
+                <p>Drag & Drop your image here or click to browse</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="preview-area">
+                    <img id="preview-img" src="" alt="Preview">
+                </div>
+
+                <div class="settings-area">
+                    <h3>Resize Settings</h3>
+
+                    <div class="control-group">
+                        <label>Dimensions (px)</label>
+                        <div class="input-row">
+                            <div style="flex:1">
+                                <span style="font-size:0.8em; color:var(--text-muted)">Width</span>
+                                <input type="number" id="width-input">
+                            </div>
+                            <button id="lock-btn" class="lock-btn active" title="Lock Aspect Ratio">
+                                🔒
+                            </button>
+                            <div style="flex:1">
+                                <span style="font-size:0.8em; color:var(--text-muted)">Height</span>
+                                <input type="number" id="height-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Percentage Scale</label>
+                        <input type="range" id="scale-slider" min="10" max="200" value="100">
+                        <div style="text-align: right; color: var(--text-muted); font-size: 0.9em;">
+                            <span id="scale-val">100</span>%
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <p style="font-size: 0.9em; color: var(--text-muted);">
+                            Original: <span id="orig-dims">0 x 0</span><br>
+                            New: <span id="new-dims">0 x 0</span>
+                        </p>
+                    </div>
+
+                    <button class="action-btn" onclick="downloadImage()">Download Resized Image</button>
+                    <button onclick="resetTool()"
+                        style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">Start
+                        Over</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Complete Guide to Image Resizing</h2>
+            <p>The Adiminium Image Resizer gives you pixel-perfect control over your image dimensions. In a digital
+                world of varying screen sizes—from 4K monitors to tiny smartwatches—one size definitely does
+                <em>not</em> fit all. This tool allows you to scale your visual assets precisely for their intended
+                destination.</p>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>Aspect Ratio Lock:</strong> By default, the "Lock" icon is active. This ensures that if you
+                change the Width, the Height changes automatically to prevent your image from looking "squashed" or
+                "stretched".
+            </div>
+
+            <h3>Resizing vs. Cropping</h3>
+            <p>It's important to distinguish:</p>
+            <ul>
+                <li><strong>Resizing (This Tool):</strong> Changes the resolution of the entire image. A 1000x1000 photo
+                    becomes 500x500. The content remains the same, just smaller.</li>
+                <li><strong>Cropping:</strong> Cuts away parts of the image content. A 1000x1000 photo becomes 500x500,
+                    but now you only see the center face, not the background.</li>
+            </ul>
+
+            <h3>Interpolation Algorithms</h3>
+            <p>When you resize an image, the computer has to guess how to blend pixels (Downscaling) or invent new
+                pixels (Upscaling). We use the browser's native <strong>High Quality Bi-Cubic Interpolation</strong> to
+                ensure smooth edges and sharp details.</p>
+
+            <h3>Common Standard Sizes</h3>
+            <ul>
+                <li><strong>1920 x 1080 (HD):</strong> Standard Desktop wallpaper or YouTube thumbnail.</li>
+                <li><strong>1080 x 1080:</strong> Instagram Post (Square).</li>
+                <li><strong>1080 x 1920:</strong> TikTok / Instagram Story (Vertical).</li>
+                <li><strong>1200 x 630:</strong> Facebook / Twitter (X) Link Preview card.</li>
+                <li><strong>32 x 32:</strong> Browser Favicon.</li>
+            </ul>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Your image appears in the preview.</li>
+                <li><strong>Choose Method:</strong>
+                    <ul>
+                        <li><em>Pixel Exact:</em> Type "1920" in width.</li>
+                        <li><em>Percentage:</em> Drag slider to "50%" to make it half size.</li>
+                    </ul>
+                </li>
+                <li><strong>Process:</strong> Click Download. The image is re-drawn at the new resolution.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Can I make small images bigger (Upscale)?</h4>
+                <p>You can, but "Upscaling" cannot create detail that isn't there. If you turn a 100px icon into a
+                    1000px image, it will look blurry or blocked. For that, you would need AI Upscaling (different
+                    tech).</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Why is the file size smaller?</h4>
+                <p>Pixel Count = File Size. A 4000x3000 photo has 12 Million pixels. Resizing it to 800x600 reduces it
+                    to 480,000 pixels. That's 96% fewer pixels to store!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const previewImg = document.getElementById('preview-img');
+
+        const widthInput = document.getElementById('width-input');
+        const heightInput = document.getElementById('height-input');
+        const lockBtn = document.getElementById('lock-btn');
+        const scaleSlider = document.getElementById('scale-slider');
+        const scaleVal = document.getElementById('scale-val');
+
+        const origDims = document.getElementById('orig-dims');
+        const newDims = document.getElementById('new-dims');
+
+        let originalImage = null;
+        let aspectRatio = 0;
+        let isLocked = true;
+
+        // Event Listeners
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        lockBtn.addEventListener('click', () => {
+            isLocked = !isLocked;
+            lockBtn.classList.toggle('active');
+            lockBtn.innerHTML = isLocked ? '🔒' : '🔓';
+            if (isLocked && originalImage) {
+                // Reset to match aspect ratio based on width
+                heightInput.value = Math.round(widthInput.value / aspectRatio);
+                updateDims();
+            }
+        });
+
+        widthInput.addEventListener('input', () => {
+            if (isLocked && aspectRatio) {
+                heightInput.value = Math.round(widthInput.value / aspectRatio);
+            }
+            updateScaleFromDims();
+            updateDims();
+        });
+
+        heightInput.addEventListener('input', () => {
+            if (isLocked && aspectRatio) {
+                widthInput.value = Math.round(heightInput.value * aspectRatio);
+            }
+            updateScaleFromDims();
+            updateDims();
+        });
+
+        scaleSlider.addEventListener('input', (e) => {
+            const pct = e.target.value;
+            scaleVal.textContent = pct;
+
+            if (originalImage) {
+                widthInput.value = Math.round(originalImage.width * (pct / 100));
+                heightInput.value = Math.round(originalImage.height * (pct / 100));
+                updateDims();
+            }
+        });
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    aspectRatio = img.width / img.height;
+
+                    // Init inputs
+                    widthInput.value = img.width;
+                    heightInput.value = img.height;
+                    origDims.textContent = `${img.width} x ${img.height}`;
+                    updateDims();
+
+                    // Show editor
+                    previewImg.src = e.target.result;
+                    dropZone.style.display = 'none';
+                    editor.style.display = 'flex';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateDims() {
+            newDims.textContent = `${widthInput.value} x ${heightInput.value}`;
+        }
+
+        function updateScaleFromDims() {
+            if (!originalImage) return;
+            // Approx scale based on width
+            const pct = Math.round((widthInput.value / originalImage.width) * 100);
+            scaleSlider.value = pct;
+            scaleVal.textContent = pct;
+        }
+
+        function resetTool() {
+            originalImage = null;
+            fileInput.value = '';
+            editor.style.display = 'none';
+            dropZone.style.display = 'block';
+        }
+
+        function downloadImage() {
+            if (!originalImage) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = parseInt(widthInput.value);
+            canvas.height = parseInt(heightInput.value);
+            const ctx = canvas.getContext('2d');
+
+            // High quality smoothing
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+
+            // Trigger download
+            const link = document.createElement('a');
+            link.download = 'resized-image.png'; // dynamic name later?
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+
+</html>

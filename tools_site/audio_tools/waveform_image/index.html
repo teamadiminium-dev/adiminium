@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio to Image | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-body);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-surface);
+        }
+
+        #waveform {
+            background: #000;
+            border-radius: 12px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .config {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb"><a href="../../index.html">Home</a> / <a href="../index.html">Audio Tools</a> / Audio to
+            Image</div>
+        <h1 style="text-align: center; margin-bottom: 2rem;">Audio to Image Generator</h1>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📸</div>
+                    <p>Click to upload audio</p>
+                    <input type="file" id="file-input" accept="audio/*" style="display: none;">
+                </div>
+
+                <div class="config">
+                    <div>
+                        <label>Wave Color:</label>
+                        <input type="color" id="wave-color" value="#00ff9d">
+                    </div>
+                    <div>
+                        <label>Background:</label>
+                        <input type="color" id="bg-color" value="#000000">
+                    </div>
+                </div>
+
+                <div id="waveform"></div>
+
+                <div class="controls">
+                    <button class="action-btn" onclick="exportImage()">Export as PNG</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Create Stunning Audio Visualizers</h2>
+            <p>The Adiminium Audio-to-Image Generator turns your music into art. In the age of social media, you cannot
+                post an MP3 file to Instagram or TikTok. You need a video or an image. This tool helps you create the
+                high-resolution graphical assets needed to showcase your audio.</p>
+
+            <h3>Top Design Trends</h3>
+            <p>Audio visualization styles have evolved. Our tool creates the classic "Soundcloud Style" waveform:</p>
+            <ul>
+                <li><strong>Cyberpunk / Neon:</strong> Use a black background with a bright neon green (#00ff9d) or hot
+                    pink (#ff00ff) wave.</li>
+                <li><strong>Minimalist:</strong> Use a white background with a dark grey (#333) wave for a clean,
+                    Apple-style aesthetic.</li>
+                <li><strong>Dark Mode:</strong> Deep navy background with a light blue wave looks professional and
+                    sleek.</li>
+            </ul>
+
+            <h3>How It Works</h3>
+            <p>We read the entire audio file and extract the "Peak Data" for every millisecond. Then, using the HTML5
+                Canvas API, we draw these peaks as a series of smoothed bars.</p>
+            <ul>
+                <li><strong>Resolution:</strong> The output is a high-density PNG image derived from your screen's pixel
+                    ratio.</li>
+                <li><strong>Transparency:</strong> If you want a transparent background (to overlay on a photo in
+                    Photoshop), simply set the Background Color to the same as the wave color (or check back for our
+                    upcoming "Transparent Background" toggle).</li>
+            </ul>
+
+            <h3>Use Cases</h3>
+            <ol>
+                <li><strong>Podcast Social Posts:</strong> Take a 30-second clip, generate its waveform here, and place
+                    it over a photo of the guest to show "Audio Content".</li>
+                <li><strong>YouTube Thumbnails:</strong> A waveform implies "Music" or "Interview" instantly to a viewer
+                    scrolling through thumbnails.</li>
+                <li><strong>Album Art:</strong> Some ambient and electronic artists use the actual waveform of the song
+                    as the cover art for the single.</li>
+            </ol>
+
+            <h3>Step-by-Step Guide</h3>
+            <ol>
+                <li><strong>Upload:</strong> Select your song or clip.</li>
+                <li><strong>Customize:</strong> Use the color pickers to match your brand identity.</li>
+                <li><strong>Render:</strong> The waveform displays instantly.</li>
+                <li><strong>Export:</strong> Click "Export as PNG" to save the image to your computer.</li>
+            </ol>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Is this a video?</h4>
+                <p>No, this tool generates a static <strong>Image</strong> (PNG). To make this move (animate), you would
+                    need a Video Generator (Coming Soon) or use screen recording software while playing the audio.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>What resolution is the image?</h4>
+                <p>The image width matches the width of the container on your screen (usually around 800-1000px) but at
+                    double density (Retina). For 4K exports, maximize your browser window before exporting.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        let wavesurfer;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: '#00ff9d',
+                progressColor: '#00ff9d',
+                cursorWidth: 0,
+                height: 300,
+                barWidth: 2,
+                barGap: 3,
+                barRadius: 3,
+                interact: false
+            });
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('drop-zone').style.display = 'none';
+                const url = URL.createObjectURL(file);
+                wavesurfer.load(url);
+            }
+        });
+
+        document.getElementById('wave-color').addEventListener('change', (e) => {
+            wavesurfer.setOptions({ waveColor: e.target.value, progressColor: e.target.value });
+        });
+
+        document.getElementById('bg-color').addEventListener('change', (e) => {
+            document.getElementById('waveform').style.background = e.target.value;
+        });
+
+        function exportImage() {
+            // Get the canvas from shadow DOM or internal structure
+            const wrapper = document.querySelector('#waveform > div'); // Should be the wrapper
+            if (!wrapper) return;
+
+            // We need to hunt for the canvas. It might be in shadow root
+            let canvas = wrapper.shadowRoot ? wrapper.shadowRoot.querySelector('canvas') : wrapper.querySelector('canvas');
+
+            if (canvas) {
+                // Create a new canvas to combine bg and wave
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = canvas.width;
+                finalCanvas.height = canvas.height;
+                const ctx = finalCanvas.getContext('2d');
+
+                // Draw bg
+                ctx.fillStyle = document.getElementById('bg-color').value;
+                ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+                // Draw wave
+                ctx.drawImage(canvas, 0, 0);
+
+                const url = finalCanvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'waveform.png';
+                a.click();
+            } else {
+                alert("Could not find waveform canvas. Try playing the audio first.");
+            }
+        }
+    </script>
+</body>
+
+</html>

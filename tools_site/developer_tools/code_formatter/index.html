@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online Code Snippet Formatter. Beautify your code for Word, PowerPoint, and Google Docs. Preserves syntax highlighting and line numbers for professional documents.">
+    <meta name="keywords"
+        content="format code for word, code snippet for powerpoint, copy code with line numbers, code beautifier for docs, syntax highlighter for word, paste code into word">
+    <title>Code Snippet Formatter for Word/PPT | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .panel-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-family: 'Fira Code', monospace;
+            resize: vertical;
+            line-height: 1.5;
+            transition: all 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .preview-box {
+            width: 100%;
+            height: 400px;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: #ffffff;
+            /* Always white for consistent Word output */
+            color: #333;
+            overflow: auto;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* The output container styles that will be copied */
+        .code-table {
+            border-collapse: collapse;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 13px;
+            width: 100%;
+            background: #fafafa;
+            border: 1px solid #ddd;
+        }
+
+        .code-table td {
+            vertical-align: top;
+            padding: 0;
+        }
+
+        .line-num-cell {
+            background: #f0f0f0;
+            color: #888;
+            text-align: right;
+            padding: 4px 8px;
+            user-select: none;
+            border-right: 1px solid #ddd;
+            width: 1%;
+            white-space: nowrap;
+        }
+
+        .code-cell {
+            padding: 4px 10px;
+            background: #ffffff;
+            color: #24292e;
+            white-space: pre-wrap;
+        }
+
+        /* Syntax Colors - Light Theme for documents */
+        .token-keyword {
+            color: #d73a49;
+            font-weight: bold;
+        }
+
+        /* Red/Pink */
+        .token-string {
+            color: #032f62;
+        }
+
+        /* Dark Blue */
+        .token-comment {
+            color: #6a737d;
+            font-style: italic;
+        }
+
+        /* Grey */
+        .token-function {
+            color: #6f42c1;
+        }
+
+        /* Purple */
+        .token-number {
+            color: #005cc5;
+        }
+
+        /* Blue */
+        .token-class {
+            color: #6f42c1;
+            font-weight: bold;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            background: var(--bg-surface);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .select-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        select {
+            padding: 0.6rem 2rem 0.6rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-copy {
+            padding: 0.7rem 1.5rem;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Developer Tools</a> / Code Snippet Formatter
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Code Formatter for Word/PPT/Docs</h1>
+
+        <div class="tool-container">
+            <div class="toolbar">
+                <div class="select-group">
+                    <div style="display:flex; flex-direction:column; gap:0.2rem;">
+                        <label style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">Language</label>
+                        <select id="language" onchange="formatCode()">
+                            <option value="js">JavaScript / JSON</option>
+                            <option value="html">HTML / XML</option>
+                            <option value="css">CSS</option>
+                            <option value="py">Python</option>
+                            <option value="java">Java / C++ / C#</option>
+                            <option value="sql">SQL</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:0.2rem;">
+                        <label style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">Style</label>
+                        <select id="style-mode">
+                            <option value="light">Light (Best for Word)</option>
+                            <!-- Dark mode for Word is tricky, sticking to Light for now as it prints better -->
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-copy" onclick="copyStyled()">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                    Copy for Word/PPT
+                </button>
+            </div>
+
+            <div class="panels">
+                <div class="panel-col">
+                    <label style="font-weight:600; color:var(--text-muted); margin-bottom:0.5rem;">Input Code</label>
+                    <textarea id="code-input" placeholder="// Paste your code here..." oninput="formatCode()"
+                        spellcheck="false"></textarea>
+                </div>
+
+                <div class="panel-col">
+                    <label style="font-weight:600; color:var(--text-muted); margin-bottom:0.5rem;">Preview (Ready to
+                        Copy)</label>
+                    <div class="preview-box" id="preview-output" contenteditable="false">
+                        <!-- Output will be here -->
+                        <div style="color:#aaa; text-align:center; padding-top:2rem;">Preview will appear here...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Pasting code into documents like Microsoft Word, Google Docs, or PowerPoint often results in a formatting
+                disaster. You lose syntax highlighting, indentation gets crushed, and the code looks unprofessional. The
+                Adiminium Code Formatter solves this by generating a syntax-highlighted, table-based snippet that
+                preserves layout and color. It's the perfect tool for students writing technical reports, developers
+                creating documentation, or anyone who needs to present code cleanly in a rich-text environment.</p>
+
+            <h3>What It Does</h3>
+            <p>Converts code snippets into syntax-highlighted HTML/Rich Text that can be pasted directly into word
+                processors.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Paste Code:</strong> Enter your source code into the input area.</li>
+                <li><strong>Select Language:</strong> Choose the appropriate language (JS, Python, Java, etc.) for
+                    accurate coloring.</li>
+                <li><strong>Copy:</strong> Click "Copy for Word/PPT".</li>
+                <li><strong>Paste:</strong> Switch to your document (Ctrl+V) to see the beautifully formatted block.
+                </li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Students, technical writers, researchers, and developers creating presentation slides.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Why use this instead of screenshots?</h4>
+                <p>Text remains searchable and copy-pasteable for your readers. Screenshots are static images that
+                    cannot be edited or indexed.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Does it support Dark Mode?</h4>
+                <p>Currently, we optimize for "Light Mode" because most papers and documents are printed on white
+                    backgrounds.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Which languages are supported?</h4>
+                <p>We support JavaScript, HTML, CSS, Python, Java, SQL, and generic C-style languages.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const input = document.getElementById('code-input');
+        const preview = document.getElementById('preview-output');
+        const langSelect = document.getElementById('language');
+
+        /* --- Advanced Lexer (Tokenizer) --- */
+
+        // Language Definitions (Keywords & Patterns)
+        const LANGUAGES = {
+            js: {
+                keywords: ["function", "return", "if", "else", "for", "while", "var", "let", "const", "class", "new", "this", "import", "export", "from", "async", "await", "try", "catch", "switch", "case", "break", "continue", "default", "typeof", "instanceof", "void", "delete", "true", "false", "null", "undefined", "NaN"],
+                builtins: ["console", "window", "document", "Math", "JSON", "Promise", "Array", "Object", "String", "Number", "Boolean", "Date", "Map", "Set"],
+                singleLineComment: "//",
+                multiLineComment: ["/*", "*/"],
+                strings: ['"', "'", "`"]
+            },
+            py: {
+                keywords: ["def", "class", "if", "elif", "else", "for", "while", "return", "import", "from", "as", "try", "except", "finally", "with", "pass", "lambda", "global", "nonlocal", "yield", "raise", "print", "assert", "del", "True", "False", "None", "and", "or", "not", "in", "is"],
+                builtins: ["len", "range", "str", "int", "float", "list", "dict", "set", "super", "open", "type", "dir", "help"],
+                singleLineComment: "#",
+                multiLineComment: ['"""', '"""'],
+                strings: ['"', "'"]
+            },
+            java: {
+                keywords: ["public", "private", "protected", "class", "interface", "enum", "extends", "implements", "new", "this", "super", "void", "if", "else", "for", "while", "do", "switch", "case", "default", "break", "continue", "return", "try", "catch", "finally", "throw", "throws", "package", "import", "static", "final", "abstract", "native", "synchronized", "volatile", "transient", "boolean", "char", "byte", "short", "int", "long", "float", "double"],
+                builtins: ["System", "String", "Integer", "Math", "List", "ArrayList", "Map", "HashMap"],
+                singleLineComment: "//",
+                multiLineComment: ["/*", "*/"],
+                strings: ['"']
+            },
+            sql: {
+                keywords: ["SELECT", "FROM", "WHERE", "INSERT", "INTO", "UPDATE", "DELETE", "CREATE", "TABLE", "DROP", "ALTER", "INDEX", "VIEW", "JOIN", "LEFT", "RIGHT", "INNER", "OUTER", "ON", "GROUP", "BY", "ORDER", "HAVING", "LIMIT", "OFFSET", "UNION", "ALL", "DISTINCT", "AS", "CASE", "WHEN", "THEN", "ELSE", "END", "AND", "OR", "NOT", "NULL", "PRIMARY", "KEY", "FOREIGN", "REFERENCES", "DEFAULT", "VALUES", "SET"],
+                builtins: ["COUNT", "SUM", "AVG", "MAX", "MIN", "NOW", "DATE", "CONCAT"],
+                singleLineComment: "--",
+                multiLineComment: ["/*", "*/"],
+                strings: ["'"]
+            },
+            html: {},
+            css: {}
+        };
+
+        class Lexer {
+            constructor(code, lang) {
+                this.code = code;
+                this.lang = lang;
+                this.pos = 0;
+                this.tokens = [];
+                this.config = LANGUAGES[lang] || LANGUAGES.js;
+            }
+
+            is(str) {
+                return this.code.startsWith(str, this.pos);
+            }
+
+            consume(count = 1) {
+                const chunk = this.code.substring(this.pos, this.pos + count);
+                this.pos += count;
+                return chunk;
+            }
+
+            peek(count = 1) {
+                return this.code.substring(this.pos, this.pos + count);
+            }
+
+            tokenize() {
+                if (this.lang === 'html') return this.tokenizeHTML();
+
+                while (this.pos < this.code.length) {
+                    const char = this.peek();
+
+                    // 1. Whitespace
+                    if (/\s/.test(char)) {
+                        this.tokens.push({ type: 'text', value: this.consume() });
+                        continue;
+                    }
+
+                    // 2. Strings
+                    let isString = false;
+                    for (const quote of (this.config.strings || [])) {
+                        if (this.is(quote)) {
+                            this.tokens.push({ type: 'token-string', value: this.readString(quote) });
+                            isString = true;
+                            break;
+                        }
+                    }
+                    if (isString) continue;
+
+                    // 3. Comments (Multi-line)
+                    if (this.config.multiLineComment && this.is(this.config.multiLineComment[0])) {
+                        this.tokens.push({ type: 'token-comment', value: this.readUntil(this.config.multiLineComment[1], true) });
+                        continue;
+                    }
+
+                    // 4. Comments (Single-line)
+                    if (this.config.singleLineComment && this.is(this.config.singleLineComment[0])) {
+                        this.tokens.push({ type: 'token-comment', value: this.readUntil('\n', false) });
+                        continue;
+                    }
+
+                    // 5. Numbers
+                    if (/[0-9]/.test(char)) {
+                        this.tokens.push({ type: 'token-number', value: this.readPattern(/[0-9a-fA-F\.x]/) });
+                        continue;
+                    }
+
+                    // 6. Identifiers
+                    if (/[a-zA-Z_$]/.test(char)) {
+                        const word = this.readPattern(/[a-zA-Z0-9_$]/);
+                        let type = 'text';
+
+                        const checkWord = this.lang === 'sql' ? word.toUpperCase() : word;
+
+                        if (this.config.keywords && this.config.keywords.includes(checkWord)) type = 'token-keyword';
+                        else if (this.config.builtins && this.config.builtins.includes(checkWord)) type = 'token-function';
+
+                        this.tokens.push({ type: type, value: word });
+                        continue;
+                    }
+
+                    // 7. Operators / Punctuation
+                    this.tokens.push({ type: 'token-operator', value: this.consume() });
+                }
+                return this.tokens;
+            }
+
+            tokenizeHTML() {
+                while (this.pos < this.code.length) {
+                    const char = this.peek();
+
+                    if (this.is('<!--')) {
+                        this.tokens.push({ type: 'token-comment', value: this.readUntil('-->', true) });
+                        continue;
+                    }
+
+                    if (char === '<' && !this.is('</')) {
+                        this.tokens.push({ type: 'token-keyword', value: this.consume() });
+                        this.tokens.push({ type: 'token-keyword', value: this.readPattern(/[a-zA-Z0-9\-]/) });
+                        continue;
+                    }
+                    if (this.is('</')) {
+                        this.tokens.push({ type: 'token-keyword', value: this.consume(2) });
+                        this.tokens.push({ type: 'token-keyword', value: this.readPattern(/[a-zA-Z0-9\-]/) });
+                        continue;
+                    }
+                    if (char === '>') {
+                        this.tokens.push({ type: 'token-keyword', value: this.consume() });
+                        continue;
+                    }
+
+                    if (char === '"' || char === "'") {
+                        this.tokens.push({ type: 'token-string', value: this.readString(char) });
+                        continue;
+                    }
+
+                    this.tokens.push({ type: 'text', value: this.consume() });
+                }
+                return this.tokens;
+            }
+
+            readString(quote) {
+                let str = this.consume();
+                while (this.pos < this.code.length) {
+                    const char = this.peek();
+                    if (char === '\\') {
+                        str += this.consume(2);
+                        continue;
+                    }
+                    str += this.consume();
+                    if (char === quote) break;
+                }
+                return str;
+            }
+
+            readUntil(endStr, includeEnd) {
+                let content = '';
+                if (includeEnd) content = this.consume(endStr.length);
+
+                while (this.pos < this.code.length) {
+                    if (this.is(endStr)) {
+                        if (includeEnd) content += this.consume(endStr.length);
+                        break;
+                    }
+                    content += this.consume();
+                    if (endStr === '\n' && content.endsWith('\n')) break;
+                }
+                return content;
+            }
+
+            readPattern(regex) {
+                let content = '';
+                while (this.pos < this.code.length && regex.test(this.peek())) {
+                    content += this.consume();
+                }
+                return content;
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function formatCode() {
+            const raw = input.value;
+            if (!raw) {
+                preview.innerHTML = '<div style="color:#aaa; text-align:center; padding-top:2rem;">Preview will appear here...</div>';
+                return;
+            }
+
+            const lang = langSelect.value;
+
+            // 1. Tokenize
+            const lexer = new Lexer(raw, lang);
+            const tokens = lexer.tokenize();
+
+            // 2. Render to HTML spans
+            let highlightedHtml = '';
+            tokens.forEach(token => {
+                const safeVal = escapeHtml(token.value);
+                if (token.type === 'text' || token.type === 'token-operator') {
+                    highlightedHtml += safeVal;
+                } else {
+                    highlightedHtml += `<span class="${token.type}">${safeVal}</span>`;
+                }
+            });
+
+            // 3. Split into lines for table
+            const lines = highlightedHtml.split('\n');
+
+            // Build Table
+            let tableHtml = '<table class="code-table">';
+            lines.forEach((lineContent, index) => {
+                // If line is empty, put a non-breaking space so row has height
+                const content = lineContent || ' ';
+                tableHtml += `
+                    <tr>
+                        <td class="line-num-cell">${index + 1}</td>
+                        <td class="code-cell">${content}</td>
+                    </tr>
+                `;
+            });
+            tableHtml += '</table>';
+
+            preview.innerHTML = tableHtml;
+        }
+
+        function copyStyled() {
+            if (!input.value) return;
+
+            // Select the text range of the preview box
+            const range = document.createRange();
+            range.selectNode(preview);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+
+            try {
+                // Execute copy
+                document.execCommand('copy');
+
+                // Feedback
+                const originalText = document.querySelector('.btn-copy').innerHTML;
+                document.querySelector('.btn-copy').innerHTML = '✅ Copied!';
+                setTimeout(() => {
+                    document.querySelector('.btn-copy').innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                alert('Failed to copy');
+            }
+
+            window.getSelection().removeAllRanges();
+        }
+
+        // Init
+        // input.value = "function hello() {\n  console.log('Hello World');\n}";
+        // formatCode();
+    </script>
+</body>
+
+</html>

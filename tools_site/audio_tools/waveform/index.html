@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Waveform Viewer | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: var(--bg-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-body);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-surface);
+        }
+
+        #waveform {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            margin: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Audio Tools</a> / Waveform Viewer
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Audio Waveform Viewer</h1>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <div id="drop-zone" class="drop-zone" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌊</div>
+                    <p>Click to upload audio</p>
+                    <input type="file" id="file-input" accept="audio/*" style="display: none;">
+                </div>
+
+                <div id="waveform"></div>
+
+                <div class="controls">
+                    <button class="action-btn" onclick="wavesurfer.playPause()">Play/Pause</button>
+                    <button class="action-btn" onclick="wavesurfer.zoom(50)">Zoom In</button>
+                    <button class="action-btn" onclick="wavesurfer.zoom(0)">Zoom Out</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Visualizing Sound: The Waveform Viewer</h2>
+            <p>The Waveform Viewer is a diagnostic and inspection tool that reveals the hidden details of your audio.
+                Sound is invisible, but by turning it into a visual graph, we can understand its structure, dynamics,
+                and quality at a glance. Whether you are checking a file for clipping, analyzing the beat structure of a
+                song, or just enjoying the aesthetics of sound, this tool renders a high-definition, interactive canvas
+                of your audio.</p>
+
+            <h3>What IS a Waveform?</h3>
+            <p>A waveform is a 2D graph of sound:</p>
+            <ul>
+                <li><strong>X-Axis (Horizontal):</strong> Represents <strong>Time</strong>. Moving left to right is the
+                    progression of the song.</li>
+                <li><strong>Y-Axis (Vertical):</strong> Represents <strong>Amplitude</strong> (Volume). The taller the
+                    wave, the louder the sound.</li>
+            </ul>
+            <p>This "Oscillogram" view allows you to see the rhythmic pulse of music. Sharp, tall spikes usually
+                indicate drum hits (Transients), while sustained thick blocks indicate bass or held synthesizer chords.
+            </p>
+
+            <h3>Key Features</h3>
+            <ul>
+                <li><strong>High-Resolution Canvas:</strong> We render thousands of data points to give you a crisp,
+                    accurate view, not just a blurry preview.</li>
+                <li><strong>Zoom Controls:</strong> Use the "Zoom In" button to dive deep into the waveform. At high
+                    zoom levels, you can almost see the individual vibrations of the speaker cone!</li>
+                <li><strong>Responsive Playback:</strong> Click anywhere on the waveform to instantly jump the playhead
+                    to that position. The synchronized cursor verifies exactly what you are hearing.</li>
+                <li><strong>Peak Detection:</strong> Visually spot "Clipping". If the waveform looks like a solid brick
+                    that hits the top and bottom edges constantly, your audio is likely distorted and too loud.</li>
+            </ul>
+
+            <h3>Use Cases</h3>
+            <ol>
+                <li><strong>Quality Control (QC):</strong> Before publishing a podcast, load it here. Do you see big
+                    silent gaps? Do you see loud spikes that might hurt listeners' ears? Fix them before release.</li>
+                <li><strong>Music Education:</strong> Teachers can show students "This is what a crescendo looks like"
+                    or identifying the structure of a Verse vs. Chorus by the density of the waves.</li>
+                <li><strong>Forensic Audio:</strong> Spotting edits or anomalies. A bad edit usually shows up as an
+                    unnatural vertical line in the waveform.</li>
+            </ol>
+
+            <h3>Technical Overview</h3>
+            <p>This tool is built on the robust <strong>WaveSurfer.js</strong> library. It decodes the audio file into a
+                <code>Float32Array</code> of PCM data. It then calculates the Root Mean Square (RMS) or Peak amplitude
+                for each pixel column on your screen to draw the graph efficiently.</p>
+
+            <h3>Frequently Asked Questions</h3>
+            <div class="faq-item">
+                <h4>Can I edit the audio here?</h4>
+                <p>This is primarily a <em>Viewer</em>. To cut/edit the audio based on what you see, please switch to
+                    our <strong>Audio Trim Tool</strong>.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Why zoom?</h4>
+                <p>Zooming lets you find precise events, like a cough or a click, which might only last 0.1 seconds. In
+                    a full zoomed-out view, that click is just 1 pixel wide and invisible.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I save the image?</h4>
+                <p>If you want to save this beautiful visualization as a PNG/JPG for your album art or video thumbnail,
+                    use our dedicated <strong>Audio to Image Generator</strong> tool!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const wavesurfer = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: '#4d4d4d',
+            progressColor: '#00ff9d',
+            cursorColor: '#ffffff',
+            barWidth: 2,
+            barRadius: 3,
+            cursorWidth: 1,
+            height: 200,
+            barGap: 3
+        });
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('drop-zone').style.display = 'none';
+                const url = URL.createObjectURL(file);
+                wavesurfer.load(url);
+            }
+        });
+    </script>
+</body>
+
+</html>

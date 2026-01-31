@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converters | Adiminium Tools</title>
+    <link rel="stylesheet" href="../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tool-link {
+            display: block;
+            padding: 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+        .tool-link:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .tool-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> / Converters
+        </div>
+
+        <h1 style="margin-bottom: 2rem;">Converters</h1>
+
+        <div class="grid">
+            <a href="currency/index.html" class="tool-link">
+                <div class="card-icon">💱</div>
+                <div class="tool-name">Currency Converter</div>
+                <div class="tool-desc">Real-time exchange rates for global currencies.</div>
+            </a>
+
+            <a href="unit/index.html" class="tool-link">
+                <div class="card-icon">📏</div>
+                <div class="tool-name">Unit Converter</div>
+                <div class="tool-desc">Length, weight, temperature, and more.</div>
+            </a>
+
+            <a href="base/index.html" class="tool-link">
+                <div class="card-icon">💾</div>
+                <div class="tool-name">Number Base Converter</div>
+                <div class="tool-desc">Binary, Decimal, Octal, and Hexadecimal.</div>
+            </a>
+
+            <a href="roman/index.html" class="tool-link">
+                <div class="card-icon">🏛️</div>
+                <div class="tool-name">Roman Numeral Converter</div>
+                <div class="tool-desc">Convert Logic: Decimal ↔ Roman Numerals (MMXXVI).</div>
+            </a>
+
+            <a href="text/index.html" class="tool-link">
+                <div class="card-icon">0️⃣1️⃣</div>
+                <div class="tool-name">Text to Binary</div>
+                <div class="tool-desc">Translate text into computer code (01001000...)</div>
+            </a>
+
+            <a href="color/index.html" class="tool-link">
+                <div class="card-icon">🎨</div>
+                <div class="tool-name">Hex to RGB Converter</div>
+                <div class="tool-desc">Color codes for web design. Live Preview.</div>
+            </a>
+
+            <a href="ascii/index.html" class="tool-link">
+                <div class="card-icon">🔡</div>
+                <div class="tool-name">ASCII Converter</div>
+                <div class="tool-desc">Text to Decimal Codes (A → 65).</div>
+            </a>
+
+            <a href="morse/index.html" class="tool-link">
+                <div class="card-icon">📻</div>
+                <div class="tool-name">Morse Code Converter</div>
+                <div class="tool-desc">Text to Dots and Dashes (... --- ...).</div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="../js/theme.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/particles.js"></script>
+</body>
+
+</html>

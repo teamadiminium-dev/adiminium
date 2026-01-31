@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Image Generator | Adiminium Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: 0.2s;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-body);
+        }
+
+        .drop-zone button {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .editor-container {
+            display: none;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .output-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .img-preview {
+            max-width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: contain;
+            background: var(--bg-body);
+            margin-bottom: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+        }
+
+        .action-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Image Tools</a> / Responsive Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Responsive Image (srcset) Generator</h1>
+
+        <div class="tool-container">
+            <div id="drop-zone" class="drop-zone">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
+                <p>Upload a high-res image to generate breakpoints</p>
+                <button onclick="document.getElementById('file-input').click()">Select Image</button>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+            </div>
+
+            <div id="editor" class="editor-container">
+                <div class="output-card">
+                    <h3>Generated HTML</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem">
+                        This code uses typical breakpoints: 400w, 800w, 1200w.
+                    </p>
+                    <textarea id="output-code" readonly></textarea>
+                </div>
+
+                <div id="downloads">
+                    <h3>Download Resized Assets</h3>
+                    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem" id="download-links"></div>
+                </div>
+
+                <button onclick="location.reload()"
+                    style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; align-self:center">Start
+                    Over</button>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>The Modern Web Guide: Responsive Images (Srcset)</h2>
+            <p>The Adiminium Responsive Image Generator is the ultimate "Do It For Me" tool for modern web development.
+                In the old days, we just had one `img src="pic.jpg"`. Today, that is malpractice. You shouldn't serve a
+                massive 4K desktop hero image to a user on a shaky 3G iPhone connection.</p>
+
+            <h3>The Solution: `srcset`</h3>
+            <p>HTML5 introduced the `srcset` attribute. It allows you to provide a <em>menu</em> of images to the
+                browser, and let the browser pick the best one.
+                <br><em>"Here is the small one, the medium one, and the big one. You choose."</em>
+            </p>
+
+            <h3>How This Tool Helps</h3>
+            <p>Creating these assets manually is painful. You have to open Photoshop, resize to 400px, save. Resize to
+                800px, save. Resize to 1200px, save. Then write the complex HTML code.
+                <br><strong>This tool does it all instantly.</strong>
+            </p>
+
+            <h3>Standard Breakpoints</h3>
+            <p>We use an industry-standard "Mobile / Tablet / Desktop" strategy:</p>
+            <ul>
+                <li><strong>400w:</strong> Perfect for mobile phones in portrait mode.</li>
+                <li><strong>800w:</strong> Great for tablets or mobile phones with high-density "Retina" screens (2x
+                    pixel density).</li>
+                <li><strong>1200w:</strong> Standard desktop view.</li>
+            </ul>
+
+            <h3>Workflow</h3>
+            <ol>
+                <li><strong>Upload Master:</strong> Always start with the biggest, highest quality image you have (e.g.,
+                    2000px wide).</li>
+                <li><strong>Auto-Generate:</strong> We create the 400, 800, and 1200 versions in memory.</li>
+                <li><strong>Copy Code:</strong> Grab the pre-written HTML tag. It includes `sizes` attributes for
+                    responsive layout hints.</li>
+                <li><strong>Download Assets:</strong> Download the resized files and put them in your project folder.
+                </li>
+            </ol>
+
+            <div class="tip-box"
+                style="background: rgba(0, 255, 157, 0.05); border-left: 4px solid var(--primary-color); padding: 1rem 1.5rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0;">
+                <strong>SEO Bonus:</strong> Google tracks "Core Web Vitals", including LCP (Largest Contentful Paint).
+                Serving smaller images to mobile users massively improves your LCP score, directly boosting your search
+                ranking.
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const editor = document.getElementById('editor');
+        const outputCode = document.getElementById('output-code');
+        const downloadLinks = document.getElementById('download-links');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => processFile(e.target.files[0]));
+
+        function processFile(file) {
+            if (!file) return;
+
+            dropZone.style.display = 'none';
+            editor.style.display = 'flex';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    generateBreakpoints(img, file.name);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function generateBreakpoints(originalImg, filename) {
+            const widths = [400, 800, 1200];
+            const nameBase = filename.split('.')[0];
+            const ext = 'jpg'; // Normalizing to jpg for web compatibility
+
+            let srcset = '';
+            downloadLinks.innerHTML = '';
+
+            for (let w of widths) {
+                // Don't upscale
+                if (w > originalImg.width) continue;
+
+                const h = (w / originalImg.width) * originalImg.height;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(originalImg, 0, 0, w, h);
+
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                const fname = `${nameBase}-${w}w.${ext}`;
+
+                // Add to srcset
+                srcset += `${fname} ${w}w, \n`;
+
+                // Create download button
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = fname;
+                link.className = 'action-btn';
+                link.style.padding = '0.5rem 1rem';
+                link.style.fontSize = '0.9rem';
+                link.innerHTML = `⬇️ ${w}w`;
+                downloadLinks.appendChild(link);
+            }
+
+            // Clean tag
+            const finalTag = `<img src="${filename}" \n     srcset="${srcset.trim().slice(0, -1)}" \n     sizes="(max-width: 600px) 400px, (max-width: 900px) 800px, 1200px" \n     alt="${nameBase}">`;
+
+            outputCode.value = finalTag;
+        }
+    </script>
+</body>
+
+</html>

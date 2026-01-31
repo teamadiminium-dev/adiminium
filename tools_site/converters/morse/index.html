@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Free online Morse Code Converter / Translator. Translate text to Morse code (dots and dashes) and decode Morse back to text. Supports International Morse Code standard.">
+    <meta name="keywords"
+        content="morse code converter, text to morse, morse to text, morse decoder, sos morse code, telegraph code, morse translator">
+    <title>Morse Code Converter | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .converter-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-family: monospace;
+            /* Monospace helpful for alignment */
+            resize: vertical;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-action:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dim);
+            color: var(--primary-color);
+            opacity: 1;
+        }
+
+        .copy-btn {
+            margin-top: 0.5rem;
+            align-self: flex-end;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .copy-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Morse Keys */
+        .morse-keys {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .morse-btn {
+            flex: 1;
+            padding: 1rem;
+            font-size: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--primary-color);
+            background: rgba(0, 200, 83, 0.1);
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .morse-btn:active {
+            background: var(--primary-color);
+            color: #000;
+            transform: scale(0.95);
+        }
+
+        .space-btn {
+            font-size: 1rem;
+            flex: 1.5;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .description-section p {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tools..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Converters</a> / Morse Code
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Morse Code Converter</h1>
+
+        <div class="converter-container">
+            <div class="panels">
+                <div class="panel-col">
+                    <label>Text Input</label>
+                    <textarea id="text-input" placeholder="Type messages here..." spellcheck="false"></textarea>
+                    <button class="copy-btn" onclick="copyToClipboard('text-input')">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Text
+                    </button>
+                </div>
+
+                <div class="panel-col">
+                    <label>Morse Code Output</label>
+                    <textarea id="morse-input" placeholder="... --- ..." spellcheck="false"
+                        oninput="toText()"></textarea>
+
+                    <div class="morse-keys">
+                        <button class="morse-btn" onclick="addSignal('.')">●</button>
+                        <button class="morse-btn" onclick="addSignal('-')">▬</button>
+                        <button class="morse-btn space-btn" onclick="addSignal(' ')">Space</button>
+                        <button class="morse-btn" onclick="backspace()"
+                            style="background: var(--bg-surface); border-color: #e74c3c; color: #e74c3c;">⌫</button>
+                    </div>
+
+                    <button class="copy-btn" onclick="copyToClipboard('morse-input')">
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Morse
+                    </button>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-action btn-primary" onclick="toMorse()">
+                    Text &rarr; Morse
+                </button>
+                <button class="btn-action btn-primary" onclick="toText()">
+                    Morse &rarr; Text
+                </button>
+                <button class="btn-action" onclick="clearAll()">
+                    Clear All
+                </button>
+            </div>
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+                Tip: Use spaces to separate letters, and " / " to separate words.
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Before text messages and emails, there was Morse Code. Developed in the 1830s for the telegraph, this
+                system transmits information using standardized sequences of short (dots) and long (dashes) signals. The
+                Adiminium Morse Code Converter brings this historic method to the digital age. It allows you to encode
+                any message into Morse for fun, learning, or emergency signaling, and decodes received patterns back
+                into readable English instantly.</p>
+
+            <h3>What It Does</h3>
+            <p>Translates alphanumeric text into standard International Morse Code patterns and decodes Morse strings
+                back to text.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Encode:</strong> Type your message in the text box. The Morse translation appears instantly
+                    below.</li>
+                <li><strong>Decode:</strong> Type dots (.) and dashes (-) in the bottom box to reveal the text.</li>
+                <li><strong>Format:</strong> Use spaces to separate letters and slashes (/) to separate words.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Scouts, amateur radio (HAM) operators, survivalists, and puzzle enthusiasts.</p>
+
+            <h3>Freqently Asked Questions</h3>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">What is the standard for spacing?</h4>
+                <p>International Morse Code rules state: 1 unit for a dot, 3 units for a dash, 1 unit between parts of a
+                    letter, 3 units between letters, and 7 units between words.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Can I use it for audio?</h4>
+                <p>This tool converts text visuals. While you can read it out to tap it, it does not currently generate
+                    audio tones.</p>
+            </div>
+            <div class="faq-item" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">is SOS ...---...?</h4>
+                <p>Yes. Three dots (S), three dashes (O), three dots (S). It is the universal distress signal.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const textIn = document.getElementById('text-input');
+        const morseIn = document.getElementById('morse-input');
+
+        const morseCode = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..',
+            '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....',
+            '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----',
+            ' ': '/', '.': '.-.-.-', ',': '--..--', '?': '..--..', "'": '.----.',
+            '!': '-.-.--', '/': '-..-.'
+        };
+
+        const reverseMorse = Object.fromEntries(
+            Object.entries(morseCode).map(([k, v]) => [v, k])
+        );
+
+        // Add visual signals
+        function addSignal(sig) {
+            morseIn.value += sig;
+            toText();
+        }
+
+        function backspace() {
+            morseIn.value = morseIn.value.slice(0, -1);
+            toText();
+        }
+
+        function toMorse() {
+            const text = textIn.value.toUpperCase();
+            let morse = '';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (morseCode[char]) {
+                    morse += morseCode[char] + ' ';
+                } else {
+                    morse += char + ' ';
+                }
+            }
+            morseIn.value = morse.trim();
+        }
+
+        function toText() {
+            const val = morseIn.value.trim();
+            if (!val) {
+                textIn.value = '';
+                return;
+            }
+
+            // Split by spaces
+            const parts = val.split(/\s+/);
+            let text = '';
+
+            for (let part of parts) {
+                if (reverseMorse[part]) {
+                    text += reverseMorse[part];
+                } else if (part === '/') {
+                    text += ' ';
+                } else {
+                    text += part; // Unknown
+                }
+            }
+            textIn.value = text;
+        }
+
+        function clearAll() {
+            textIn.value = '';
+            morseIn.value = '';
+        }
+
+        function copyToClipboard(id) {
+            const el = document.getElementById(id);
+            el.select();
+            document.execCommand('copy');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Visualizer | Adiminium Tools</title>
+    <link rel="stylesheet" href="../../css/variables.css">
+    <style>
+        header {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+            background: var(--primary-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .breadcrumb {
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--primary-color);
+        }
+
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .generator-container {
+                grid-template-columns: 320px 1fr;
+            }
+        }
+
+        .controls-panel {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        select,
+        input[type="number"],
+        .flex-add-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+
+        button.flex-add-btn {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        button.flex-add-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .preview-stage {
+            background-color: var(--bg-surface);
+            border-radius: 16px;
+            min-height: 400px;
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            overflow: auto;
+        }
+
+        .flex-container {
+            display: flex;
+            background: #eee;
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            border: 1px dashed #ccc;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .flex-item {
+            background: var(--primary-color);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            padding: 1rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .flex-item:nth-child(even) {
+            background: var(--primary-dim);
+            color: var(--primary-color);
+        }
+
+        .code-output {
+            background: var(--bg-body);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Fira Code', monospace;
+            position: relative;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .description-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            line-height: 1.8;
+            color: var(--text-muted);
+        }
+
+        .description-section h2 {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="../../index.html" class="logo">Adiminium <span>Tools</span></a>
+
+            <div class="search-wrapper">
+                <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="global-search" class="search-input" placeholder="Search tool..."
+                    autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <button onclick="toggleTheme()" aria-label="Toggle theme"
+                style="background:none; border:1px solid var(--border-color); padding:0.5rem; border-radius:50%; cursor:pointer; color:var(--text-main); width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="../../index.html">Home</a> / <a href="../index.html">Color & Design</a> / Flexbox Generator
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 2rem;">Flexbox Visualizer</h1>
+
+        <div class="generator-container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label>Flex Direction</label>
+                    <select id="flex-direction" onchange="updateFlex()">
+                        <option value="row">row</option>
+                        <option value="row-reverse">row-reverse</option>
+                        <option value="column">column</option>
+                        <option value="column-reverse">column-reverse</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Justify Content</label>
+                    <select id="justify-content" onchange="updateFlex()">
+                        <option value="flex-start">flex-start</option>
+                        <option value="flex-end">flex-end</option>
+                        <option value="center">center</option>
+                        <option value="space-between">space-between</option>
+                        <option value="space-around">space-around</option>
+                        <option value="space-evenly">space-evenly</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Align Items</label>
+                    <select id="align-items" onchange="updateFlex()">
+                        <option value="stretch">stretch</option>
+                        <option value="flex-start">flex-start</option>
+                        <option value="flex-end">flex-end</option>
+                        <option value="center">center</option>
+                        <option value="baseline">baseline</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Flex Wrap</label>
+                    <select id="flex-wrap" onchange="updateFlex()">
+                        <option value="nowrap">nowrap</option>
+                        <option value="wrap">wrap</option>
+                        <option value="wrap-reverse">wrap-reverse</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Align Content</label>
+                    <select id="align-content" onchange="updateFlex()">
+                        <option value="stretch">stretch</option>
+                        <option value="flex-start">flex-start</option>
+                        <option value="flex-end">flex-end</option>
+                        <option value="center">center</option>
+                        <option value="space-between">space-between</option>
+                        <option value="space-around">space-around</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Items</label>
+                    <div style="display:flex; gap:0.5rem;">
+                        <button class="flex-add-btn" onclick="modifyItems(1)">+</button>
+                        <button class="flex-add-btn" onclick="modifyItems(-1)"
+                            style="background:var(--bg-body); color:var(--text-main); border:1px solid var(--border-color);">-</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div class="preview-stage">
+                    <div id="flex-container" class="flex-container">
+                        <div class="flex-item">1</div>
+                        <div class="flex-item">2</div>
+                        <div class="flex-item">3</div>
+                        <div class="flex-item">4</div>
+                    </div>
+                </div>
+
+                <div class="code-output">
+                    <div id="css-code">.container {
+                        display: flex;
+                        }</div>
+                    <button class="copy-btn" onclick="copyCSS()">Copy CSS</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="description-section">
+            <h2>Description</h2>
+            <p>Flexbox is essential for modern responsive design, simplifying 1D layouts. The Adiminium Flexbox
+                Visualizer allows you to instantly see the effect of various properties like `justify-content` (spacing
+                along the main axis) and `align-items` (alignment on the cross axis). By adding/removing items and
+                tweaking directions, you can better understand how flex containers behave and grab the code for your
+                navbars, centered cards, or list layouts.</p>
+
+            <h3>What It Does</h3>
+            <p>Interactive playground for CSS Flexbox container properties.</p>
+
+            <h3>How To Use</h3>
+            <ul style="padding-left: 1.5rem; line-height: 1.6;">
+                <li><strong>Controls:</strong> Adjust Direction, Alignment, and Wrapping behaviors using the dropdowns.
+                </li>
+                <li><strong>Items:</strong> Add (+) or Remove (-) items to test wrapping scenarios.</li>
+                <li><strong>Preview:</strong> The container updates in real-time.</li>
+            </ul>
+
+            <h3>Who It Is For</h3>
+            <p>Beginners learning Flexbox mechanics and pros needing quick alignment snippets.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div style="margin-bottom: 1rem;">
+                <a href="../../../main_site/privacy.html" style="margin: 0 1rem;">Privacy Policy</a>
+                <a href="../../../main_site/terms.html" style="margin: 0 1rem;">Terms & Conditions</a>
+                <a href="../../../main_site/contact.html" style="margin: 0 1rem;">Contact Us</a>
+            </div>
+            <p>&copy; 2026 Adiminium. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/theme.js"></script>
+    <script src="../../js/search.js"></script>
+    <script src="../../js/particles.js"></script>
+    <script>
+        const container = document.getElementById('flex-container');
+        const cssCode = document.getElementById('css-code');
+
+        function updateFlex() {
+            const dir = document.getElementById('flex-direction').value;
+            const justify = document.getElementById('justify-content').value;
+            const align = document.getElementById('align-items').value;
+            const wrap = document.getElementById('flex-wrap').value;
+            const alignContent = document.getElementById('align-content').value;
+
+            container.style.flexDirection = dir;
+            container.style.justifyContent = justify;
+            container.style.alignItems = align;
+            container.style.flexWrap = wrap;
+            container.style.alignContent = alignContent;
+
+            let code = `.container {\n  display: flex;\n  flex-direction: ${dir};\n  justify-content: ${justify};\n  align-items: ${align};`;
+
+            if (wrap !== 'nowrap') {
+                code += `\n  flex-wrap: ${wrap};`;
+                if (alignContent !== 'stretch') {
+                    code += `\n  align-content: ${alignContent};`;
+                }
+            }
+            code += `\n}`;
+
+            cssCode.textContent = code;
+        }
+
+        function modifyItems(change) {
+            const currentCount = container.children.length;
+            if (change === 1) {
+                if (currentCount < 12) {
+                    const item = document.createElement('div');
+                    item.className = 'flex-item';
+                    item.textContent = currentCount + 1;
+                    container.appendChild(item);
+                }
+            } else {
+                if (currentCount > 1) {
+                    container.removeChild(container.lastElementChild);
+                }
+            }
+        }
+
+        function copyCSS() {
+            navigator.clipboard.writeText(cssCode.textContent).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+
+        // Init
+        updateFlex();
+    </script>
+</body>
+
+</html>
